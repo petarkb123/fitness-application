@@ -2,6 +2,14 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent iOS text size adjustment */
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 html {
@@ -9,6 +17,7 @@ html {
     background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%);
     background-color: #1a1a30;
     min-height: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -252,6 +261,19 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+/* Desktop: Hide mobile-specific elements, show desktop profile */
+.header-actions {
+    display: none !important;
+}
+
+.mobile-profile {
+    display: none !important;
+}
+
+.desktop-profile {
+    display: flex !important;
 }
 
 .user-profile {
@@ -545,6 +567,10 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px; /* Touch-friendly minimum height */
 }
 
 .btn-primary {
@@ -592,9 +618,9 @@ body {
         right: 0;
         bottom: 0;
         top: auto;
-        height: 60px;
+        height: 65px;
         width: 100%;
-        padding: 0;
+        padding: 0.5rem 0;
         border-right: none;
         border-top: 1px solid rgba(255,255,255,0.15);
         background: rgba(30, 30, 45, 0.98);
@@ -604,6 +630,21 @@ body {
         z-index: 2000;
         display: flex;
         align-items: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        /* Ensure it's always visible */
+        min-height: 65px;
+        max-height: 65px;
+    }
+    
+    /* Hide scrollbar on bottom nav */
+    .sidebar::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .sidebar {
+        scrollbar-width: none;
     }
 
     .sidebar-header, .nav-section-title { display: none; }
@@ -616,11 +657,22 @@ body {
         align-items: center;
     }
     
-    .nav-section { margin: 0; }
+    .nav-section { 
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Hide second nav-section (ACCOUNT section with Settings/Logout) */
+    .nav-section:nth-child(2) {
+        display: none;
+    }
     
     .nav-list {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-evenly; /* Evenly distribute nav items */
         align-items: center;
         height: 100%;
         margin: 0;
@@ -632,28 +684,40 @@ body {
     .nav-item {
         margin: 0;
         flex: 1;
-        max-width: 65px;
-        min-width: 50px;
+        max-width: 80px;
+        min-width: 60px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    /* Hide Settings and Logout from bottom nav on mobile (they're in header) */
+    .nav-item:has(a[href="/settings"]),
+    .nav-item:has(form[action*="logout"]) {
+        display: none;
     }
     
     .nav-link {
-        padding: 0.4rem 0.2rem;
+        padding: 0.5rem 0.25rem;
         border-radius: 8px;
         flex-direction: column;
-        gap: 0.2rem;
+        gap: 0.25rem;
         background: transparent !important;
         border: none !important;
         transform: none !important;
         box-shadow: none !important;
         height: 100%;
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
+        touch-action: manipulation;
+        user-select: none;
+        min-height: 55px;
     }
     
     .nav-link span {
         display: block !important;
-        font-size: 0.6rem !important;
+        font-size: 0.65rem !important;
         font-weight: 500;
         white-space: nowrap;
         overflow: hidden;
@@ -663,7 +727,7 @@ body {
     }
     
     .nav-link i {
-        font-size: 1.1rem !important;
+        font-size: 1.2rem !important;
         width: auto !important;
         margin: 0;
     }
@@ -679,38 +743,171 @@ body {
         transform: none !important;
     }
 
-    /* Logout button styling */
-    .sidebar form {
-        flex: 1;
-        max-width: 60px;
-        min-width: 48px;
-    }
-
-    .sidebar form .nav-link {
-        background: transparent !important;
-        color: rgba(255, 255, 255, 0.85) !important;
-        border: none !important;
-    }
-
-    .sidebar form .nav-link:hover {
-        background: rgba(239, 68, 68, 0.15) !important;
-        color: #ef4444 !important;
-    }
+    /* Logout button removed from bottom nav - it's in the header now */
 
     .main-content {
         margin-left: 0;
         padding: 1rem;
-        padding-bottom: 70px;
+        padding-bottom: 85px; /* Increased to ensure content is fully visible above nav */
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+    
+    /* MOBILE ONLY: Reorganize header layout */
+    .top-header {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem; /* More space between profile and title */
+        flex: 1;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+        margin-top: 0.25rem; /* Extra space after profile */
+    }
+    
+    .mobile-profile {
+        margin-bottom: 0.25rem; /* Space below profile */
+    }
+    
+    .header-right {
+        flex-shrink: 0;
+    }
+    
+    /* MOBILE ONLY: Show mobile profile, hide desktop profile */
+    .mobile-profile {
+        display: flex !important;
+    }
+    
+    .desktop-profile {
+        display: none !important;
+    }
+    
+    /* MOBILE ONLY: Show header action buttons */
+    .header-actions {
+        display: flex !important; /* Override desktop display: none */
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .header-btn {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.9);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 1.1rem;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    .header-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(102, 126, 234, 0.4);
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+    
+    .user-profile {
+        gap: 0.65rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .profile-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .profile-name {
+        font-size: 1rem;
+        font-weight: 600;
     }
 
+    /* Stack action cards vertically, make them wider and shorter */
     .quick-actions {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        grid-template-columns: 1fr; /* Single column */
+        gap: 0.65rem;
+    }
+    
+    .action-card {
+        flex-direction: row; /* Horizontal layout */
+        padding: 0.75rem 1rem;
+        min-height: auto;
+    }
+    
+    .action-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .action-content {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .action-content h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.15rem;
+    }
+    
+    .action-content p {
+        font-size: 0.8rem;
+        line-height: 1.3;
     }
 
+    /* Stack stats vertically, make them horizontal */
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        grid-template-columns: 1fr; /* Single column */
+        gap: 0.65rem;
+    }
+    
+    .stat-card {
+        flex-direction: row; /* Horizontal layout */
+        padding: 0.75rem 1rem;
+        min-height: auto;
+    }
+    
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    
+    .stat-content {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        margin-bottom: 0.1rem;
+        line-height: 1.2;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        line-height: 1.3;
     }
 
     .welcome-title {
@@ -721,49 +918,58 @@ body {
         padding: 1.5rem;
     }
 
-    .action-card, .stat-card {
-        padding: 1rem;
+    .action-card {
+        padding: 1rem 1.25rem;
     }
 
     .action-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.2rem;
+        width: 48px;
+        height: 48px;
+        font-size: 1.3rem;
     }
 
     .action-card h3 {
         font-size: 1rem;
     }
 
-    .stat-label {
-        font-size: 0.8rem;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-    }
-
     .calendar {
-        padding: 1rem;
+        padding: 0.65rem;
+    }
+    
+    .calendar-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
     }
 
     .calendar-grid {
-        gap: 0.5rem;
+        gap: 0.3rem;
     }
 
     .cal-label {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
+        padding: 0.1rem 0;
     }
 
     .cal-cell {
-        padding: 0.5rem;
-        min-height: 40px;
+        padding: 0.3rem;
+        min-height: 32px;
         aspect-ratio: 1/1;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .cal-num {
-        font-size: 0.9rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* Smaller "New" button on calendar */
+    .rest-days-section .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        min-height: 36px;
+    }
+    
+    .rest-days-section .btn i {
+        font-size: 0.75rem;
     }
 
     .activity-item {
@@ -778,12 +984,32 @@ body {
     .activity-content h4 {
         font-size: 1rem;
     }
+    
+    /* Make rest-days section more compact */
+    .rest-days-section {
+        margin-top: 0.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.05rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .section-header {
+        margin-bottom: 0.5rem;
+    }
 }
 
 @media (max-width: 480px) {
     .main-content {
         padding: 0.75rem;
-        padding-bottom: 70px;
+        padding-bottom: 90px; /* Extra padding for smaller screens */
+        width: 100%;
+        max-width: 100vw;
+    }
+    
+    .dashboard-container {
+        overflow-x: hidden;
     }
 
     /* Welcome section more compact */
@@ -806,106 +1032,207 @@ body {
         padding: 0.875rem;
     }
 
-    /* Stats in 2-column grid */
+    /* Stack stats vertically on small screens */
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        grid-template-columns: 1fr; /* Single column */
+        gap: 0.65rem;
     }
 
     .stat-card {
-        padding: 0.875rem;
+        flex-direction: row; /* Horizontal layout */
+        padding: 0.65rem 0.875rem;
+        min-height: auto;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .stat-content {
+        flex: 1;
+        text-align: left;
     }
 
     .stat-label {
-        font-size: 0.7rem;
-        margin-bottom: 0.25rem;
+        font-size: 0.75rem;
+        margin-bottom: 0.1rem;
+        line-height: 1.3;
     }
 
     .stat-value {
         font-size: 1.35rem;
+        line-height: 1.2;
     }
 
-    /* Quick actions 2-column */
+    /* Quick actions in single column */
     .quick-actions {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        grid-template-columns: 1fr; /* Single column */
+        gap: 0.65rem;
         margin-bottom: 1rem;
     }
-
+    
     .action-card {
-        padding: 0.875rem;
+        flex-direction: row; /* Horizontal layout */
+        padding: 0.65rem 0.875rem;
+        min-height: auto;
     }
 
     .action-icon {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         font-size: 1.1rem;
-        margin-bottom: 0.5rem;
+        flex-shrink: 0;
     }
 
     .action-card h3 {
         font-size: 0.9rem;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.15rem;
     }
 
     .action-card p {
         font-size: 0.75rem;
+        line-height: 1.3;
+    }
+    
+    .action-content {
+        flex: 1;
+        text-align: left;
+    }
+    
+    /* Adjust header for very small screens */
+    .header-left {
+        gap: 0.65rem; /* Slightly less space on small screens */
+    }
+    
+    .page-title {
+        font-size: 1.35rem;
+        margin-top: 0.2rem;
+    }
+    
+    .mobile-profile {
+        margin-bottom: 0.2rem;
+    }
+    
+    .profile-avatar {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .profile-name {
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    .header-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
     }
 
-    /* Calendar compact but readable */
+    /* Calendar more compact on small screens */
     .calendar {
-        padding: 0.75rem;
-        margin-bottom: 1rem;
+        padding: 0.5rem;
+        margin-bottom: 0.65rem;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .calendar-title {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
     }
 
     .calendar-grid {
-        gap: 0.4rem;
+        gap: 0.25rem;
+        max-width: 100%;
     }
 
     .cal-label {
-        font-size: 0.65rem;
-        padding: 0.25rem 0;
-        margin-bottom: 0.25rem;
+        font-size: 0.55rem;
+        padding: 0.1rem 0;
+        margin-bottom: 0.1rem;
     }
 
     .cal-cell {
-        padding: 0.4rem;
-        min-height: 35px;
+        padding: 0.25rem;
+        min-height: 28px;
         aspect-ratio: 1/1;
-        font-size: 0.7rem;
-        border-radius: 6px;
+        font-size: 0.6rem;
+        border-radius: 5px;
+        max-width: 100%;
     }
 
     .cal-num {
-        font-size: 0.8rem !important;
+        font-size: 0.7rem !important;
         line-height: 1.2;
     }
 
     .cal-workout, .cal-reason {
-        font-size: 0.5rem !important;
-        padding: 0.15rem 0.25rem !important;
+        font-size: 0.45rem !important;
+        padding: 0.1rem 0.15rem !important;
         max-width: 95%;
         line-height: 1.1;
+    }
+    
+    /* Even smaller "New" button on small screens */
+    .rest-days-section .btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+        min-height: 32px;
+    }
+    
+    .rest-days-section .btn i {
+        font-size: 0.7rem;
+    }
+    
+    /* Modal adjustments for small screens */
+    .modal-content {
+        max-width: 95vw;
+        margin: 0 auto;
+    }
+    
+    .rest-days-grid {
+        max-width: 100%;
     }
 
     /* Ensure bottom nav doesn't need scrolling */
     .sidebar {
-        overflow: hidden;
+        overflow: visible;
     }
 
     .nav-list {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        padding: 0 0.5rem; /* Add padding to prevent cutoff */
     }
 
     .nav-list::-webkit-scrollbar {
         display: none;
+    }
+    
+    /* Prevent horizontal scroll on body */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100vw;
+    }
+    
+    /* Ensure all grids fit */
+    .quick-actions,
+    .stats-grid {
+        max-width: 100%;
+        overflow: hidden;
+    }
+    
+    .action-card,
+    .stat-card,
+    .activity-item,
+    .welcome-section {
+        max-width: 100%;
     }
 
     /* Activity feed more compact */
@@ -943,8 +1270,17 @@ body {
 
     /* Section titles */
     .dashboard h2, .section-title {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Make rest-days section more compact on small screens */
+    .rest-days-section {
+        margin-top: 0.6rem;
+    }
+    
+    .section-header {
+        margin-bottom: 0.4rem;
     }
 }
 
@@ -1012,7 +1348,7 @@ body {
 .rest-days-grid.single { grid-template-columns: 1fr; }
 .calendar { width: 100%; background: rgba(42, 42, 65, 0.6); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; padding: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); }
 .calendar-title { font-weight: 600; margin-bottom: 8px; }
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 10px; }
 .cal-label { font-size: 12px; color: rgba(255, 255, 255, 0.75); text-align: center; }
 .cal-cell { position: relative; background: rgba(42, 42, 65, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 10px; text-align: right; min-height: 88px; color: #eef; transition: background .15s, border-color .15s, transform .15s; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02); display: flex; flex-direction: column; justify-content: space-between; }
 .cal-cell:hover { transform: translateY(-2px); border-color: rgba(102, 126, 234, 0.35); background: rgba(42, 42, 65, 0.85); }

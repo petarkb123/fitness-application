@@ -2,7 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a30">
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>FitPower - Dashboard</title>
@@ -86,10 +90,8 @@
         
         <header class="top-header">
             <div class="header-left">
-                <h1 class="page-title">Dashboard</h1>
-            </div>
-            <div class="header-right">
-                <div class="user-profile">
+                <!-- Mobile only: User profile above title -->
+                <div class="user-profile mobile-profile">
                     <div class="profile-avatar avatar-preview">
                         <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
                         <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
@@ -99,6 +101,33 @@
                     <div class="profile-info">
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
+                </div>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <!-- Desktop only: User profile in top right (original) -->
+                <div class="user-profile desktop-profile">
+                    <div class="profile-avatar avatar-preview">
+                        <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
+                        <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name" th:text="${username}">User</span>
+                    </div>
+                </div>
+                <!-- Mobile only: Settings and Logout buttons -->
+                <div class="header-actions">
+                    <a href="/settings" class="header-btn">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                    <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+                        <button type="submit" class="header-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    </form>
                 </div>
             </div>
         </header>
@@ -368,16 +397,14 @@
             const year = now.getFullYear();
             const month = now.getMonth();
             const first = new Date(year, month, 1);
-            const start = new Date(first);
-            start.setDate(1 - ((first.getDay()+6)%7)); // Monday start
+            const last = new Date(year, month + 1, 0); // Last day of current month
+            const start = new Date(first); // Start from first day of current month
             const title = document.createElement('div');
             title.className = 'calendar-title';
             title.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
             cal.appendChild(title);
             const grid = document.createElement('div');
             grid.className = 'calendar-grid';
-            const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-            labels.forEach(l=>{ const el=document.createElement('div'); el.className='cal-label'; el.textContent=l; grid.appendChild(el); });
             // Build rest map from server model
             const restList = /*[[${restDays}]]*/ [];
             const restMap = new Map((restList||[]).map(r => [r.date, { id: r.id, reason: r.reason, kind:'REST' }]));
@@ -386,10 +413,11 @@
             // store globally for later duplicate checks
             window._scheduledMonthMap = scheduledMap;
             const todayIso = new Date().toISOString().slice(0,10);
-            for (let i=0;i<42;i++){
+            const daysInMonth = last.getDate();
+            for (let i=0;i<daysInMonth;i++){
                 const d = new Date(start); d.setDate(start.getDate()+i);
                 const cell = document.createElement('div');
-                cell.className = 'cal-cell' + (d.getMonth()!==month ? ' muted':'' );
+                cell.className = 'cal-cell';
                 const dd = String(d.getDate()).padStart(2,'0');
                 const mm = String(d.getMonth()+1).padStart(2,'0');
                 const iso = `${d.getFullYear()}-${mm}-${dd}`;
