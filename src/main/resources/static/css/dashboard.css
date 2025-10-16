@@ -697,15 +697,79 @@ body {
     }
 
     .quick-actions {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .welcome-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
+    }
+
+    .welcome-section {
+        padding: 1.25rem;
+    }
+
+    .action-card, .stat-card {
+        padding: 0.875rem;
+    }
+
+    .action-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.05rem;
+    }
+
+    .action-card h3 {
+        font-size: 0.9rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .stat-value {
+        font-size: 1.35rem;
+    }
+
+    .calendar {
+        padding: 0.75rem;
+    }
+
+    .calendar-grid {
+        gap: 0.4rem;
+    }
+
+    .cal-label {
+        font-size: 0.625rem;
+    }
+
+    .cal-cell {
+        padding: 0.35rem;
+        min-height: auto;
+        aspect-ratio: 1/1;
+        font-size: 0.7rem;
+    }
+
+    .cal-num {
+        font-size: 0.75rem !important;
+    }
+
+    .activity-item {
+        padding: 0.875rem;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .activity-content h4 {
+        font-size: 0.9rem;
     }
 }
 
