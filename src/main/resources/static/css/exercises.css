@@ -1352,13 +1352,13 @@ body {
     .sidebar-nav { padding: 0; height: 100%; }
     .nav-section { margin: 0; }
     .nav-list { display: flex; justify-content: space-around; align-items: center; height: 100%; margin: 0; padding: 0 0.25rem; }
-    .nav-item { margin: 0; flex: 1; max-width: 72px; }
-    .nav-link { padding: 0.35rem 0.2rem; border-radius: 6px; flex-direction: column; gap: 0.1rem; background: transparent !important; border: none !important; transform: none !important; box-shadow: none !important; height: 100%; display: flex; align-items: center; justify-content: center; }
-    .nav-link span { display: block !important; font-size: 0.6rem !important; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1; }
-    .nav-link i { font-size: 1.05rem !important; width: auto !important; margin: 0; }
+    .nav-item { margin: 0; flex: 1; max-width: 60px; }
+    .nav-link { padding: 0.3rem 0.15rem; border-radius: 6px; flex-direction: column; gap: 0.1rem; background: transparent !important; border: none !important; transform: none !important; box-shadow: none !important; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .nav-link span { display: block !important; font-size: 0.5625rem !important; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1; }
+    .nav-link i { font-size: 1rem !important; width: auto !important; margin: 0; }
     .nav-item.active .nav-link { background: rgba(102, 126, 234, 0.18) !important; transform: none !important; color: #667eea !important; }
     .nav-link:hover { background: rgba(255,255,255,0.06) !important; transform: none !important; }
-    .sidebar form { flex: 1; max-width: 72px; }
+    .sidebar form { flex: 1; max-width: 60px; }
     .sidebar form .nav-link { background: transparent !important; color: rgba(255, 255, 255, 0.85) !important; border: none !important; }
     .sidebar form .nav-link:hover { background: rgba(239, 68, 68, 0.15) !important; color: #ef4444 !important; }
 

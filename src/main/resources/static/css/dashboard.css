@@ -625,11 +625,12 @@ body {
     .nav-item {
         margin: 0;
         flex: 1;
-        max-width: 72px;
+        max-width: 60px;
+        min-width: 48px;
     }
     
     .nav-link {
-        padding: 0.35rem 0.2rem;
+        padding: 0.3rem 0.15rem;
         border-radius: 6px;
         flex-direction: column;
         gap: 0.1rem;
@@ -645,7 +646,7 @@ body {
     
     .nav-link span {
         display: block !important;
-        font-size: 0.6rem !important;
+        font-size: 0.5625rem !important;
         font-weight: 500;
         white-space: nowrap;
         overflow: hidden;
@@ -655,7 +656,7 @@ body {
     }
     
     .nav-link i {
-        font-size: 1.05rem !important;
+        font-size: 1rem !important;
         width: auto !important;
         margin: 0;
     }
@@ -674,7 +675,8 @@ body {
     /* Logout button styling */
     .sidebar form {
         flex: 1;
-        max-width: 72px;
+        max-width: 60px;
+        min-width: 48px;
     }
 
     .sidebar form .nav-link {
@@ -763,19 +765,31 @@ body {
         padding: 0.5rem;
     }
 
+    .calendar-grid {
+        gap: 0.3rem;
+    }
+
     .cal-label {
-        font-size: 0.625rem;
-        padding: 0.25rem;
+        font-size: 0.5625rem;
+        padding: 0.125rem;
     }
 
     .cal-cell {
-        padding: 0.3rem;
-        min-height: 44px;
-        font-size: 0.75rem;
+        padding: 0.25rem;
+        min-height: auto;
+        aspect-ratio: 1/1;
+        font-size: 0.625rem;
+        border-radius: 6px;
     }
 
-    .cal-number {
-        font-size: 0.875rem;
+    .cal-num {
+        font-size: 0.75rem !important;
+    }
+
+    .cal-workout, .cal-reason {
+        font-size: 0.5rem !important;
+        padding: 0.125rem 0.25rem !important;
+        max-width: 90%;
     }
 
     /* Ensure bottom nav doesn't need scrolling */
@@ -872,7 +886,7 @@ body {
 .calendar-title { font-weight: 600; margin-bottom: 8px; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
 .cal-label { font-size: 12px; color: rgba(255, 255, 255, 0.75); text-align: center; }
-.cal-cell { position: relative; background: rgba(42, 42, 65, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 10px; text-align: right; min-height: 88px; color: #eef; transition: background .15s, border-color .15s, transform .15s; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02); }
+.cal-cell { position: relative; background: rgba(42, 42, 65, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 10px; text-align: right; min-height: 88px; aspect-ratio: 1/1; color: #eef; transition: background .15s, border-color .15s, transform .15s; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02); display: flex; flex-direction: column; justify-content: space-between; }
 .cal-cell:hover { transform: translateY(-2px); border-color: rgba(102, 126, 234, 0.35); background: rgba(42, 42, 65, 0.85); }
 .cal-cell:hover { border-color: #2e3748; }
 .cal-cell .cal-num { font-size: 12px; opacity: .85; }
