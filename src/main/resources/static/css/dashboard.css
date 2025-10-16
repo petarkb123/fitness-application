@@ -592,7 +592,7 @@ body {
         right: 0;
         bottom: 0;
         top: auto;
-        height: 56px;
+        height: 60px;
         width: 100%;
         padding: 0;
         border-right: none;
@@ -602,6 +602,8 @@ body {
         box-shadow: 0 -4px 16px rgba(0,0,0,0.4);
         transform: none;
         z-index: 2000;
+        display: flex;
+        align-items: center;
     }
 
     .sidebar-header, .nav-section-title { display: none; }
@@ -609,6 +611,9 @@ body {
     .sidebar-nav { 
         padding: 0;
         height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
     }
     
     .nav-section { margin: 0; }
@@ -619,7 +624,9 @@ body {
         align-items: center;
         height: 100%;
         margin: 0;
-        padding: 0 0.25rem;
+        padding: 0 0.5rem;
+        width: 100%;
+        list-style: none;
     }
     
     .nav-item {
@@ -693,17 +700,24 @@ body {
     .main-content {
         margin-left: 0;
         padding: 0.75rem;
-        padding-bottom: 66px;
+        padding-bottom: 70px;
+        overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .quick-actions {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .welcome-title {
@@ -716,6 +730,9 @@ body {
 
     .action-card, .stat-card {
         padding: 0.875rem;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
     }
 
     .action-icon {
@@ -776,7 +793,10 @@ body {
 @media (max-width: 480px) {
     .main-content {
         padding: 0.5rem;
-        padding-bottom: 62px;
+        padding-bottom: 70px;
+        overflow-x: hidden;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* Welcome section more compact */
@@ -797,12 +817,17 @@ body {
     /* Cards ultra compact */
     .action-card, .stat-card, .activity-item {
         padding: 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
     }
 
     /* Stats in 2-column grid */
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .stat-card {
@@ -823,6 +848,8 @@ body {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
         margin-bottom: 1rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .action-card {
