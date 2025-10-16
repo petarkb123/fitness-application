@@ -1350,13 +1350,13 @@ body {
 .calendar-title { font-weight: 600; margin-bottom: 8px; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .cal-label { font-size: 12px; color: rgba(255, 255, 255, 0.75); text-align: center; }
-.cal-cell { position: relative; background: rgba(42, 42, 65, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 6px; padding: 4px; text-align: right; min-height: 40px; aspect-ratio: 1/1; color: #eef; transition: background .15s, border-color .15s, transform .15s; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02); display: flex; flex-direction: column; justify-content: space-between; }
+.cal-cell { position: relative; background: rgba(42, 42, 65, 0.75); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 4px; padding: 2px; text-align: right; min-height: 24px; aspect-ratio: 1/1; color: #eef; transition: background .15s, border-color .15s, transform .15s; cursor: pointer; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02); display: flex; flex-direction: column; justify-content: space-between; }
 .cal-cell:hover { transform: translateY(-2px); border-color: rgba(102, 126, 234, 0.35); background: rgba(42, 42, 65, 0.85); }
 .cal-cell:hover { border-color: #2e3748; }
-.cal-cell .cal-num { font-size: 10px; opacity: .85; }
+.cal-cell .cal-num { font-size: 8px; opacity: .85; }
 .cal-cell.today { outline: 2px solid #9aa3ff; outline-offset: -2px; box-shadow: inset 0 0 0 1px rgba(154,163,255,.25); }
 .cal-cell.has-rest { background: linear-gradient(180deg, rgba(255,85,119,.12), rgba(255,85,119,.04)); border-color: #ff557733; }
-.cal-cell .cal-reason { position: absolute; left: 2px; bottom: 2px; font-size: 8px; padding: 1px 4px; border-radius: 999px; background: #ff55771a; color: #ff889c; border: 1px solid #ff55772e; }
+.cal-cell .cal-reason { position: absolute; left: 1px; bottom: 1px; font-size: 6px; padding: 1px 2px; border-radius: 999px; background: #ff55771a; color: #ff889c; border: 1px solid #ff55772e; }
 
 .rest-days-list { background: #101015; border: 1px solid #222; border-radius: 8px; padding: 12px; max-height: 420px; overflow-y: auto; }
 .rest-day-card { border: 1px solid #1f2430; border-radius: 8px; padding: 10px; margin-bottom: 10px; background: #141821; display: grid; grid-template-columns: 1fr auto; gap: 8px; }
@@ -1390,7 +1390,7 @@ body {
 }
 
 .cal-cell.has-workout { background: linear-gradient(180deg, rgba(88,101,242,.12), rgba(88,101,242,.04)); border-color: #5865f233; }
-.cal-cell .cal-workout { position: absolute; left: 2px; bottom: 2px; font-size: 8px; padding: 1px 4px; border-radius: 999px; background: #5865f21a; color: #b8bdfd; border: 1px solid #5865f22e; max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-cell .cal-workout { position: absolute; left: 1px; bottom: 1px; font-size: 6px; padding: 1px 2px; border-radius: 999px; background: #5865f21a; color: #b8bdfd; border: 1px solid #5865f22e; max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (min-width: 1400px) {
   .cal-cell { min-height: 110px; }
