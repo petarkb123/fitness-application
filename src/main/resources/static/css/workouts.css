@@ -1346,11 +1346,11 @@ body {
 
 @media (max-width: 480px) {
     .main-content {
-        padding: 0.5rem;
+        padding: 0.75rem;
     }
 
     .session-card {
-        padding: 1rem;
+        padding: 1.25rem;
     }
 
     .page-title {
@@ -1379,6 +1379,38 @@ body {
     .session-actions .btn {
         width: 100%;
         justify-content: center;
+        min-height: 48px; /* Touch-friendly */
+        font-size: 1rem;
+    }
+
+    /* Better button spacing */
+    .btn {
+        padding: 0.875rem 1.25rem;
+        min-height: 44px; /* Minimum touch target */
+    }
+
+    /* Larger touch targets for icon buttons */
+    .btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.75rem;
+    }
+
+    /* Modal optimizations */
+    .modal-container {
+        width: 95%;
+        max-height: 85vh;
+    }
+
+    .modal-header, .modal-content, .modal-actions {
+        padding: 1.25rem;
+    }
+
+    /* Form inputs touch-friendly */
+    .form-input, .form-select {
+        min-height: 48px;
+        font-size: 16px; /* Prevent iOS zoom */
+        padding: 0.875rem 1rem;
     }
 }
 
@@ -2164,8 +2196,7 @@ body {
     }
 
     .summary-card {
-        flex-direction: column;
-        text-align: center;
+        padding: 1.25rem;
     }
 
     .exercise-detail-card .exercise-header {
@@ -2174,11 +2205,16 @@ body {
         gap: 1rem;
     }
 
+    .exercise-detail-card {
+        padding: 1.25rem;
+    }
+
     .table-header,
     .table-body .set-row {
         grid-template-columns: 50px 1fr 1fr 1fr;
         gap: 0.5rem;
-        padding: 0.75rem;
+        padding: 0.875rem;
+        font-size: 0.9rem;
     }
 
     .exercise-summary {
@@ -2204,5 +2240,27 @@ body {
     .superset-divider {
         margin-top: 0;
         transform: rotate(90deg);
+    }
+
+    /* Exercise cards mobile */
+    .exercise-card {
+        padding: 1.25rem;
+    }
+
+    .exercise-name {
+        font-size: 1.125rem;
+    }
+
+    /* Set inputs better spacing */
+    .set-inputs .form-input {
+        width: 90px;
+        min-height: 44px;
+        font-size: 16px; /* Prevent zoom */
+    }
+
+    /* Button improvements */
+    .btn-add-set, .btn-remove {
+        min-height: 44px;
+        min-width: 44px;
     }
 }

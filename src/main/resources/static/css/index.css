@@ -797,10 +797,12 @@ body {
 @media (max-width: 480px) {
     .hero-title {
         font-size: 2rem;
+        line-height: 1.2;
     }
 
     .hero-description {
-        font-size: 0.95rem;
+        font-size: 1rem; /* Increased for readability */
+        line-height: 1.6;
     }
 
     .hero-devices {
@@ -818,7 +820,7 @@ body {
     }
 
     .welcome-card {
-        padding: 2rem 1.5rem;
+        padding: 2rem 1.25rem;
     }
 
     .welcome-icon {
@@ -829,11 +831,59 @@ body {
 
     .welcome-card h2 {
         font-size: 1.75rem;
+        line-height: 1.3;
+    }
+
+    .welcome-card p {
+        font-size: 1rem;
     }
 
     .btn-large {
-        padding: 1rem 2rem;
-        font-size: 0.95rem;
+        padding: 1.125rem 2rem;
+        font-size: 1rem;
+        min-height: 52px; /* Generous touch target */
+        width: 100%; /* Full width on mobile */
+    }
+
+    /* All buttons touch-friendly */
+    .btn {
+        min-height: 48px;
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+
+    .btn-outline, .btn-glass {
+        min-height: 48px;
+    }
+
+    /* Feature cards better spacing */
+    .feature-card {
+        padding: 1.5rem;
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.75rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.125rem;
+    }
+
+    .feature-card p {
+        font-size: 0.9375rem;
+    }
+
+    /* Hero buttons stacked */
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
     }
 }
 
