@@ -1314,27 +1314,73 @@ optgroup option {
 }
 
 @media (max-width: 768px) {
+    /* Compact professional bottom navigation */
     .sidebar {
-        transform: translateX(-100%);
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        height: 56px;
         width: 100%;
+        padding: 0;
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.15);
+        background: rgba(30, 30, 45, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.4);
+        transform: none;
         z-index: 2000;
     }
 
+    .sidebar-header, .nav-section-title { display: none; }
+    .sidebar-nav { padding: 0; height: 100%; }
+    .nav-section { margin: 0; }
+    .nav-list { display: flex; justify-content: space-around; align-items: center; height: 100%; margin: 0; padding: 0 0.25rem; }
+    .nav-item { margin: 0; flex: 1; max-width: 72px; }
+    .nav-link { padding: 0.35rem 0.2rem; border-radius: 6px; flex-direction: column; gap: 0.1rem; background: transparent !important; border: none !important; transform: none !important; box-shadow: none !important; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .nav-link span { display: block !important; font-size: 0.6rem !important; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1; }
+    .nav-link i { font-size: 1.05rem !important; width: auto !important; margin: 0; }
+    .nav-item.active .nav-link { background: rgba(102, 126, 234, 0.18) !important; transform: none !important; color: #667eea !important; }
+    .nav-link:hover { background: rgba(255,255,255,0.06) !important; transform: none !important; }
+    .sidebar form { flex: 1; max-width: 72px; }
+    .sidebar form .nav-link { background: transparent !important; color: rgba(255, 255, 255, 0.85) !important; border: none !important; }
+    .sidebar form .nav-link:hover { background: rgba(239, 68, 68, 0.15) !important; color: #ef4444 !important; }
+
     .main-content {
         margin-left: 0;
-        padding: 1rem;
+        padding: 0.75rem;
+        padding-bottom: 66px;
     }
 
     .page-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     .template-form {
-        padding: 1rem;
+        padding: 0.875rem;
     }
 
     .exercises-table {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .form-group label {
+        font-size: 0.875rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+        font-size: 15px;
+        padding: 0.75rem;
+    }
+
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.65rem 1rem;
+    }
+
+    .exercise-card {
+        padding: 0.875rem;
     }
 
     .exercises-table th,
@@ -1350,14 +1396,42 @@ optgroup option {
 @media (max-width: 480px) {
     .main-content {
         padding: 0.5rem;
+        padding-bottom: 62px;
     }
 
     .template-form {
-        padding: 1rem;
+        padding: 0.875rem;
     }
 
     .page-title {
-        font-size: 1.75rem;
+        font-size: 1.35rem;
+    }
+
+    .form-group label {
+        font-size: 0.875rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+        font-size: 15px;
+        padding: 0.75rem;
+    }
+
+    .btn {
+        font-size: 0.8125rem;
+        padding: 0.625rem 1rem;
+        min-height: 40px;
+    }
+
+    .exercise-card {
+        padding: 0.875rem;
+    }
+
+    .modal-container {
+        width: 95%;
+    }
+
+    .modal-title {
+        font-size: 1.125rem;
     }
 
     .exercises-table {

@@ -585,37 +585,113 @@ body {
 }
 
 @media (max-width: 768px) {
-    /* Convert sidebar to bottom nav on mobile */
+    /* Compact professional bottom navigation */
     .sidebar {
         position: fixed;
         left: 0;
         right: 0;
         bottom: 0;
         top: auto;
-        height: auto;
+        height: 56px;
         width: 100%;
-        padding: 0.5rem 0.75rem;
+        padding: 0;
         border-right: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(42, 42, 65, 0.9);
-        box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25);
+        border-top: 1px solid rgba(255,255,255,0.15);
+        background: rgba(30, 30, 45, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: 0 -4px 16px rgba(0,0,0,0.4);
         transform: none;
         z-index: 2000;
     }
 
     .sidebar-header, .nav-section-title { display: none; }
-    .sidebar-nav { padding: 0; }
+    
+    .sidebar-nav { 
+        padding: 0;
+        height: 100%;
+    }
+    
     .nav-section { margin: 0; }
-    .nav-list { display: flex; justify-content: space-around; align-items: center; gap: 0.25rem; }
-    .nav-item { margin: 0; }
-    .nav-link { padding: 0.6rem 0.8rem; border-radius: 12px; }
-    .nav-link span { display: none; }
-    .nav-link i { font-size: 1.2rem; width: auto; }
+    
+    .nav-list {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        margin: 0;
+        padding: 0 0.25rem;
+    }
+    
+    .nav-item {
+        margin: 0;
+        flex: 1;
+        max-width: 72px;
+    }
+    
+    .nav-link {
+        padding: 0.35rem 0.2rem;
+        border-radius: 6px;
+        flex-direction: column;
+        gap: 0.1rem;
+        background: transparent !important;
+        border: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .nav-link span {
+        display: block !important;
+        font-size: 0.6rem !important;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        line-height: 1;
+    }
+    
+    .nav-link i {
+        font-size: 1.05rem !important;
+        width: auto !important;
+        margin: 0;
+    }
+
+    .nav-item.active .nav-link {
+        background: rgba(102, 126, 234, 0.18) !important;
+        transform: none !important;
+        color: #667eea !important;
+    }
+
+    .nav-link:hover {
+        background: rgba(255,255,255,0.06) !important;
+        transform: none !important;
+    }
+
+    /* Logout button styling */
+    .sidebar form {
+        flex: 1;
+        max-width: 72px;
+    }
+
+    .sidebar form .nav-link {
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        border: none !important;
+    }
+
+    .sidebar form .nav-link:hover {
+        background: rgba(239, 68, 68, 0.15) !important;
+        color: #ef4444 !important;
+    }
 
     .main-content {
         margin-left: 0;
-        padding: 1rem;
-        padding-bottom: 84px; /* space for bottom nav */
+        padding: 0.75rem;
+        padding-bottom: 66px;
     }
 
     .quick-actions {
@@ -634,18 +710,79 @@ body {
 @media (max-width: 480px) {
     .main-content {
         padding: 0.5rem;
+        padding-bottom: 62px;
     }
 
     .welcome-section {
-        padding: 1.5rem;
+        padding: 1.125rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 0.875rem;
     }
 
     .action-card, .stat-card, .activity-item {
-        padding: 1rem;
+        padding: 0.875rem;
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .quick-actions {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .action-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .action-card h3 {
+        font-size: 0.875rem;
+    }
+
+    .calendar {
+        padding: 0.75rem;
+    }
+
+    .cal-cell {
+        padding: 0.4rem;
+        min-height: 56px;
+        font-size: 0.8rem;
+    }
+
+    .cal-label {
+        font-size: 0.7rem;
+    }
+
+    .activity-item {
+        padding: 0.75rem;
+    }
+
+    .activity-content h4 {
+        font-size: 0.9rem;
+    }
+
+    .activity-meta {
+        font-size: 0.75rem;
     }
 }
 
