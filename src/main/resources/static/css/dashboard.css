@@ -760,17 +760,37 @@ body {
     }
 
     .calendar {
-        padding: 0.75rem;
-    }
-
-    .cal-cell {
-        padding: 0.4rem;
-        min-height: 56px;
-        font-size: 0.8rem;
+        padding: 0.5rem;
     }
 
     .cal-label {
-        font-size: 0.7rem;
+        font-size: 0.625rem;
+        padding: 0.25rem;
+    }
+
+    .cal-cell {
+        padding: 0.3rem;
+        min-height: 44px;
+        font-size: 0.75rem;
+    }
+
+    .cal-number {
+        font-size: 0.875rem;
+    }
+
+    /* Ensure bottom nav doesn't need scrolling */
+    .sidebar {
+        overflow: hidden;
+    }
+
+    .nav-list {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .nav-list::-webkit-scrollbar {
+        display: none;
     }
 
     .activity-item {

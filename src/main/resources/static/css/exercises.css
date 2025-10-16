@@ -1391,16 +1391,28 @@ body {
 
 @media (max-width: 768px) {
     .muscle-group-content .exercises-grid {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
     }
 
     .muscle-group-header {
-        padding: 1rem;
+        padding: 0.75rem;
     }
 
     .muscle-group-content {
-        padding: 0 1rem 1rem;
+        padding: 0 0.5rem 0.5rem;
+    }
+
+    .exercise-card {
+        padding: 0.75rem;
+    }
+
+    .exercise-name {
+        font-size: 0.875rem;
+    }
+
+    .exercise-muscle, .exercise-equipment {
+        font-size: 0.65rem;
     }
 }
 
@@ -1410,20 +1422,36 @@ body {
         padding-bottom: 62px;
     }
 
+    .exercises-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .muscle-group-content .exercises-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
     .exercise-card {
-        padding: 0.875rem;
+        padding: 0.625rem;
     }
 
     .exercise-name {
-        font-size: 1.05rem;
+        font-size: 0.8125rem;
+        margin-bottom: 0.25rem;
     }
 
     .exercise-muscle {
-        font-size: 0.75rem;
+        font-size: 0.625rem;
     }
 
     .exercise-equipment {
-        font-size: 0.75rem;
+        font-size: 0.625rem;
+    }
+
+    .btn-icon {
+        min-width: 32px;
+        min-height: 32px;
     }
 
     .modal-content {

@@ -1558,39 +1558,59 @@ body {
     }
 
     .exercise-detail-card {
-        padding: 1rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .exercise-header {
+        margin-bottom: 0.625rem;
     }
 
     .exercise-name {
-        font-size: 1.05rem;
+        font-size: 0.9375rem;
+        margin-bottom: 0.125rem;
     }
 
     .exercise-muscle {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
+    }
+
+    .exercise-stats {
+        gap: 0.4rem;
+    }
+
+    .stat-badge {
+        font-size: 0.625rem;
+        padding: 0.25rem 0.5rem;
     }
 
     .table-header,
     .table-body .set-row {
-        grid-template-columns: 40px 1fr 1fr 1fr;
-        gap: 0.4rem;
-        padding: 0.625rem;
-        font-size: 0.8rem;
+        grid-template-columns: 32px 1fr 1fr 1fr;
+        gap: 0.3rem;
+        padding: 0.5rem;
+        font-size: 0.75rem;
     }
 
     .table-header {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
+        padding: 0.4rem 0.5rem;
     }
 
     .table-body .set-number {
-        width: 1.5rem;
-        height: 1.5rem;
-        font-size: 0.75rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        font-size: 0.7rem;
     }
 
     .table-body .weight,
     .table-body .reps,
     .table-body .volume {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
+    }
+
+    .sets-details {
+        padding-top: 0.75rem;
     }
 
     .exercise-summary {
