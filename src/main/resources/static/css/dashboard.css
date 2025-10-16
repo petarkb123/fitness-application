@@ -715,81 +715,111 @@ body {
         padding-bottom: 62px;
     }
 
+    /* Welcome section more compact */
     .welcome-section {
-        padding: 1.125rem;
+        padding: 1rem;
         margin-bottom: 0.75rem;
     }
 
     .welcome-title {
-        font-size: 1.5rem;
-        margin-bottom: 0.25rem;
+        font-size: 1.35rem;
+        margin-bottom: 0.35rem;
     }
 
     .welcome-subtitle {
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
     }
 
+    /* Cards ultra compact */
     .action-card, .stat-card, .activity-item {
-        padding: 0.875rem;
+        padding: 0.75rem;
     }
 
+    /* Stats in 2-column grid */
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
     }
 
+    .stat-card {
+        padding: 0.75rem;
+    }
+
     .stat-label {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
+        margin-bottom: 0.25rem;
     }
 
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
     }
 
+    /* Quick actions 2-column */
     .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
         margin-bottom: 1rem;
     }
 
+    .action-card {
+        padding: 0.75rem;
+    }
+
     .action-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 1.1rem;
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+        margin-bottom: 0.4rem;
     }
 
     .action-card h3 {
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
+        margin-bottom: 0.125rem;
     }
 
+    .action-card p {
+        font-size: 0.6875rem;
+    }
+
+    /* Calendar ultra compact */
     .calendar {
         padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .calendar-title {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
     }
 
     .calendar-grid {
-        gap: 0.3rem;
+        gap: 0.25rem;
     }
 
     .cal-label {
         font-size: 0.5625rem;
-        padding: 0.125rem;
+        padding: 0.125rem 0;
+        margin-bottom: 0.125rem;
     }
 
     .cal-cell {
-        padding: 0.25rem;
+        padding: 0.2rem;
         min-height: auto;
         aspect-ratio: 1/1;
         font-size: 0.625rem;
-        border-radius: 6px;
+        border-radius: 4px;
     }
 
     .cal-num {
-        font-size: 0.75rem !important;
+        font-size: 0.6875rem !important;
+        line-height: 1;
     }
 
     .cal-workout, .cal-reason {
-        font-size: 0.5rem !important;
-        padding: 0.125rem 0.25rem !important;
-        max-width: 90%;
+        font-size: 0.4375rem !important;
+        padding: 0.1rem 0.2rem !important;
+        max-width: 95%;
+        line-height: 1;
     }
 
     /* Ensure bottom nav doesn't need scrolling */
@@ -807,16 +837,43 @@ body {
         display: none;
     }
 
+    /* Activity feed more compact */
+    .activity-feed {
+        margin-bottom: 1rem;
+    }
+
+    .activity-feed h2 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
     .activity-item {
-        padding: 0.75rem;
+        padding: 0.625rem;
+    }
+
+    .activity-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
     }
 
     .activity-content h4 {
-        font-size: 0.9rem;
+        font-size: 0.8125rem;
+        margin-bottom: 0.125rem;
+    }
+
+    .activity-content p {
+        font-size: 0.6875rem;
     }
 
     .activity-meta {
-        font-size: 0.75rem;
+        font-size: 0.6875rem;
+    }
+
+    /* Section titles */
+    .dashboard h2, .section-title {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
     }
 }
 
