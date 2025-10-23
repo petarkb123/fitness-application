@@ -1,0 +1,80 @@
+/* Global Mobile CSS - Zoom and Touch Prevention */
+
+@media (max-width: 480px) {
+    /* Prevent zoom and double-tap issues globally */
+    * {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Ensure proper scrolling and safe areas */
+    body, html {
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
+        position: relative;
+        padding-bottom: env(safe-area-inset-bottom); /* For iOS safe areas */
+    }
+
+    /* Fix for iOS Safari address bar pushing content */
+    body {
+        padding-top: constant(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top);
+    }
+
+    /* Ensure input fields don't zoom */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="search"],
+    textarea,
+    select {
+        font-size: 16px !important; /* Prevents iOS zoom */
+        min-height: 44px; /* Ensure sufficient touch target size */
+        -webkit-appearance: none; /* Remove default iOS styling */
+        border-radius: 8px;
+    }
+
+    /* General button and link touch target size */
+    button, a, .btn {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Prevent zoom on focus for all form elements */
+    input:focus,
+    textarea:focus,
+    select:focus {
+        font-size: 16px !important;
+        transform: scale(1);
+    }
+
+    /* Fix for iOS Safari viewport issues */
+    .main-content {
+        padding-bottom: env(safe-area-inset-bottom);
+        min-height: calc(100vh - env(safe-area-inset-bottom));
+    }
+
+    /* Prevent text selection that can cause zoom */
+    .no-select {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+    /* Fix for iOS Safari address bar */
+    @supports (-webkit-touch-callout: none) {
+        body {
+            min-height: -webkit-fill-available;
+        }
+        
+        .main-content {
+            min-height: -webkit-fill-available;
+        }
+    }
+}

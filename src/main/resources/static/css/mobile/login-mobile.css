@@ -1,11 +1,19 @@
 
 @media (max-width: 480px) {
+    /* Prevent zoom and double-tap issues */
+    * {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+    
     body, html {
         overflow-x: hidden;
         overflow-y: auto;
         min-height: 100vh;
         margin: 0;
         padding: 0;
+        position: relative;
+        padding-bottom: env(safe-area-inset-bottom);
     }
     
     .nav-container {
@@ -40,17 +48,18 @@
     }
 
     .main-content {
-        padding: 2rem 0;
+        padding: 1rem 0 2rem 0;
         margin: 0;
         min-height: 100vh;
         overflow: visible;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
+        padding-top: 2rem;
     }
 
     .login-container {
-        margin-top: 0;
+        margin-top: 1rem;
         padding: 1rem;
         max-width: 100%;
         width: 100%;
@@ -104,9 +113,11 @@
 
     .form-input {
         min-height: 44px;
-        font-size: 15px;
+        font-size: 16px !important; /* Prevents iOS zoom */
         padding: 0.75rem 0.875rem;
         border-radius: 12px;
+        -webkit-appearance: none;
+        transform-origin: left top;
     }
 
     .btn, .btn-primary, .btn-google {
