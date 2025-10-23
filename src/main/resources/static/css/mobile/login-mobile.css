@@ -1,0 +1,167 @@
+
+@media (max-width: 480px) {
+    body, html {
+        overflow: hidden !important;
+        height: 100vh;
+        max-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .nav-container {
+        padding: 0 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .nav-menu-indicator {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .nav-menu-indicator .nav-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-glass {
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem 0.75rem !important;
+        box-shadow: none !important;
+    }
+    
+    .btn-glass:hover {
+        background: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .main-content {
+        padding: 0;
+        margin: 0;
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-container {
+        margin-top: -10rem;
+        padding: 0 1rem;
+        max-width: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-card {
+        padding: 1.75rem 1.25rem;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .login-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .login-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .login-title {
+        font-size: 1.35rem;
+        line-height: 1.25;
+        margin-bottom: 0.35rem;
+    }
+
+    .login-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .form-options {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+
+    .forgot-link {
+        align-self: flex-end;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.8125rem;
+    }
+
+    .form-input {
+        min-height: 44px;
+        font-size: 15px;
+        padding: 0.75rem 0.875rem;
+        border-radius: 12px;
+    }
+
+    .btn, .btn-primary, .btn-google {
+        min-height: 44px;
+        font-size: 0.9375rem;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+    }
+
+    .login-btn {
+        padding: 0.875rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.875rem;
+    }
+
+    .form-label {
+        font-size: 0.8125rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+    }
+
+    .checkbox-container {
+        font-size: 0.8125rem;
+    }
+
+    .register-link {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .divider {
+        margin: 1.25rem 0;
+        font-size: 0.8125rem;
+    }
+
+    .social-login {
+        gap: 0.75rem;
+    }
+
+    .login-footer {
+        margin-top: 1.5rem;
+    }
+
+    .login-footer p {
+        font-size: 0.875rem;
+    }
+}

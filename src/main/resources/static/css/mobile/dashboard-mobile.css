@@ -1,0 +1,948 @@
+
+@media (max-width: 480px) {
+
+.main-content {
+    margin-left: 0;
+    padding: 0.75rem;
+    padding-bottom: 90px;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+.dashboard-content {
+    padding: 0.75rem 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+
+.activity-item {
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+}
+
+.welcome-section {
+    padding: 1.5rem;
+    border-radius: 16px;
+}
+
+.action-content h3 {
+    font-size: 0.95rem;
+}
+
+.action-content p {
+    font-size: 0.85rem;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+}
+
+.activity-content h4 {
+    font-size: 0.95rem;
+}
+
+.activity-details {
+    font-size: 0.8rem;
+}
+
+.quick-actions {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+}
+
+.action-card {
+    flex-direction: row;
+    padding: 0.75rem 1rem;
+    min-height: auto;
+}
+
+.action-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.action-content {
+    flex: 1;
+    text-align: left;
+}
+
+.action-content h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+}
+
+.action-content p {
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+}
+
+.quick-actions,
+.stats-grid {
+    justify-items: center;
+}
+
+.action-card,
+.stat-card,
+.welcome-section,
+.activity-item {
+    width: 92%;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.stat-card {
+    flex-direction: row;
+    padding: 0.75rem 1rem;
+    min-height: auto;
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+    text-align: left;
+}
+
+.welcome-title {
+    font-size: 1.5rem;
+}
+
+.welcome-section {
+    padding: 1.5rem;
+}
+
+.action-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+}
+
+.action-card h3 {
+    font-size: 1rem;
+}
+
+.calendar {
+    padding: 0.65rem;
+}
+
+.calendar-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.calendar-grid {
+    gap: 0.3rem;
+}
+
+.cal-label {
+    font-size: 0.6rem;
+    padding: 0.1rem 0;
+}
+
+.cal-cell {
+    padding: 0.3rem;
+    min-height: 32px;
+    aspect-ratio: 1/1;
+    font-size: 0.7rem;
+}
+
+.cal-num {
+    font-size: 0.8rem !important;
+}
+
+.rest-days-section .btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    min-height: 36px;
+}
+
+.rest-days-section .btn i {
+    font-size: 0.75rem;
+}
+
+.activity-item {
+    padding: 1rem;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.activity-content h4 {
+    font-size: 1rem;
+}
+
+.rest-days-section {
+    margin-top: 0.75rem;
+}
+
+.section-title {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-header {
+    margin-bottom: 0.5rem;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    height: 65px;
+    width: 100%;
+    padding: 0.5rem 0;
+    border-right: none;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    background: rgba(30, 30, 45, 0.98);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.4);
+    transform: none;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    min-height: 65px;
+    max-height: 65px;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar {
+    scrollbar-width: none;
+}
+
+.sidebar-header, .nav-section-title { display: none; }
+
+.sidebar-nav { 
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+
+ .nav-section-title { display: none; }
+
+
+
+.nav-section { 
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-section:nth-child(2) {
+    display: none;
+}
+
+.nav-list {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0 0.25rem;
+    width: 100%;
+    list-style: none;
+}
+
+.nav-item {
+    margin: 0;
+    flex: 1;
+    max-width: 90px;
+    min-width: 70px;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-item:has(a[href="/settings"]),
+.nav-item:has(form[action*="logout"]) {
+    display: none;
+}
+
+.nav-link {
+    padding: 0.6rem 0.3rem;
+    border-radius: 10px;
+    flex-direction: column;
+    gap: 0.3rem;
+    background: transparent !important;
+    border: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    user-select: none;
+    min-height: 65px;
+}
+
+.nav-link span {
+    display: block !important;
+    font-size: 0.65rem !important;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    line-height: 1.1;
+}
+
+.nav-link i {
+    font-size: 1.4rem !important;
+    width: auto !important;
+    margin: 0;
+}
+
+.nav-item.active .nav-link {
+    background: rgba(102, 126, 234, 0.18) !important;
+    transform: none !important;
+    color: #667eea !important;
+}
+
+.nav-link:hover {
+    background: rgba(255,255,255,0.06) !important;
+    transform: none !important;
+}
+
+
+.top-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    margin-left: 0.2rem;
+    padding: 0.5rem 0;
+    padding-bottom: 0.8rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 0.65rem;
+    padding-bottom: 0.36rem;
+}
+   
+    
+    .mobile-profile {
+        margin-bottom: 0;
+        display: flex !important;
+        align-items: center;
+    }
+    
+    .desktop-profile {
+        display: none !important;
+    }
+    
+    .profile-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .profile-name {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+  
+
+.user-profile {
+    gap: 0.65rem;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-content::before {
+    content: "Dashboard";
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    padding-top: 0;
+    margin-top: -2rem;
+}
+
+.header-actions {
+    display: flex !important;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.header-btn {
+    min-width: 60px;
+    padding: 0.5rem 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.header-btn i {
+    font-size: 1.1rem;
+}
+
+.header-btn span {
+    font-size: 0.65rem;
+    font-weight: 500;
+    white-space: nowrap;
+    line-height: 1.1;
+}
+
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(102, 126, 234, 0.4);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.rest-days-grid { 
+    grid-template-columns: 1fr; 
+}
+
+/* Base modal styles - missing from mobile */
+.modal { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,.6); 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 50; 
+    backdrop-filter: blur(2px); 
+}
+.modal.open { display: flex; }
+
+.modal-header { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    margin-bottom: 12px; 
+}
+.modal-header h3 { 
+    margin: 0; 
+    font-size: 18px; 
+}
+.modal-close { 
+    cursor: pointer; 
+    font-size: 20px; 
+    color: #aaa; 
+}
+.modal-close:hover { 
+    color: #ffffff; 
+}
+
+.form-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+    margin-bottom: 12px; 
+}
+.form-group label { 
+    color: #cfd6e4; 
+    font-size: 13px; 
+}
+.form-group input, .form-group select, .form-group textarea { 
+    background: #0f131a; 
+    border: 1px solid #1f2430; 
+    color: #eee; 
+    padding: 10px 12px; 
+    border-radius: 8px; 
+    outline: none; 
+    font-size: 1.2rem; 
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
+    border-color: #5865f2; 
+    box-shadow: 0 0 0 3px rgba(88,101,242,.15); 
+}
+.form-help { 
+    font-size: 12px; 
+    color: #8a93a6; 
+}
+.form-error { 
+    display: none; 
+    margin-top: 6px; 
+    font-size: 13px; 
+    color: #ff7181; 
+}
+.form-success { 
+    display: none; 
+    margin-top: 6px; 
+    font-size: 13px; 
+    color: #58f2a6; 
+}
+.modal-actions { 
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 10px; 
+    margin-top: 14px; 
+}
+
+.modal-content {
+    background: #0e1219; 
+    border: 1px solid #232a36; 
+    border-radius: 14px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    width: 75vw !important;
+    max-width: 85vw !important;
+    max-height: 65vh !important;
+    min-height: 40vh !important;
+    padding: 1.5rem;
+    overflow: visible !important;
+    position: relative;
+    z-index: 1000;
+}
+
+.modal-header h3 { font-size: 0.9rem; margin-bottom: 1rem; }
+.modal-actions .btn, .modal-actions button, .modal-actions input[type="submit"] { font-size: 0.7rem; min-height: 28px; padding: 0.4rem 0.6rem; }
+.modal-content .form-group select,
+.modal-content .form-group input[type="date"],
+.modal-content .form-group input[type="text"],
+.modal-content .form-group textarea {
+    padding: 0.06rem 0.1rem;
+    font-size: 0.46rem;
+    min-height: 13px;
+}
+
+/* Make calendar button white in modal */
+.modal-content .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    background-color: white !important;
+    color: white !important;
+    filter: invert(1) !important;
+}
+
+/* Fix dropdown positioning in modal - simplified approach */
+
+/* Remove any positioning that might interfere with dropdowns */
+.modal-content .form-group,
+.modal-content .form-group select,
+.modal-content .form-group select option {
+    position: static !important;
+    z-index: auto !important;
+    overflow: visible !important;
+}
+
+.modal-actions .btn,
+.modal-actions button,
+.modal-actions input[type="submit"] {
+    padding: 0.28rem 0.45rem;
+    font-size: 0.52rem;
+    min-height: 22px;
+}
+
+
+.dashboard-container {
+    overflow-x: hidden;
+}
+
+
+
+.welcome-section {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 14px;
+    width: 92%;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.welcome-title {
+    font-size: 1.35rem;
+    margin-bottom: 0.35rem;
+}
+
+.welcome-subtitle {
+    font-size: 0.8125rem;
+}
+
+.activity-item {
+    padding: 0.75rem 0.875rem;
+    border-radius: 11px;
+}
+
+.action-content h3 {
+    font-size: 0.875rem;
+}
+
+.action-content p {
+    font-size: 0.75rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+}
+
+.stat-value {
+    font-size: 1.35rem;
+}
+
+.activity-content h4 {
+    font-size: 0.875rem;
+}
+
+.activity-details {
+    font-size: 0.75rem;
+}
+
+.activity-date {
+    font-size: 0.7rem;
+}
+
+.section-header,
+.section-title,
+.dashboard-content h2,
+.activity-feed h2,
+.stats-overview h2,
+.quick-actions-header h2 {
+    padding-left: 4%;
+    margin-bottom: 0.4rem;
+}
+
+.rest-days-section .section-header {
+    width: 94%;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    margin-bottom: 0.3rem;
+    margin-top: 0.3rem;
+}
+
+.rest-days-section .section-title {
+    padding-left: 0;
+}
+
+.quick-actions,
+.stats-grid,
+.rest-days-grid {
+    justify-items: center;
+}
+
+.rest-days-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    gap: 0.65rem;
+}
+.header-btn {
+    background: transparent !important;
+    border: none !important;
+    padding: 0.5rem 0.75rem !important;
+    box-shadow: none !important;
+}
+
+.header-btn:hover {
+    background: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+    text-align: left;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.1rem;
+    line-height: 1.3;
+}
+
+.stat-value {
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+
+
+.page-title {
+    display: none;
+}
+
+
+.modal-header {
+    margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+    font-size: 0.9rem;
+}
+
+
+.form-group input, .form-group select, .form-group textarea {
+    padding: 0.08rem 0.12rem;
+    font-size: 0.5rem;
+    min-height: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.form-group select {
+    z-index: 10;
+}
+
+
+.form-group select:focus {
+    outline: none;
+    border-color: #5865f2;
+}
+
+.form-group select option {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+.form-group label {
+    font-size: 0.4rem;
+    margin-bottom: 0.015rem;
+}
+
+.form-group textarea {
+    min-height: 14px;
+    resize: none;
+}
+
+.header-btn {
+    min-width: 55px;
+    padding: 0.4rem 0.4rem;
+}
+
+.header-btn i {
+    font-size: 1rem;
+}
+
+.header-btn span {
+    font-size: 0.6rem;
+}
+
+.calendar {
+    padding: 0.5rem;
+    margin-bottom: 0.65rem;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.calendar-title {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+
+.calendar-grid {
+    gap: 0.25rem;
+    max-width: 100%;
+}
+
+.cal-label {
+    font-size: 0.55rem;
+    padding: 0.1rem 0;
+    margin-bottom: 0.1rem;
+}
+
+.cal-cell {
+    padding: 0.25rem;
+    min-height: 28px;
+    aspect-ratio: 1/1;
+    font-size: 0.6rem;
+    border-radius: 5px;
+    max-width: 100%;
+}
+
+.cal-num {
+    font-size: 0.7rem !important;
+    line-height: 1.2;
+}
+
+.cal-workout, .cal-reason {
+    font-size: 0.45rem !important;
+    padding: 0.1rem 0.15rem !important;
+    max-width: 95%;
+    line-height: 1.1;
+}
+
+.rest-days-section .btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+    min-height: 32px;
+}
+
+.rest-days-section .btn i {
+    font-size: 0.7rem;
+}
+
+
+.modal-header {
+    margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+    font-size: 1.05rem !important;
+}
+
+
+.form-group input, .form-group select, .form-group textarea {
+    padding: 0.16rem 0.24rem !important;
+    font-size: 0.82rem !important;
+    min-height: 24px !important;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-actions {
+    gap: 6px;
+    margin-top: 0.4rem;
+}
+.modal-actions .btn,
+.modal-actions button {
+    padding: 0.38rem 0.65rem !important;
+    font-size: 0.8rem !important;
+    min-height: 30px !important;
+}
+
+.form-group select {
+    z-index: 10;
+}
+
+
+.form-group select:focus {
+    outline: none;
+    border-color: #5865f2;
+}
+
+.form-group select option {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+.form-group label {
+    font-size: 0.78rem !important;
+    margin-bottom: 0.025rem !important;
+}
+
+.form-group textarea {
+    min-height: 14px;
+    resize: none;
+}
+
+.modal-actions { gap: 6px; margin-top: 0.35rem; }
+.modal-actions .btn, .modal-actions button { padding: 0.35rem 0.55rem; font-size: 0.58rem; min-height: 26px; }
+
+.rest-days-grid {
+    max-width: 100%;
+}
+
+
+
+
+body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+}
+
+.quick-actions,
+.stats-grid {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.activity-feed {
+    margin-bottom: 1rem;
+}
+
+.activity-feed h2 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.activity-item {
+    padding: 0.625rem;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.875rem;
+}
+
+.activity-content h4 {
+    font-size: 0.8125rem;
+    margin-bottom: 0.125rem;
+}
+
+.activity-content p {
+    font-size: 0.6875rem;
+}
+
+.activity-meta {
+    font-size: 0.6875rem;
+}
+
+.dashboard h2, .section-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.rest-days-section {
+    margin-top: 0.6rem;
+}
+
+
+
+}

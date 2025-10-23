@@ -1,0 +1,173 @@
+
+@media (max-width: 480px) {
+    /* Disable scrolling on register page */
+    body, html {
+        overflow: hidden !important;
+        height: 100vh;
+        max-height: 100vh;
+    }
+    
+    .nav-container {
+        padding: 0 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .nav-menu-indicator {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .nav-menu-indicator .nav-item {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-glass {
+        background: transparent !important;
+        border: none !important;
+        padding: 0.5rem 0.75rem !important;
+        box-shadow: none !important;
+    }
+    
+    .btn-glass:hover {
+        background: transparent !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .main-content {
+        padding: 0.5rem 0;
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .register-container {
+        margin-top: -9rem;
+        padding: 0 1rem;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .register-card {
+        padding: 0.75rem 1rem;
+        border-radius: 14px;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .register-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .register-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .register-title {
+        font-size: 1.1rem;
+        line-height: 1.15;
+        margin-bottom: 0.2rem;
+    }
+
+    .register-subtitle {
+        font-size: 0.75rem;
+    }
+
+    .form-options {
+        margin-top: 1.2rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-bottom: 0.35rem;
+    }
+
+    .form-row .form-group {
+        margin-bottom: 0.35rem;
+    }
+
+    .form-input, .form-select {
+        min-height: 38px;
+        font-size: 14px;
+        padding: 0.45rem 0.7rem;
+        border-radius: 9px;
+    }
+
+    .btn, .btn-primary, .btn-google {
+        min-height: 38px;
+        font-size: 0.85rem;
+        padding: 0.55rem 0.8rem;
+        border-radius: 9px;
+    }
+
+    .register-btn {
+        padding: 0.55rem 0.8rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.35rem;
+    }
+    
+    .form-group:has(input[type="password"]) {
+        margin-bottom: 0.6rem;
+    }
+
+    .form-label {
+        font-size: 0.72rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+    }
+
+    .checkbox-container {
+        font-size: 0.8125rem;
+    }
+
+    .login-link {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .divider {
+        margin: 0.5rem 0;
+        font-size: 0.72rem;
+    }
+
+    .social-login {
+        gap: 0.4rem;
+    }
+
+    .register-footer {
+        margin-top: 0.5rem;
+    }
+
+    .register-footer p {
+        font-size: 0.75rem;
+    }
+
+    .password-strength {
+        margin-top: 0.3rem;
+    }
+
+    .strength-text {
+        font-size: 0.68rem;
+    }
+}

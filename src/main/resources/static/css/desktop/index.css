@@ -8,21 +8,24 @@
 
 html {
     scroll-behavior: smooth;
-    background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%);
     min-height: 100%;
+    background: #1a1a30;
 }
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: #ffffff;
-    background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%);
-    background-attachment: fixed;
-    background-size: 100% 100%;
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%, #1a1a30 100%);
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
+
+
 
 .background-elements {
     position: fixed;
@@ -32,7 +35,6 @@ body {
     height: 100%;
     z-index: -1;
     overflow: hidden;
-    background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%);
 }
 
 .bg-circle {
@@ -176,6 +178,12 @@ body {
     justify-content: center;
     box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5), 0 0 40px rgba(102, 126, 234, 0.2);
     position: relative;
+}
+
+.logo-circle i {
+    color: #ffffff;
+    font-size: 1.25rem;
+    line-height: 1;
 }
 
 .logo-circle::after {
@@ -693,199 +701,7 @@ body {
     }
 }
 
-@media (max-width: 1024px) {
-    .hero-container {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-        text-align: center;
-    }
 
-    .hero-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .hero-description {
-        max-width: 100%;
-    }
-
-    .hero-devices {
-        order: -1;
-        justify-content: center;
-    }
-
-    .features-cards {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-
-    .hero-title {
-        font-size: 3rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .nav-container {
-        padding: 0 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .nav-menu-indicator {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .nav-menu-indicator .nav-item {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.85rem;
-    }
-
-    .hero {
-        padding: 3rem 0 2rem;
-    }
-
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .hero-description {
-        font-size: 1.05rem;
-    }
-
-    .hero-actions {
-        justify-content: center;
-    }
-
-    .device-laptop {
-        width: 260px;
-        height: 160px;
-    }
-
-    .device-phone {
-        width: 70px;
-        height: 140px;
-    }
-
-    .welcome-card {
-        padding: 3rem 2rem;
-    }
-
-    .welcome-card h2 {
-        font-size: 2rem;
-    }
-
-    .welcome-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .btn {
-        width: 100%;
-        max-width: 320px;
-        justify-content: center;
-    }
-
-    .feature-card {
-        padding: 2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 1.75rem;
-        line-height: 1.2;
-    }
-
-    .hero-description {
-        font-size: 0.9375rem;
-        line-height: 1.5;
-    }
-
-    .hero-devices {
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .device-laptop {
-        transform: none;
-    }
-
-    .device-phone {
-        transform: none;
-    }
-
-    .welcome-card {
-        padding: 2rem 1.25rem;
-    }
-
-    .welcome-icon {
-        width: 70px;
-        height: 70px;
-        font-size: 2rem;
-    }
-
-    .welcome-card h2 {
-        font-size: 1.5rem;
-        line-height: 1.25;
-    }
-
-    .welcome-card p {
-        font-size: 0.9375rem;
-    }
-
-    .btn-large {
-        padding: 0.875rem 1.75rem;
-        font-size: 0.9375rem;
-        min-height: 48px;
-        width: 100%;
-    }
-
-    /* All buttons more compact */
-    .btn {
-        min-height: 44px;
-        font-size: 0.9375rem;
-        padding: 0.75rem 1.25rem;
-    }
-
-    .btn-outline, .btn-glass {
-        min-height: 44px;
-    }
-
-    /* Feature cards more compact */
-    .feature-card {
-        padding: 1.25rem;
-    }
-
-    .feature-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-    }
-
-    .feature-card h3 {
-        font-size: 1rem;
-    }
-
-    .feature-card p {
-        font-size: 0.875rem;
-    }
-
-    /* Hero buttons stacked */
-    .hero-buttons {
-        flex-direction: column;
-        width: 100%;
-        gap: 1rem;
-    }
-
-    .hero-buttons .btn {
-        width: 100%;
-    }
-}
 
 .btn:focus-visible {
     outline: 3px solid rgba(102, 126, 234, 0.5);

@@ -2,9 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a30">
     <title>FitPower - Advanced Analytics</title>
-    <link rel="stylesheet" th:href="@{/css/advanced-stats.css}">
+    <link rel="stylesheet" th:href="@{/css/desktop/advanced-stats.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/advanced-stats-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -85,10 +90,8 @@
         
         <header class="top-header">
             <div class="header-left">
-                <h1 class="page-title">Advanced Analytics</h1>
-            </div>
-            <div class="header-right">
-                <div class="user-profile">
+                <!-- Mobile only: User profile above title -->
+                <div class="user-profile mobile-profile">
                     <div class="profile-avatar avatar-preview">
                         <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
                         <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
@@ -98,6 +101,35 @@
                     <div class="profile-info">
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
+                </div>
+                <h1 class="page-title">Advanced Analytics</h1>
+            </div>
+            <div class="header-right">
+                <!-- Desktop only: User profile in top right (original) -->
+                <div class="user-profile desktop-profile">
+                    <div class="profile-avatar avatar-preview">
+                        <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
+                        <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name" th:text="${username}">User</span>
+                    </div>
+                </div>
+                <!-- Mobile only: Settings and Logout buttons -->
+                <div class="header-actions">
+                    <a href="/settings" class="header-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+                        <button type="submit" class="header-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    </form>
                 </div>
             </div>
         </header>
@@ -186,48 +218,7 @@
             </section>
 
             
-            <section class="analytics-section" th:if="${!volumeTrends.isEmpty()}">
-                <div class="section-header">
-                    <h2><i class="fas fa-weight-hanging"></i> Exercise Volume Trends</h2>
-                    <p class="section-subtitle">Track volume progression for each exercise over time</p>
-                </div>
-
-                <div class="exercise-trends-list">
-                    <div class="trend-card" th:each="trend : ${volumeTrends}">
-                        <div class="trend-header">
-                            <div class="trend-title">
-                                <h3 th:text="${trend.exerciseName()}">Exercise Name</h3>
-                                <span class="muscle-badge" th:text="${trend.muscleGroup()}">Muscle</span>
-                            </div>
-                            <div class="trend-indicator" th:classappend="${trend.trend()}">
-                                <i class="fas" th:classappend="${trend.trend() == 'increasing' ? 'fa-arrow-up' : (trend.trend() == 'decreasing' ? 'fa-arrow-down' : 'fa-minus')}"></i>
-                                <span th:text="${trend.trend()}">Trend</span>
-                            </div>
-                        </div>
-
-                        <div class="trend-stats">
-                            <div class="trend-stat">
-                                <span class="trend-stat-label">Total Volume</span>
-                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.totalVolume(), 0, 'COMMA', 0, 'POINT')} + ' lbs'">0 lbs</span>
-                            </div>
-                            <div class="trend-stat">
-                                <span class="trend-stat-label">Total Sets</span>
-                                <span class="trend-stat-value" th:text="${trend.totalSets()}">0</span>
-                            </div>
-                            <div class="trend-stat">
-                                <span class="trend-stat-label">Avg Per Session</span>
-                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.avgVolumePerSession(), 0, 'COMMA', 0, 'POINT')} + ' lbs'">0 lbs</span>
-                            </div>
-                        </div>
-
-                        <div class="trend-chart">
-                            <canvas th:id="'volumeChart' + ${trendStat.index}" class="volume-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            
+             
             <section class="analytics-section" th:if="${!progressiveOverload.isEmpty()}">
                 <div class="section-header">
                     <h2><i class="fas fa-chart-area"></i> Progressive Overload Tracking</h2>
@@ -274,6 +265,49 @@
                     </div>
                 </div>
             </section>
+            
+            <section class="analytics-section" th:if="${!volumeTrends.isEmpty()}">
+                <div class="section-header">
+                    <h2><i class="fas fa-weight-hanging"></i> Exercise Volume Trends</h2>
+                    <p class="section-subtitle">Track volume progression for each exercise over time</p>
+                </div>
+
+                <div class="exercise-trends-list">
+                    <div class="trend-card" th:each="trend : ${volumeTrends}">
+                        <div class="trend-header">
+                            <div class="trend-title">
+                                <h3 th:text="${trend.exerciseName()}">Exercise Name</h3>
+                                <span class="muscle-badge" th:text="${trend.muscleGroup()}">Muscle</span>
+                            </div>
+                            <div class="trend-indicator" th:classappend="${trend.trend()}">
+                                <i class="fas" th:classappend="${trend.trend() == 'increasing' ? 'fa-arrow-up' : (trend.trend() == 'decreasing' ? 'fa-arrow-down' : 'fa-minus')}"></i>
+                                <span th:text="${trend.trend()}">Trend</span>
+                            </div>
+                        </div>
+
+                        <div class="trend-stats">
+                            <div class="trend-stat">
+                                <span class="trend-stat-label">Total Volume</span>
+                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.totalVolume(), 0, 'COMMA', 0, 'POINT')} + ' lbs'">0 lbs</span>
+                            </div>
+                            <div class="trend-stat">
+                                <span class="trend-stat-label">Total Sets</span>
+                                <span class="trend-stat-value" th:text="${trend.totalSets()}">0</span>
+                            </div>
+                            <div class="trend-stat">
+                                <span class="trend-stat-label">Avg Per Session</span>
+                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.avgVolumePerSession(), 0, 'COMMA', 0, 'POINT')} + ' lbs'">0 lbs</span>
+                            </div>
+                        </div>
+
+                        <div class="trend-chart">
+                            <canvas th:id="'volumeChart' + ${trendStat.index}" class="volume-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+           
 
             
             <section class="analytics-section">

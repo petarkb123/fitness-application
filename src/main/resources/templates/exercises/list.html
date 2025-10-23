@@ -2,9 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a30">
     <title>FitPower - Exercises</title>
-    <link rel="stylesheet" th:href="@{/css/exercises.css}">
+    <link rel="stylesheet" th:href="@{/css/desktop/exercises.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/exercises-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -82,12 +87,25 @@
     
     <main class="main-content">
         
-        <header class="top-header">
-            <div class="header-left">
-                <h1 class="page-title">Exercises</h1>
+    <header class="top-header">
+        <div class="header-left">
+            <!-- Mobile only: User profile above title -->
+            <div class="user-profile mobile-profile">
+                <div class="profile-avatar avatar-preview">
+                    <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
+                    <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <span class="profile-name" th:text="${username}">User</span>
+                </div>
             </div>
+            <h1 class="page-title">Exercises</h1>
+        </div>
             <div class="header-right">
-                <div class="user-profile">
+                <!-- Desktop only: User profile in top right (original) -->
+                <div class="user-profile desktop-profile">
                     <div class="profile-avatar avatar-preview">
                         <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
                         <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
@@ -97,6 +115,20 @@
                     <div class="profile-info">
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
+                </div>
+                <!-- Mobile only: Settings and Logout buttons -->
+                <div class="header-actions">
+                    <a href="/settings" class="header-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+                        <button type="submit" class="header-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    </form>
                 </div>
             </div>
         </header>
@@ -121,7 +153,7 @@
 
             
             <div class="exercise-section" th:if="${not #lists.isEmpty(exercises)}">
-                <h2 class="section-title">My exercises</h2>
+                <h2 class="section-title my-exercises-title">My exercises</h2>
                 <div class="exercises-grid">
                     <div class="exercise-card" th:each="exercise : ${exercises}" th:if="${!exercise.builtIn}">
                         <div class="exercise-header">
@@ -152,7 +184,7 @@
             
             
             <div class="exercise-section" th:if="${not #lists.isEmpty(exercises)}">
-                <h2 class="section-title">Exercise Library by Muscle Group</h2>
+                <h2 class="section-title muscle-group-title">Exercise Library by Muscle Group</h2>
                 <div class="muscle-groups-container">
 
                     
