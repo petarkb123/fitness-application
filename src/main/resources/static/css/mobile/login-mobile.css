@@ -1,9 +1,9 @@
 
 @media (max-width: 480px) {
     body, html {
-        overflow: hidden !important;
-        height: 100vh;
-        max-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
         margin: 0;
         padding: 0;
     }
@@ -40,19 +40,18 @@
     }
 
     .main-content {
-        padding: 0;
+        padding: 2rem 0;
         margin: 0;
-        height: 100vh;
-        max-height: 100vh;
-        overflow: hidden;
+        min-height: 100vh;
+        overflow: visible;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .login-container {
-        margin-top: -10rem;
-        padding: 0 1rem;
+        margin-top: 0;
+        padding: 1rem;
         max-width: 100%;
         width: 100%;
         display: flex;

@@ -1,10 +1,10 @@
 
 @media (max-width: 480px) {
-    /* Disable scrolling on register page */
+    /* Enable scrolling on register page */
     body, html {
-        overflow: hidden !important;
-        height: 100vh;
-        max-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
     }
     
     .nav-container {
@@ -39,17 +39,16 @@
     }
 
     .main-content {
-        padding: 0.5rem 0;
-        height: 100vh;
-        max-height: 100vh;
-        overflow: hidden;
+        padding: 2rem 0;
+        min-height: 100vh;
+        overflow: visible;
         display: flex;
         align-items: center;
     }
 
     .register-container {
-        margin-top: -9rem;
-        padding: 0 1rem;
+        margin-top: 0;
+        padding: 1rem;
         max-width: 100%;
         width: 100%;
     }
