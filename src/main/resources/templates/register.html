@@ -64,6 +64,19 @@
 
                 <form class="register-form" th:action="@{/register}" method="post">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    
+                    <!-- Error message display -->
+                    <div class="error-message" th:if="${error}" th:classappend="${error} ? 'show' : ''">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span th:text="${error}">Registration failed. Please try again.</span>
+                    </div>
+                    
+                    <!-- Success message display -->
+                    <div class="success-message" th:if="${msg}" th:classappend="${msg} ? 'show' : ''">
+                        <i class="fas fa-check-circle"></i>
+                        <span th:text="${msg}">Registration successful!</span>
+                    </div>
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName" class="form-label">
@@ -275,7 +288,7 @@
         strengthText.textContent = strength.strengthText;
     });
 
-    // Form validation
+    // Form validation - removed alert() calls to only use UI error messages
     document.querySelector('.register-form').addEventListener('submit', function(e) {
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
@@ -285,45 +298,63 @@
         const confirmPassword = document.getElementById('confirmPassword').value;
         const terms = document.getElementById('terms').checked;
 
+        // Remove any existing error messages
+        const existingError = document.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+
         if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
             e.preventDefault();
-            alert('Please fill in all required fields');
+            showErrorMessage('Please fill in all required fields');
             return;
         }
 
         if (username.length < 3) {
             e.preventDefault();
-            alert('Username must be at least 3 characters long');
+            showErrorMessage('Username must be at least 3 characters long');
             return;
         }
 
         if (!isValidEmail(email)) {
             e.preventDefault();
-            alert('Please enter a valid email address');
+            showErrorMessage('Please enter a valid email address');
             return;
         }
 
         if (password !== confirmPassword) {
             e.preventDefault();
-            alert('Passwords do not match');
+            showErrorMessage('Passwords do not match');
             return;
         }
 
         if (password.length < 8) {
             e.preventDefault();
-            alert('Password must be at least 8 characters long');
+            showErrorMessage('Password must be at least 8 characters long');
             return;
         }
 
         if (!terms) {
             e.preventDefault();
-            alert('Please accept the Terms of Service and Privacy Policy');
+            showErrorMessage('Please accept the Terms of Service and Privacy Policy');
             return;
         }
         
         // Clear saved form data on successful submission
         sessionStorage.removeItem('registerFormData');
     });
+
+    // Function to show error messages in the UI
+    function showErrorMessage(message) {
+        const form = document.querySelector('.register-form');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message show';
+        errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>' + message + '</span>';
+        
+        // Insert after the CSRF token input
+        const csrfInput = form.querySelector('input[type="hidden"]');
+        csrfInput.parentNode.insertBefore(errorDiv, csrfInput.nextSibling);
+    }
 
     function isValidEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
