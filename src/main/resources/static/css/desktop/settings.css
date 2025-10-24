@@ -363,6 +363,19 @@ body {
     gap: 0.5rem;
 }
 
+/* Password form specific spacing */
+.password-form .form-group {
+    margin-bottom: 2rem; /* Increased spacing between password fields */
+}
+
+/* Avatar form spacing */
+.avatar-field-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem; /* Increased spacing between input and edit button */
+}
+
 .form-label {
     display: flex;
     align-items: center;
@@ -703,5 +716,66 @@ input[type="password"] {
 /* Ensure mobile profile is hidden on desktop */
 .mobile-profile {
     display: none !important;
+}
+
+/* Username field edit functionality */
+.username-field-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.username-input {
+    flex: 1;
+    transition: all 0.3s ease;
+}
+
+.username-input.editing {
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.username-input[readonly] {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+    cursor: not-allowed;
+}
+
+.edit-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    min-width: auto;
+    white-space: nowrap;
+}
+
+.edit-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.save-btn, .cancel-btn {
+    display: none;
+}
+
+.save-btn.show, .cancel-btn.show {
+    display: inline-flex;
+}
+
+.cancel-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
 }
 

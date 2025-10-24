@@ -297,6 +297,16 @@
         font-size: 0.875rem;
     }
 
+    /* Password form specific spacing */
+    .password-form .form-group {
+        margin-bottom: 1.5rem; /* Increased spacing between password fields for mobile */
+    }
+
+    /* Avatar form spacing */
+    .avatar-field-container {
+        gap: 1rem; /* Increased spacing between input and edit button for mobile */
+    }
+
     .form-input {
         font-size: 15px;
         padding: 0.75rem;
@@ -312,5 +322,81 @@
     .flash-message {
         padding: 0.875rem 1.25rem;
         font-size: 0.9rem;
+    }
+
+    /* Username field edit functionality - Mobile */
+    .username-field-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .username-input {
+        transition: all 0.3s ease;
+    }
+
+    .username-input.editing {
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .username-input[readonly] {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.7);
+        cursor: not-allowed;
+    }
+
+    .edit-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        min-width: auto;
+        white-space: nowrap;
+        align-self: flex-start;
+    }
+
+    .edit-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    .save-btn, .cancel-btn {
+        display: none;
+        font-size: 0.8rem;
+        padding: 0.625rem 1rem;
+        min-height: 40px;
+    }
+
+    .save-btn.show, .cancel-btn.show {
+        display: inline-flex;
+    }
+
+    .cancel-btn {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .cancel-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Form actions layout for mobile */
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 }

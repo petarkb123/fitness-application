@@ -158,6 +158,18 @@
             
             <div class="workout-session">
                 
+                <!-- Error message display -->
+                <div class="error-message" id="workoutErrorMessage" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="errorMessageText">An error occurred</span>
+                </div>
+
+                <!-- Success message display -->
+                <div class="success-message" id="workoutSuccessMessage" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successMessageText">Success!</span>
+                </div>
+                
                 <div class="add-exercise-section">
                     <button class="btn btn-primary" onclick="openAddExerciseModal()">
                         <i class="fas fa-plus"></i>
@@ -316,9 +328,9 @@
     function addExerciseToWorkout() {
         const select = document.getElementById('exerciseSelect');
         const exerciseId = select.value;
-        if (!exerciseId) { alert('Please select an exercise'); return; }
+        if (!exerciseId) { showErrorMessage('Please select an exercise'); return; }
         const exercise = exercises.find(ex => String(ex.id) === String(exerciseId));
-        if (!exercise) { alert('Exercise not found'); return; }
+        if (!exercise) { showErrorMessage('Exercise not found'); return; }
         addExerciseCard(exercise);
         select.value = '';
         closeAddExerciseModal();
@@ -494,7 +506,7 @@
     // ---------- submit ----------
     function finishWorkout() {
         const cards = document.querySelectorAll('.exercise-card');
-        if (cards.length === 0) { alert('Please add at least one exercise'); return; }
+        if (cards.length === 0) { showErrorMessage('Please add at least one exercise'); return; }
 
         const payload = { sessionId: workoutSessionId, exercises: [] };
 
@@ -604,7 +616,7 @@
         });
 
         if (payload.exercises.length === 0) {
-            alert('Please log at least one set before finishing the workout');
+            showErrorMessage('Please log at least one set before finishing the workout');
             return;
         }
 
@@ -624,12 +636,12 @@
                     window.location.href = '/workouts'; 
                 } else {
                     r.text().then(() => {
-                        alert('Error finishing workout: ' + r.status + ' ' + r.statusText); 
+                        showErrorMessage('Error finishing workout: ' + r.status + ' ' + r.statusText); 
                     });
                 }
             })
             .catch(err => { 
-                alert('Error finishing workout: ' + err.message); 
+                showErrorMessage('Error finishing workout: ' + err.message); 
             });
     }
 
@@ -649,7 +661,7 @@
     function createSuperset() {
         const selected = getSelectedCards();
         if (selected.length !== 2) {
-            alert('Please select exactly 2 exercises to create a superset');
+            showErrorMessage('Please select exactly 2 exercises to create a superset');
             return;
         }
         
@@ -661,12 +673,12 @@
         
         // Validate that both exercises have the same number of sets
         if (sets1 !== sets2) {
-            alert('Both exercises must have the same number of sets to create a superset. Please match the sets of both exercises before creating a superset.');
+            showErrorMessage('Both exercises must have the same number of sets to create a superset. Please match the sets of both exercises before creating a superset.');
             return;
         }
         
         if (sets1 === 0) {
-            alert('Please add at least one set to each exercise before creating a superset.');
+            showErrorMessage('Please add at least one set to each exercise before creating a superset.');
             return;
         }
         
@@ -949,6 +961,36 @@
         });
         
         return card;
+    }
+
+    // Function to show error messages in the UI
+    function showErrorMessage(message) {
+        const errorDiv = document.getElementById('workoutErrorMessage');
+        const errorText = document.getElementById('errorMessageText');
+        errorText.textContent = message;
+        errorDiv.style.display = 'flex';
+        errorDiv.classList.add('show');
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            errorDiv.classList.remove('show');
+            setTimeout(() => errorDiv.style.display = 'none', 300);
+        }, 5000);
+    }
+
+    // Function to show success messages in the UI
+    function showSuccessMessage(message) {
+        const successDiv = document.getElementById('workoutSuccessMessage');
+        const successText = document.getElementById('successMessageText');
+        successText.textContent = message;
+        successDiv.style.display = 'flex';
+        successDiv.classList.add('show');
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            successDiv.classList.remove('show');
+            setTimeout(() => successDiv.style.display = 'none', 300);
+        }, 3000);
     }
 
     // ---------- init ----------
