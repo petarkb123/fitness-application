@@ -235,8 +235,31 @@
     }
 
     .page-header .btn {
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1rem;
         font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-height: 40px;
+    }
+
+    .page-header .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+    }
+
+    .page-header .btn-primary:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4), 0 0 10px rgba(102, 126, 234, 0.2);
+    }
+
+    .page-header .btn-primary i {
+        font-size: 0.9rem;
     }
 
     /* Show 2 cards per row on mobile */

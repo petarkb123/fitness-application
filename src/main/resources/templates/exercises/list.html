@@ -146,7 +146,7 @@
                 </div>
                 <button class="btn btn-primary" onclick="openAddModal()">
                     <i class="fas fa-plus"></i>
-                    Create Custom
+                    Create New Exercise
                 </button>
             </div>
 
@@ -469,7 +469,7 @@
                 <p>Start building your exercise library by adding your first exercise.</p>
                 <button class="btn btn-primary" onclick="openAddModal()">
                     <i class="fas fa-plus"></i>
-                    Add Your First Exercise
+                    Create New Exercise
                 </button>
             </div>
         </div>
@@ -479,7 +479,7 @@
 <div class="modal" id="addModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Add New Exercise</h2>
+            <h2>Create New Exercise</h2>
             <button class="btn-close" onclick="closeAddModal()">
                 <i class="fas fa-times"></i>
             </button>
@@ -493,7 +493,8 @@
                     <i class="fas fa-dumbbell"></i>
                     Exercise Name
                 </label>
-                <input type="text" name="name" class="form-input" placeholder="Enter exercise name" required>
+                <input type="text" name="name" class="form-input" placeholder="e.g., Push-ups, Bench Press, Squats" required maxlength="120">
+                <small class="form-help">Choose a clear, descriptive name</small>
             </div>
 
             <div class="form-group">
@@ -502,27 +503,33 @@
                     Primary Muscle Group
                 </label>
                 <select name="muscleGroup" class="form-select" required>
-                    <option value="" disabled selected>Select muscle group</option>
+                    <option value="" disabled selected>Choose muscle group</option>
                     <option th:each="m : ${muscles}" th:value="${m}" th:text="${m}"></option>
                 </select>
+                <small class="form-help">Select primary muscle group</small>
             </div>
 
             <div class="form-group">
                 <label class="form-label">
-                    <i class="fas fa-muscle"></i>
-                    Equipment
+                    <i class="fas fa-tools"></i>
+                    Equipment Required
                 </label>
                 <select name="equipment" class="form-select" required>
                     <option value="" disabled selected>Select equipment</option>
                     <option th:each="m : ${equipments}" th:value="${m}" th:text="${m}"></option>
                 </select>
+                <small class="form-help">Choose required equipment</small>
             </div>
 
-
-
             <div class="form-actions">
-                <button type="button" class="btn btn-outline" onclick="closeAddModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">Add Exercise</button>
+                <button type="button" class="btn btn-outline" onclick="closeAddModal()">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Create
+                </button>
             </div>
         </form>
     </div>
@@ -543,11 +550,29 @@
     }
 
     function openAddModal() {
-        document.getElementById('addModal').style.display = 'flex';
+        const modal = document.getElementById('addModal');
+        modal.style.display = 'flex';
+        
+        // Focus on the first input field
+        setTimeout(() => {
+            const firstInput = modal.querySelector('input[name="name"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 100);
     }
+    
     function closeAddModal() {
-        document.getElementById('addModal').style.display = 'none';
+        const modal = document.getElementById('addModal');
+        modal.style.display = 'none';
+        
+        // Reset form
+        const form = document.getElementById('exerciseCreateForm');
+        if (form) {
+            form.reset();
+        }
     }
+    
     window.onclick = function (event) {
         const modal = document.getElementById('addModal');
         if (event.target === modal) closeAddModal();
@@ -575,6 +600,56 @@
                 card.style.transform = 'translateY(0)';
             }, 100 + (index * 100));
         });
+
+        // Enhanced form functionality
+        const exerciseForm = document.getElementById('exerciseCreateForm');
+        if (exerciseForm) {
+            // Add form validation
+            exerciseForm.addEventListener('submit', function(e) {
+                const nameInput = this.querySelector('input[name="name"]');
+                const muscleSelect = this.querySelector('select[name="muscleGroup"]');
+                const equipmentSelect = this.querySelector('select[name="equipment"]');
+                
+                // Clear previous error states
+                [nameInput, muscleSelect, equipmentSelect].forEach(field => {
+                    if (field) {
+                        field.style.borderColor = '';
+                    }
+                });
+                
+                let hasErrors = false;
+                
+                // Validate exercise name
+                if (!nameInput.value.trim()) {
+                    nameInput.style.borderColor = '#ff6b7a';
+                    hasErrors = true;
+                }
+                
+                // Validate muscle group
+                if (!muscleSelect.value) {
+                    muscleSelect.style.borderColor = '#ff6b7a';
+                    hasErrors = true;
+                }
+                
+                // Validate equipment
+                if (!equipmentSelect.value) {
+                    equipmentSelect.style.borderColor = '#ff6b7a';
+                    hasErrors = true;
+                }
+                
+                if (hasErrors) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Add keyboard navigation
+            exerciseForm.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeAddModal();
+                }
+            });
+        }
     });
 </script>
 </body>
