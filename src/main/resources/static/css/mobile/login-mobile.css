@@ -117,6 +117,7 @@
         padding: 0.75rem 0.875rem;
         border-radius: 12px;
         -webkit-appearance: none;
+        appearance: none;
         transform-origin: left top;
     }
 

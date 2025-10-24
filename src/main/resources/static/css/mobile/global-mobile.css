@@ -34,6 +34,7 @@
         font-size: 16px !important; /* Prevents iOS zoom */
         min-height: 44px; /* Ensure sufficient touch target size */
         -webkit-appearance: none; /* Remove default iOS styling */
+        appearance: none;
         border-radius: 8px;
     }
 
