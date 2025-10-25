@@ -118,19 +118,16 @@
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
                 </div>
-                <!-- Mobile only: Settings and Logout buttons -->
+                <!-- Mobile only: Settings and Home Page buttons -->
                 <div class="header-actions">
                     <a href="/settings" class="header-btn">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
                     </a>
-                    <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
-                        <button type="submit" class="header-btn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
-                        </button>
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    </form>
+                    <a href="/" class="header-btn">
+                        <i class="fas fa-home"></i>
+                        <span>Home Page</span>
+                    </a>
                 </div>
             </div>
         </header>

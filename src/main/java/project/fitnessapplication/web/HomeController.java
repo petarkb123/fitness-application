@@ -37,9 +37,6 @@ public class HomeController {
     @GetMapping("/privacy")
     public String privacy() { return "privacy"; }
 
-    @GetMapping("/nutrition")
-    public String nutrition() { return "nutrition"; }
-
-    @GetMapping("/power-scale")
-    public String powerScale() { return "power-scale"; }
+    @GetMapping("/coming-soon")
+    public String comingSoon() { return "coming-soon"; }
 }

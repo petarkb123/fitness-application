@@ -32,6 +32,16 @@
     .nav-menu-indicator .nav-item {
         padding: 0.5rem 0.75rem;
         font-size: 0.85rem;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+    
+    .nav-menu-indicator .nav-item:hover {
+        text-decoration: none;
+    }
+    
+    .nav-auth {
+        display: none;
     }
     
     .btn-glass {

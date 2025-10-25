@@ -199,13 +199,17 @@ body {
     color: rgba(255, 255, 255, 0.8);
     padding: 0.5rem 1rem;
     font-weight: 500;
-    cursor: default;
-    transition: color 0.3s ease;
+    cursor: pointer;
+    transition: all 0.3s ease;
     font-size: 0.95rem;
+    text-decoration: none;
+    border-radius: 8px;
 }
 
 .nav-menu-indicator .nav-item:hover {
-    color: rgba(255, 255, 255, 1);
+    color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
 }
 
 .nav-separator {
