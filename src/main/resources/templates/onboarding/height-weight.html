@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Height & Weight - FitPower</title>
+    <link rel="stylesheet" th:href="@{/css/desktop/onboarding.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/onboarding-mobile.css}" media="(max-width: 480px)">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="background-elements">
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+</div>
+
+<div class="main-glass-container">
+    <div class="onboarding-container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <a href="/onboarding/workout-frequency-direct" class="back-arrow">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 24%"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="onboarding-content">
+            <h1 class="onboarding-title">Height & weight</h1>
+            <p class="onboarding-subtitle">This will be used to calibrate your custom plan.</p>
+
+            <form th:action="@{/onboarding/height-weight}" method="post" class="onboarding-form" id="heightWeightForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="unitSystem" id="unitSystem" th:value="${selectedUnitSystem != null ? selectedUnitSystem : 'metric'}">
+                
+                <!-- Unit Toggle -->
+                <div class="unit-toggle-container">
+                    <label class="unit-label" id="imperialLabel" th:classappend="${selectedUnitSystem == 'imperial'} ? 'active' : ''">Imperial</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="unitToggle" th:checked="${selectedUnitSystem == 'imperial'}">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <label class="unit-label" id="metricLabel" th:classappend="${selectedUnitSystem != 'imperial'} ? 'active' : ''">Metric</label>
+                </div>
+
+                <!-- Metric Input (Default) -->
+                <div id="metricInputs" class="input-section" th:style="${selectedUnitSystem == 'imperial'} ? 'display: none;' : ''">
+                    <div class="input-row">
+                        <div class="input-column">
+                            <label class="input-label">Height</label>
+                            <div class="picker-container">
+                                <select name="cm" id="heightCm" class="picker-select" required>
+                                    <option value="">cm</option>
+                                    <option th:each="h : ${#numbers.sequence(120, 230)}" th:value="${h}" th:text="${h + ' cm'}" th:selected="${heightCm != null && h == heightCm}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-column">
+                            <label class="input-label">Weight</label>
+                            <div class="picker-container">
+                                <select name="kg" id="weightKg" class="picker-select" required>
+                                    <option value="">kg</option>
+                                    <option th:each="w : ${#numbers.sequence(30, 200)}" th:value="${w}" th:text="${w + ' kg'}" th:selected="${weightKg != null && w == weightKg}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imperial Input (Hidden) -->
+                <div id="imperialInputs" class="input-section" th:style="${selectedUnitSystem == 'imperial'} ? '' : 'display: none;'">
+                    <div class="input-row">
+                        <div class="input-column">
+                            <label class="input-label">Height</label>
+                            <div class="picker-row-inner">
+                                <div class="picker-container">
+                                    <select name="feet" id="heightFeet" class="picker-select">
+                                        <option value="">ft</option>
+                                        <option th:each="f : ${#numbers.sequence(3, 8)}" th:value="${f}" th:text="${f + ' ft'}" th:selected="${heightFeet != null && f == heightFeet}"></option>
+                                    </select>
+                                </div>
+                                <div class="picker-container">
+                                    <select name="inches" id="heightInches" class="picker-select">
+                                        <option value="">in</option>
+                                        <option th:each="i : ${#numbers.sequence(0, 11)}" th:value="${i}" th:text="${i + ' in'}" th:selected="${heightInches != null && i == heightInches}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-column">
+                            <label class="input-label">Weight</label>
+                            <div class="picker-container">
+                                <select name="lbs" id="weightLbs" class="picker-select">
+                                    <option value="">lb</option>
+                                    <option th:each="w : ${#numbers.sequence(66, 440)}" th:value="${w}" th:text="${w + ' lb'}" th:selected="${weightLbs != null && w == weightLbs}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    Continue
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const unitToggle = document.getElementById('unitToggle');
+        const unitSystemInput = document.getElementById('unitSystem');
+        const metricInputs = document.getElementById('metricInputs');
+        const imperialInputs = document.getElementById('imperialInputs');
+
+        // Initialize based on saved unit system
+        const savedUnitSystem = unitSystemInput.value;
+        if (savedUnitSystem === 'imperial') {
+            unitToggle.checked = true;
+            metricInputs.style.display = 'none';
+            imperialInputs.style.display = 'block';
+            document.getElementById('imperialLabel').classList.add('active');
+            document.getElementById('metricLabel').classList.remove('active');
+        } else {
+            unitToggle.checked = false;
+            imperialInputs.style.display = 'none';
+            metricInputs.style.display = 'block';
+            document.getElementById('metricLabel').classList.add('active');
+            document.getElementById('imperialLabel').classList.remove('active');
+        }
+
+        unitToggle.addEventListener('change', function() {
+            if (this.checked) {
+                unitSystemInput.value = 'imperial';
+                metricInputs.style.display = 'none';
+                imperialInputs.style.display = 'block';
+                document.getElementById('imperialLabel').classList.add('active');
+                document.getElementById('metricLabel').classList.remove('active');
+            } else {
+                unitSystemInput.value = 'metric';
+                imperialInputs.style.display = 'none';
+                metricInputs.style.display = 'block';
+                document.getElementById('metricLabel').classList.add('active');
+                document.getElementById('imperialLabel').classList.remove('active');
+            }
+        });
+
+        // Form validation
+        document.getElementById('heightWeightForm').addEventListener('submit', function(e) {
+            const isImperial = unitSystemInput.value === 'imperial';
+            if (isImperial) {
+                const feet = document.getElementById('heightFeet').value;
+                const inches = document.getElementById('heightInches').value;
+                const lbs = document.getElementById('weightLbs').value;
+                if (!feet || !inches || !lbs) {
+                    e.preventDefault();
+                    alert('Please select all values');
+                    return;
+                }
+            } else {
+                const cm = document.getElementById('heightCm').value;
+                const kg = document.getElementById('weightKg').value;
+                if (!cm || !kg) {
+                    e.preventDefault();
+                    alert('Please select all values');
+                    return;
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-/* ===== MOBILE LAYOUTS ===== */
 
 @media (max-width: 480px) {
     .nav-container {
@@ -45,7 +44,6 @@
         margin-bottom: 0.5rem;
     }
 
-    /* Buttons - text only on mobile */
     .btn, .btn-glass {
         background: transparent !important;
         border: none !important;

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Birthdate - FitPower</title>
+    <link rel="stylesheet" th:href="@{/css/desktop/onboarding.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/onboarding-mobile.css}" media="(max-width: 480px)">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="background-elements">
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+</div>
+
+<div class="main-glass-container">
+    <div class="onboarding-container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <a href="/onboarding/height-weight-direct" class="back-arrow">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 32%"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="onboarding-content">
+            <h1 class="onboarding-title">When were you born?</h1>
+            <p class="onboarding-subtitle">This will be used to calibrate your custom plan.</p>
+
+            <form th:action="@{/onboarding/birthdate}" method="post" class="onboarding-form" id="birthdateForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                
+                <div class="date-picker-container">
+                    <div class="date-picker-column">
+                        <label class="date-label">Month</label>
+                        <select name="month" id="birthMonth" class="date-picker" required>
+                            <option value="">--</option>
+                            <option value="01" th:selected="${birthdate != null && birthdate.contains('-01-')}">January</option>
+                            <option value="02" th:selected="${birthdate != null && birthdate.contains('-02-')}">February</option>
+                            <option value="03" th:selected="${birthdate != null && birthdate.contains('-03-')}">March</option>
+                            <option value="04" th:selected="${birthdate != null && birthdate.contains('-04-')}">April</option>
+                            <option value="05" th:selected="${birthdate != null && birthdate.contains('-05-')}">May</option>
+                            <option value="06" th:selected="${birthdate != null && birthdate.contains('-06-')}">June</option>
+                            <option value="07" th:selected="${birthdate != null && birthdate.contains('-07-')}">July</option>
+                            <option value="08" th:selected="${birthdate != null && birthdate.contains('-08-')}">August</option>
+                            <option value="09" th:selected="${birthdate != null && birthdate.contains('-09-')}">September</option>
+                            <option value="10" th:selected="${birthdate != null && birthdate.contains('-10-')}">October</option>
+                            <option value="11" th:selected="${birthdate != null && birthdate.contains('-11-')}">November</option>
+                            <option value="12" th:selected="${birthdate != null && birthdate.contains('-12-')}">December</option>
+                        </select>
+                    </div>
+                    
+                    <div class="date-picker-column">
+                        <label class="date-label">Day</label>
+                        <select name="day" id="birthDay" class="date-picker" required>
+                            <option value="">--</option>
+                            <option th:each="d : ${#numbers.sequence(1, 31)}" 
+                                    th:value="${d < 10} ? '0' + ${d} : ${d}" 
+                                    th:text="${d}"
+                                    th:selected="${birthdate != null && birthdate.endsWith('-' + (d < 10 ? '0' + d : d))}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="date-picker-column">
+                        <label class="date-label">Year</label>
+                        <select name="year" id="birthYear" class="date-picker" required>
+                            <option value="">--</option>
+                            <option th:each="y : ${#numbers.sequence(1950, 2010)}" 
+                                    th:value="${y}" 
+                                    th:text="${y}"
+                                    th:selected="${birthdate != null && birthdate.startsWith(y + '-')}"></option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    Continue
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('birthdateForm');
+        const monthSelect = document.getElementById('birthMonth');
+        const daySelect = document.getElementById('birthDay');
+        const yearSelect = document.getElementById('birthYear');
+
+        // Parse saved birthdate if exists
+        const savedBirthdate = /*[[${birthdate}]]*/ null;
+        console.log('Saved birthdate from server:', savedBirthdate);
+        
+        // Only run JavaScript restoration if Thymeleaf hasn't already set the values
+        if (savedBirthdate && (!monthSelect.value || !yearSelect.value || !daySelect.value)) {
+            const parts = savedBirthdate.split('-');
+            console.log('Birthdate parts:', parts);
+            if (parts.length === 3) {
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                console.log('Setting values - year:', year, 'month:', month, 'day:', day);
+                
+                // Set the values
+                monthSelect.value = month;
+                yearSelect.value = year;
+                
+                // Update day options and set day
+                updateDayOptions();
+                // Use setTimeout to ensure day options are populated
+                setTimeout(() => {
+                    daySelect.value = day;
+                    console.log('Day set to:', daySelect.value);
+                }, 50);
+            }
+        } else if (savedBirthdate) {
+            console.log('Thymeleaf already set the values, skipping JavaScript restoration');
+        }
+
+        function updateDayOptions() {
+            const month = parseInt(monthSelect.value);
+            const year = parseInt(yearSelect.value);
+            const currentDay = parseInt(daySelect.value);
+            
+            // Only update if both month and year are selected
+            if (month && year) {
+                const daysInMonth = new Date(year, month, 0).getDate();
+                const optionCount = daySelect.options.length - 1; // Exclude "--"
+                
+                // Only update if the number of days changed
+                if (optionCount !== daysInMonth) {
+                    daySelect.innerHTML = '<option value="">--</option>';
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        const option = document.createElement('option');
+                        option.value = i < 10 ? '0' + i : i;
+                        option.textContent = i;
+                        if (currentDay && i === currentDay) option.selected = true;
+                        daySelect.appendChild(option);
+                    }
+                }
+            } else if (month && !year) {
+                // If only month is selected, show all 31 days
+                const optionCount = daySelect.options.length - 1;
+                
+                if (optionCount !== 31) {
+                    daySelect.innerHTML = '<option value="">--</option>';
+                    for (let i = 1; i <= 31; i++) {
+                        const option = document.createElement('option');
+                        option.value = i < 10 ? '0' + i : i;
+                        option.textContent = i;
+                        if (currentDay && i === currentDay) option.selected = true;
+                        daySelect.appendChild(option);
+                    }
+                }
+            } else if (!month && !year) {
+                // If neither month nor year is selected, show all 31 days
+                const optionCount = daySelect.options.length - 1;
+                
+                if (optionCount !== 31) {
+                    daySelect.innerHTML = '<option value="">--</option>';
+                    for (let i = 1; i <= 31; i++) {
+                        const option = document.createElement('option');
+                        option.value = i < 10 ? '0' + i : i;
+                        option.textContent = i;
+                        if (currentDay && i === currentDay) option.selected = true;
+                        daySelect.appendChild(option);
+                    }
+                }
+            }
+        }
+
+        // Initialize day options on page load
+        updateDayOptions();
+        
+        monthSelect.addEventListener('change', updateDayOptions);
+        yearSelect.addEventListener('change', updateDayOptions);
+
+        form.addEventListener('submit', function(e) {
+            const month = monthSelect.value;
+            const day = daySelect.value;
+            const year = yearSelect.value;
+
+            if (!month || !day || !year) {
+                e.preventDefault();
+                alert('Please select a complete date');
+                return;
+            }
+
+            // Form will submit the individual fields directly
+        });
+    });
+</script>
+</body>
+</html>

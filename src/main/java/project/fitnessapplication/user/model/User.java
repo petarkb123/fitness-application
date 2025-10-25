@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -59,6 +60,31 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    // Onboarding data fields
+    @Column(length = 20)
+    private String gender; // MALE, FEMALE, OTHER
+
+    @Column(name = "workout_frequency", length = 20)
+    private String workoutFrequency; // LOW (0-2), MEDIUM (3-5), HIGH (6+)
+
+    @Column
+    private Integer heightCm;
+
+    @Column
+    private Integer weightKg;
+
+    @Column(name = "birthdate")
+    private LocalDate birthdate;
+
+    @Column(length = 20)
+    private String goal; // LOSE_WEIGHT, MAINTAIN_WEIGHT, GAIN_WEIGHT
+
+    @Column(name = "desired_weight_kg")
+    private Integer desiredWeightKg;
+
+    @Column(name = "weight_change_speed_kg")
+    private Double weightChangeSpeedKg; // kg per week
 
     @PreUpdate void touch() { updatedAt = LocalDateTime.now(); }
 }

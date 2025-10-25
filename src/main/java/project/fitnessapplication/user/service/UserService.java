@@ -8,6 +8,7 @@ import project.fitnessapplication.user.model.User;
 import project.fitnessapplication.user.model.UserRole;
 import project.fitnessapplication.user.repository.UserRepository;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -42,6 +43,35 @@ public class UserService {
                 .lastName(last)
                 .passwordHash(encoder.encode(rawPwd))
                 .role(UserRole.USER)
+                .build();
+
+        return repo.save(u);
+    }
+
+    @Transactional
+    public User registerWithOnboarding(
+            String username, String rawPwd, String email, String first, String last,
+            String gender, String workoutFrequency, Integer heightCm, Integer weightKg,
+            LocalDate birthdate, String goal, Integer desiredWeightKg, Double weightChangeSpeedKg) {
+        
+        if (repo.existsByUsername(username)) throw new IllegalArgumentException("Username taken");
+        if (repo.existsByEmail(email)) throw new IllegalArgumentException("Email in use");
+
+        User u = User.builder()
+                .username(username)
+                .email(email)
+                .firstName(first)
+                .lastName(last)
+                .passwordHash(encoder.encode(rawPwd))
+                .role(UserRole.USER)
+                .gender(gender)
+                .workoutFrequency(workoutFrequency)
+                .heightCm(heightCm)
+                .weightKg(weightKg)
+                .birthdate(birthdate)
+                .goal(goal)
+                .desiredWeightKg(desiredWeightKg)
+                .weightChangeSpeedKg(weightChangeSpeedKg)
                 .build();
 
         return repo.save(u);

@@ -61,14 +61,7 @@
                             Logout
                         </button>
                     </form>
-                    <a th:if="${!#authorization.expression('isAuthenticated()')}" href="/login" class="btn btn-glass">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Login
-                    </a>
-                    <a th:if="${!#authorization.expression('isAuthenticated()')}" href="/register" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i>
-                        Register
-                    </a>
+                    <!-- Login and Register buttons hidden for onboarding flow -->
                 </div>
             </div>
         </nav>
@@ -89,13 +82,13 @@
                     </p>
                     <div class="hero-actions">
                         
-                        <a th:if="${!#authorization.expression('isAuthenticated()')}" href="/register" class="btn btn-primary btn-large" aria-label="Start your training journey">
+                        <a th:if="${!#authorization.expression('isAuthenticated()')}" href="/onboarding/start" class="btn btn-primary btn-large" aria-label="Start your training journey">
                             <i class="fas fa-rocket"></i>
                             Start Your Journey
                         </a>
-                        <a th:if="${!#authorization.expression('isAuthenticated()')}" href="#features" class="btn btn-outline btn-large" aria-label="Learn more about features">
-                            <i class="fas fa-play"></i>
-                            Learn More
+                        <a th:if="${!#authorization.expression('isAuthenticated()')}" href="/login" class="btn btn-outline btn-large" aria-label="Log in to your account">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Log In
                         </a>
                         
                         

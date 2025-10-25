@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Thank You - FitPower</title>
+    <link rel="stylesheet" th:href="@{/css/desktop/onboarding.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/onboarding-mobile.css}" media="(max-width: 480px)">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="background-elements">
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+</div>
+
+<div class="main-glass-container">
+    <div class="onboarding-container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <a th:href="${skippedWeightPages == true ? '/onboarding/goal-direct' : '/onboarding/weight-speed-direct'}" class="back-arrow">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 64%"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="onboarding-content thank-you-content">
+            <!-- Illustration -->
+            <div class="thank-you-illustration">
+                <div class="circle-container">
+                    <div class="clap-hands">
+                        <div class="hand left-hand">
+                            <div class="fingers"></div>
+                        </div>
+                        <div class="hand right-hand">
+                            <div class="fingers"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thank You Message -->
+            <h1 class="thank-you-title">
+                Thank you for
+                <br>
+                trusting us
+            </h1>
+            <p class="thank-you-subtitle">Now let's personalize FitPower for you...</p>
+
+            <!-- Privacy Box -->
+            <div class="privacy-box">
+                <div class="privacy-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="privacy-title">Your privacy and security matter to us.</h3>
+                <p class="privacy-text">We promise to always keep your personal information private and secure.</p>
+            </div>
+
+            <!-- Continue Button -->
+            <a th:href="@{/onboarding/register}" class="btn btn-primary btn-large">
+                Continue
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.thank-you-content {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.thank-you-illustration {
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.circle-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5b3ff 0%, #c471ed 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(196, 113, 237, 0.3);
+}
+
+.clap-hands {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.hand {
+    width: 40px;
+    height: 50px;
+    background: #1a1a30;
+    border-radius: 20px;
+    position: relative;
+}
+
+.left-hand {
+    transform: rotate(-15deg);
+}
+
+.right-hand {
+    transform: rotate(15deg);
+}
+
+.fingers {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+    background: #1a1a30;
+    border-radius: 10px;
+}
+
+.thank-you-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.thank-you-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 3rem;
+}
+
+.privacy-box {
+    background: rgba(44, 44, 74, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.privacy-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.privacy-icon i {
+    font-size: 1.5rem;
+    color: #1a1a30;
+}
+
+.privacy-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.75rem;
+}
+
+.privacy-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+    .circle-container {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .hand {
+        width: 30px;
+        height: 40px;
+    }
+    
+    .thank-you-title {
+        font-size: 1.75rem;
+    }
+    
+    .thank-you-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .privacy-box {
+        padding: 1.5rem;
+    }
+}
+</style>
+</body>
+</html>

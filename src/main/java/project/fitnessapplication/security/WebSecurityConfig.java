@@ -48,7 +48,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/", "/index", "/login", "/register",
                                 "/terms", "/privacy",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/actuator/**",
-                                "/media/**", "/workouts/templates/*/exercises" 
+                                "/media/**", "/workouts/templates/*/exercises",
+                                "/onboarding/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

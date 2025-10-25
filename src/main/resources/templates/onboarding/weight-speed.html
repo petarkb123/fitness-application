@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Weight Speed - FitPower</title>
+    <link rel="stylesheet" th:href="@{/css/desktop/onboarding.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/onboarding-mobile.css}" media="(max-width: 480px)">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="background-elements">
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+</div>
+
+<div class="main-glass-container">
+    <div class="onboarding-container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <a href="/onboarding/desired-weight-direct" class="back-arrow">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 56%"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="onboarding-content">
+            <h1 class="onboarding-title">How fast do you want to reach your goal?</h1>
+            
+            <form th:action="@{/onboarding/weight-speed}" method="post" class="onboarding-form" id="weightSpeedForm">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                
+                <!-- Goal Context -->
+                <div class="goal-context" th:text="${goal == 'LOSE_WEIGHT' ? 'Lose weight speed per week' : 'Gain weight speed per week'}" th:attr="data-goal=${goal}"></div>
+                
+                <!-- Speed Display -->
+                <div class="speed-display-container">
+                    <div class="speed-value" id="speedValue">0.5 kg</div>
+                </div>
+
+                <!-- Slider with Icons -->
+                <div class="slider-with-icons">
+                    <div class="slider-animals">
+                        <div class="animal-icon slow">
+                            <span>🐢</span>
+                        </div>
+                        <div class="animal-icon medium">
+                            <span>🐰</span>
+                        </div>
+                        <div class="animal-icon fast">
+                            <span>🐆</span>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-labels">
+                        <span>0.2 kg</span>
+                        <span>0.5 kg</span>
+                        <span>1.0 kg</span>
+                    </div>
+                    
+                    <div class="slider-container-simple">
+                        <input type="range" id="speedSlider" min="0.2" max="1.0" step="0.1" th:value="${weightChangeSpeedKg != null ? weightChangeSpeedKg : 0.5}" required>
+                    </div>
+                </div>
+
+                <!-- Recommendation Box -->
+                <div class="recommendation-box" id="recommendationBox">
+                    <span id="recommendationText">Recommended</span>
+                </div>
+                
+                <input type="hidden" name="weightChangeSpeedKg" id="speedInput" th:value="${weightChangeSpeedKg != null ? weightChangeSpeedKg : 0.5}">
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    Continue
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const speedInput = document.getElementById('speedInput');
+        const recommendationBox = document.getElementById('recommendationBox');
+        const recommendationText = document.getElementById('recommendationText');
+        
+        // Get goal from page data attribute
+        const goalContext = document.querySelector('.goal-context');
+        const goal = goalContext ? goalContext.getAttribute('data-goal') : '';
+        
+        function updateRecommendation(value) {
+            const speedKg = parseFloat(value);
+            
+            if (speedKg >= 0.4 && speedKg < 0.7) {
+                recommendationText.textContent = 'Recommended';
+                recommendationBox.style.background = 'rgba(40, 167, 69, 0.15)';
+                recommendationBox.style.color = '#56d364';
+                recommendationBox.style.borderColor = 'rgba(40, 167, 69, 0.3)';
+            } else if (speedKg < 0.4) {
+                // Speed < 0.4 - show "Slow and Steady" for both goals
+                recommendationText.textContent = 'Slow and Steady';
+                recommendationBox.style.background = 'rgba(255, 193, 7, 0.15)';
+                recommendationBox.style.color = '#ffc107';
+                recommendationBox.style.borderColor = 'rgba(255, 193, 7, 0.3)';
+            } else {
+                // Speed >= 0.7 - show warning based on goal
+                if (goal === 'LOSE_WEIGHT') {
+                    recommendationText.textContent = 'You might lose lean mass and strength';
+                } else {
+                    recommendationText.textContent = 'You might gain extra unwanted body fat';
+                }
+                recommendationBox.style.background = 'rgba(220, 53, 69, 0.15)';
+                recommendationBox.style.color = '#ff6b7a';
+                recommendationBox.style.borderColor = 'rgba(220, 53, 69, 0.3)';
+            }
+        }
+
+        // Initialize with saved value
+        const savedValue = parseFloat(slider.value);
+        speedValue.textContent = savedValue.toFixed(1) + ' kg';
+        speedInput.value = savedValue;
+        updateRecommendation(savedValue);
+
+        // Update display when slider changes
+        slider.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            speedValue.textContent = value.toFixed(1) + ' kg';
+            speedInput.value = value;
+            updateRecommendation(value);
+        });
+    });
+</script>
+</body>
+</html>

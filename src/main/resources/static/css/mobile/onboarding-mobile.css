@@ -1,0 +1,92 @@
+@media (max-width: 480px) {
+    * {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .onboarding-container {
+        padding: 1rem;
+    }
+
+    .progress-container {
+        padding: 1rem 0 0.5rem;
+    }
+
+    .back-arrow {
+        top: 1rem;
+        left: 0;
+        font-size: 1.1rem;
+    }
+
+    .onboarding-content {
+        padding: 1rem 0;
+    }
+
+    .onboarding-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .onboarding-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+    }
+
+    .options-container {
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .option-card {
+        padding: 1rem;
+        border-radius: 14px;
+    }
+
+    .option-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .option-label {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 52px;
+    }
+
+    .btn-large {
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 52px;
+    }
+
+    .progress-bar {
+        height: 3px;
+    }
+
+    /* Date Picker Mobile Fixes */
+    .date-picker-container {
+        grid-template-columns: 2fr 1.2fr 1.5fr;
+        gap: 0.75rem;
+    }
+
+    .date-picker {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+
+    /* Imperial Input Mobile Fixes */
+    .picker-row-inner {
+        gap: 0.5rem;
+    }
+
+    .picker-select {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+}
