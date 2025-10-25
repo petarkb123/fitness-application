@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-title" content="FitPower">
+    <meta name="application-name" content="FitPower">
+    <title>Nutrition - FitPower</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" th:href="@{/manifest.json}">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/icons/icon-32x32.png}">
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/icons/icon-16x16.png}">
+    <link rel="apple-touch-icon" th:href="@{/icons/icon-192x192.png}">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" th:href="@{/css/desktop/coming-soon.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/coming-soon-mobile.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="background-elements">
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+    <div class="bg-shapes">
+        <div class="bg-shape bg-shape-1"></div>
+        <div class="bg-shape bg-shape-2"></div>
+        <div class="bg-shape bg-shape-3"></div>
+    </div>
+</div>
+
+<div class="main-glass-container">
+    
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="/" class="nav-logo">
+                    <div class="logo-circle"><i class="fas fa-dumbbell"></i></div>
+                    <span>FitPower</span>
+                </a>
+                <div class="nav-menu-indicator">
+                    <a href="/workouts/history" class="nav-item">Workouts</a>
+                    <span class="nav-separator">•</span>
+                    <a href="/nutrition" class="nav-item active">Nutrition</a>
+                    <span class="nav-separator">•</span>
+                    <a href="/power-scale" class="nav-item">Power Scale</a>
+                </div>
+                <div class="nav-auth">
+                    <form th:if="${#authorization.expression('isAuthenticated()')}"
+                          th:action="@{/logout}" method="post" style="display:inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-outline">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </form>
+                    <div th:if="${!#authorization.expression('isAuthenticated()')}" class="nav-auth-buttons">
+                        <a href="/login" class="btn btn-outline">Log In</a>
+                        <a href="/onboarding/start" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="coming-soon-section">
+            <div class="coming-soon-container">
+                <div class="coming-soon-content">
+                    <div class="coming-soon-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h1 class="coming-soon-title">Nutrition</h1>
+                    <p class="coming-soon-subtitle">Coming Soon</p>
+                    <p class="coming-soon-description">
+                        Track your nutrition, monitor your macros, and optimize your diet for better results. 
+                        Our comprehensive nutrition tracking system will help you achieve your fitness goals faster.
+                    </p>
+                    <div class="coming-soon-features">
+                        <div class="feature-item">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Macro Tracking</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-utensils"></i>
+                            <span>Meal Planning</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-weight"></i>
+                            <span>Calorie Counting</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bell"></i>
+                            <span>Nutrition Reminders</span>
+                        </div>
+                    </div>
+                    <div class="coming-soon-actions">
+                        <a href="/" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Home
+                        </a>
+                        <a href="/workouts/history" class="btn btn-outline">
+                            <i class="fas fa-dumbbell"></i>
+                            View Workouts
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add subtle animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature items
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(item);
+        });
+    });
+</script>
+</body>
+</html>
