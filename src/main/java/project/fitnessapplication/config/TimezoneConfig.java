@@ -11,10 +11,10 @@ public class TimezoneConfig {
     
     static {
         // Using most representative regional timezones
-        REGION_TO_TIMEZONE.put("Europe", "Europe/London");           // GMT/UTC+0 or +1 (BST)
+        REGION_TO_TIMEZONE.put("Europe", "Europe/Paris");            // CET (UTC+1) - Central Europe
         REGION_TO_TIMEZONE.put("North America", "America/New_York"); // EST/EDT (UTC-5 or -4)
         REGION_TO_TIMEZONE.put("Asia", "Asia/Shanghai");           // CST (UTC+8) - most populated timezone in Asia
-        REGION_TO_TIMEZONE.put("Africa", "Africa/Lagos");           // WAT (UTC+1) - West/Central Africa
+        REGION_TO_TIMEZONE.put("Africa", "Africa/Cairo");           // EET (UTC+2) - East Africa
         REGION_TO_TIMEZONE.put("Oceania", "Australia/Sydney");      // AEST/AEDT (UTC+10 or +11)
         REGION_TO_TIMEZONE.put("South America", "America/Sao_Paulo"); // BRT (UTC-3)
     }
