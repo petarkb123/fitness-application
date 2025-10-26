@@ -29,18 +29,19 @@ public class TimezoneConfig {
     }
     
     /**
-     * Converts a LocalDateTime (stored in server's timezone, which is UTC) to a LocalDateTime in the user's regional timezone.
-     * The returned value represents what the time would be if you displayed it in the user's region.
+     * Converts a LocalDateTime to the user's regional timezone.
+     * The time stored is already in the correct format, we just need to consider the offset.
      */
-    public static LocalDateTime convertToRegionalTime(LocalDateTime utcTime, String region) {
-        if (utcTime == null) return null;
+    public static LocalDateTime convertToRegionalTime(LocalDateTime storedTime, String region) {
+        if (storedTime == null) return null;
         
-        // The time stored in the database is in the server's timezone (UTC)
-        ZoneId serverZone = ZoneId.of("UTC"); // Server is in UTC
+        // The time stored in the database is in the server's timezone
+        // We need to convert it to show in the user's regional timezone
+        ZoneId serverZone = ZoneId.systemDefault(); // Server's actual timezone
         ZoneId userZone = getZoneIdForRegion(region);
         
-        // Convert UTC time to user regional time
-        return utcTime
+        // Convert from server timezone to user regional timezone
+        return storedTime
                 .atZone(serverZone)
                 .withZoneSameInstant(userZone)
                 .toLocalDateTime();
