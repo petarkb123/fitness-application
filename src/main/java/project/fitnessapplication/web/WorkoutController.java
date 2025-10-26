@@ -69,7 +69,12 @@ public class WorkoutController {
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
         model.addAttribute("sessionId", s.getId());
-        model.addAttribute("startedAt", s.getStartedAt());
+        // Send startedAt as ISO string with timezone info for consistent client-side handling
+        if (s.getStartedAt() != null) {
+            model.addAttribute("startedAt", s.getStartedAt().toString());
+        } else {
+            model.addAttribute("startedAt", null);
+        }
 
         var options = workoutService.getAvailableExercises(userId)
                 .stream()
