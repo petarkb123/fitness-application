@@ -1587,10 +1587,10 @@
         let sessionStart;
         
         if (startedAtIso) {
-            // Parse the server time and treat it as UTC
+            // Parse the server time as local time to the browser
             // startedAtIso is a LocalDateTime from server (e.g., "2025-10-26T14:30:00")
-            // Parse it as UTC to handle timezone differences
-            const serverDate = new Date(startedAtIso + 'Z');
+            // Parse it as if it were local time to get the elapsed duration
+            const serverDate = new Date(startedAtIso);
             const now = Date.now();
             const elapsedSeconds = Math.floor((now - serverDate.getTime()) / 1000);
             
