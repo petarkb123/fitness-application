@@ -69,11 +69,13 @@ public class WorkoutController {
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
         model.addAttribute("sessionId", s.getId());
-        // Send startedAt as ISO string with timezone info for consistent client-side handling
+        // Calculate elapsed seconds to avoid timezone issues
         if (s.getStartedAt() != null) {
-            model.addAttribute("startedAt", s.getStartedAt().toString());
+            long elapsedSeconds = java.time.Duration.between(s.getStartedAt(), java.time.LocalDateTime.now()).getSeconds();
+            if (elapsedSeconds < 0) elapsedSeconds = 0; // Handle timezone edge cases
+            model.addAttribute("elapsedSeconds", elapsedSeconds);
         } else {
-            model.addAttribute("startedAt", null);
+            model.addAttribute("elapsedSeconds", 0);
         }
 
         var options = workoutService.getAvailableExercises(userId)
