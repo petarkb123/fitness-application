@@ -11,15 +11,12 @@
     <meta name="application-name" content="FitPower">
     <title>Coming Soon - FitPower</title>
     
-    <!-- PWA Manifest -->
     <link rel="manifest" th:href="@{/manifest.json}">
     
-    <!-- PWA Icons -->
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/icons/icon-32x32.png}">
     <link rel="icon" type="image/png" sizes="16x16" th:href="@{/icons/icon-16x16.png}">
     <link rel="apple-touch-icon" th:href="@{/icons/icon-192x192.png}">
     
-    <!-- Stylesheets -->
     <link rel="stylesheet" th:href="@{/css/desktop/coming-soon.css}">
     <link rel="stylesheet" th:href="@{/css/mobile/coming-soon-mobile.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -78,7 +75,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add subtle animations
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -93,7 +89,6 @@
             });
         }, observerOptions);
 
-        // Observe all feature items
         document.querySelectorAll('.feature-item').forEach(item => {
             item.style.opacity = '0';
             item.style.transform = 'translateY(20px)';

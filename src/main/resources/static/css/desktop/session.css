@@ -271,6 +271,11 @@ body {
   box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
 }
 
+.set-inputs .form-input.hint-value {
+  color: rgba(255, 255, 255, 0.4);
+  opacity: 0.6;
+}
+
 .input-label {
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.9);

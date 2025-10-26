@@ -155,4 +155,37 @@ public class WorkoutService {
         setRepo.deleteBySessionId(sessionId);
         sessionRepo.deleteById(sessionId);
     }
+    
+    @Transactional(readOnly = true)
+    public project.fitnessapplication.workout.dto.LastPerformanceData getLastPerformance(UUID exerciseId, UUID userId) {
+        List<WorkoutSet> sets = setRepo.findLastSetsByExerciseAndUser(exerciseId, userId);
+        if (sets.isEmpty()) {
+            return project.fitnessapplication.workout.dto.LastPerformanceData.empty();
+        }
+        
+        // Get the most recent session's sets and create a map by setNumber
+        var setsMap = new HashMap<Integer, project.fitnessapplication.workout.dto.LastPerformanceData.SetData>();
+        
+        // Get the first session's UUID to get only the most recent workout
+        UUID mostRecentSessionId = sets.get(0).getSessionId();
+        
+        for (WorkoutSet set : sets) {
+            // Only process sets from the most recent session
+            if (!set.getSessionId().equals(mostRecentSessionId)) {
+                break;
+            }
+            
+            Integer setNum = set.getSetNumber();
+            if (setNum != null && (set.getWeight() != null || set.getReps() != null)) {
+                setsMap.put(setNum, project.fitnessapplication.workout.dto.LastPerformanceData.SetData.builder()
+                    .weight(set.getWeight())
+                    .reps(set.getReps())
+                    .build());
+            }
+        }
+        
+        return project.fitnessapplication.workout.dto.LastPerformanceData.builder()
+            .sets(setsMap)
+            .build();
+    }
 }

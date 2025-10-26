@@ -88,6 +88,14 @@ public class WorkoutController {
         } else {
             model.addAttribute("existingSets", java.util.Collections.emptyList());
         }
+        
+        // Get last performance data for each exercise
+        java.util.Map<String, project.fitnessapplication.workout.dto.LastPerformanceData> lastPerformanceData = new java.util.HashMap<>();
+        for (var exercise : options) {
+            lastPerformanceData.put(exercise.id().toString(), workoutService.getLastPerformance(exercise.id(), userId));
+        }
+        model.addAttribute("lastPerformanceData", lastPerformanceData);
+        
         return "workouts/session";
     }
 

@@ -266,6 +266,7 @@
     const existingSets = existingSetsRaw || [];
     const startedAtIso = /*[[${startedAt}]]*/ null;
     const draftKey = workoutSessionId ? (`workoutDraft:${workoutSessionId}`) : null;
+    const lastPerformanceData = /*[[${lastPerformanceData}]]*/ {};
 </script>
 
 <script>
@@ -360,7 +361,7 @@
       <div class="sets-container">
         <div class="sets-header">
           <span>Sets</span>
-          <button class="btn btn-sm btn-outline" onclick="addSet(${exerciseCounter})">
+          <button class="btn btn-sm btn-outline" onclick="addSetWithExerciseId(${exerciseCounter})">
             <i class="fas fa-plus"></i> Add Set
           </button>
         </div>
@@ -373,15 +374,38 @@
         // Auto-create sets if targetSets is provided (from template), otherwise add one default set
         const targetSets = exercise.targetSets || 1;
         for (let i = 0; i < targetSets; i++) {
-            addSet(exerciseCounter);
+            addSet(exerciseCounter, false, 0, exercise.id);
         }
         
         exerciseCounter++;
     }
 
-    function addSet(exerciseIndex, isDropSet = false, dropSetLevel = 0) {
+    function addSetWithExerciseId(exerciseIndex) {
+        const exerciseCard = document.getElementById(`exercise-${exerciseIndex}`);
+        const exerciseId = exerciseCard ? exerciseCard.getAttribute('data-exercise-id') : null;
+        addSet(exerciseIndex, false, 0, exerciseId);
+    }
+    
+    function addSet(exerciseIndex, isDropSet = false, dropSetLevel = 0, exerciseId = null) {
         const setsList = document.getElementById(`sets-${exerciseIndex}`);
-        const setNumber = setsList.children.length + 1;
+        const mainSetsCount = setsList.querySelectorAll('.set-row:not(.drop-set-row)').length;
+        const setNumber = isDropSet ? mainSetsCount : mainSetsCount + 1;
+
+        // Get hints for straight sets only
+        let weightHint = '';
+        let repsHint = '';
+        if (!isDropSet && exerciseId && lastPerformanceData[String(exerciseId)]) {
+            const lastData = lastPerformanceData[String(exerciseId)];
+            const setData = lastData.sets && lastData.sets[setNumber];
+            if (setData) {
+                if (setData.weight) {
+                    weightHint = setData.weight.toString();
+                }
+                if (setData.reps) {
+                    repsHint = setData.reps.toString();
+                }
+            }
+        }
 
         const row = document.createElement('div');
         row.className = 'set-row' + (isDropSet ? ' drop-set-row' : '');
@@ -392,9 +416,9 @@
         row.innerHTML = `
       <div class="set-number">${setNumber}${dropSetLabel}</div>
       <div class="set-inputs">
-        <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5">
+        <input type="number" class="form-input hint-input" placeholder="Weight" min="0" step="0.5" data-hint="${weightHint}">
         <span class="input-label">kg</span>
-        <input type="number" class="form-input" placeholder="Reps" min="1">
+        <input type="number" class="form-input hint-input" placeholder="Reps" min="1" data-hint="${repsHint}">
         <span class="input-label">reps</span>
       </div>
       <div class="set-actions">
@@ -406,6 +430,26 @@
     `;
         setsList.appendChild(row);
         renumberSets(exerciseIndex);
+        
+        // Apply hints if they exist - do this after DOM is inserted
+        setTimeout(() => {
+            if (weightHint || repsHint) {
+                const inputs = row.querySelectorAll('.hint-input');
+                inputs.forEach(input => {
+                    const hint = input.getAttribute('data-hint');
+                    if (hint) {
+                        input.value = hint;
+                        input.classList.add('hint-value');
+                        input.addEventListener('focus', function() {
+                            if (this.classList.contains('hint-value')) {
+                                this.value = '';
+                                this.classList.remove('hint-value');
+                            }
+                        }, { once: true });
+                    }
+                });
+            }
+        }, 0);
     }
     
     function addDropSet(btn) {
@@ -554,6 +598,15 @@
                     const dropLevel = parseInt(row.getAttribute('data-drop-level') || '0');
                     
                     const inputs = row.querySelectorAll('input[placeholder]');
+                    // Check if either input is a hint (not user-entered)
+                    const isHintWeight = inputs[0]?.classList.contains('hint-value');
+                    const isHintReps = inputs[1]?.classList.contains('hint-value');
+                    
+                    // Skip if either input is a hint
+                    if (isHintWeight || isHintReps) {
+                        return;
+                    }
+                    
                     const w = inputs[0]?.value;
                     const r = inputs[1]?.value;
                     const weight = w ? parseFloat(w) : 0;
@@ -893,7 +946,7 @@
       <div class="sets-container">
         <div class="sets-header">
           <span>Sets</span>
-          <button class="btn btn-sm btn-outline" onclick="addSet(${exerciseCounter})">
+          <button class="btn btn-sm btn-outline" onclick="addSetWithExerciseId(${exerciseCounter})">
             <i class="fas fa-plus"></i> Add Set
           </button>
         </div>
@@ -926,7 +979,7 @@
       <div class="sets-container">
         <div class="sets-header">
           <span>Sets</span>
-          <button class="btn btn-sm btn-outline" onclick="addSet(${currentIndex})">
+          <button class="btn btn-sm btn-outline" onclick="addSetWithExerciseId(${currentIndex})">
             <i class="fas fa-plus"></i> Add Set
           </button>
         </div>
@@ -1134,7 +1187,7 @@
                   <div class="sets-container">
                     <div class="sets-header">
                       <span>Sets</span>
-                      <button class="btn btn-sm btn-outline" onclick="addSet(${exerciseCounter})">
+                      <button class="btn btn-sm btn-outline" onclick="addSetWithExerciseId(${exerciseCounter})">
                         <i class="fas fa-plus"></i> Add Set
                       </button>
                     </div>
@@ -1147,7 +1200,7 @@
                         // Add the target number of sets for the main exercise
                         const targetSets = ex.targetSets || 3;
                         for (let i = 0; i < targetSets; i++) {
-                            addSet(exerciseCounter);
+                            addSet(exerciseCounter, false, 0, ex.id);
                         }
                         
                         // Add drop sets from template (groupOrder > 0)
@@ -1397,7 +1450,7 @@
                 <div class="sets-container">
                     <div class="sets-header">
                         <span>Sets</span>
-                        <button class="btn btn-sm btn-outline" onclick="addSet(${exerciseCounter})">
+                        <button class="btn btn-sm btn-outline" onclick="addSetWithExerciseId(${exerciseCounter})">
                             <i class="fas fa-plus"></i> Add Set
                         </button>
                     </div>
