@@ -1587,8 +1587,11 @@
         let sessionStart;
         
         if (startedAtIso) {
-            // Existing session: start from the original start time
-            sessionStart = new Date(startedAtIso).getTime();
+            // Parse the LocalDateTime string and convert to browser's local time
+            // Format from server is: "2025-10-26T10:30:45"
+            // We assume it's in the server's timezone and display it as-is
+            const serverTime = new Date(startedAtIso).getTime();
+            sessionStart = serverTime;
         } else {
             // New session: start from now
             sessionStart = Date.now();
