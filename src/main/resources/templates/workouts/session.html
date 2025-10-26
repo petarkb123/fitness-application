@@ -1575,16 +1575,8 @@
         const el = document.getElementById('timerText');
         if (!el) return;
         
-        // If there's no workout session ID, this is a new session - start from now
-        let sessionStart;
-        
-        if (workoutSessionId && startedAtIso) {
-            // Resume existing session - use the stored start time
-            sessionStart = new Date(startedAtIso);
-        } else {
-            // New session - start from now (will show 00:00:00 initially)
-            sessionStart = Date.now();
-        }
+        // Always start from now (session just started on page load)
+        const sessionStart = Date.now();
         
         function tick(){
             const diffMs = Date.now() - sessionStart;
