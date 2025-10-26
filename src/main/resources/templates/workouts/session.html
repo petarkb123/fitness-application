@@ -1575,13 +1575,16 @@
         const el = document.getElementById('timerText');
         if (!el) return;
         
-        // Always start timer from 0 for new sessions
-        // For existing sessions (resuming), calculate from start time
+        // If there's no workout session ID, this is a new session - start from now
         let sessionStart;
-        if (startedAtIso) {
+        let elapsedSeconds = 0;
+        
+        if (workoutSessionId && startedAtIso) {
+            // Resume existing session - use the stored start time
             sessionStart = new Date(startedAtIso);
         } else {
-            sessionStart = new Date(); // New session, start now
+            // New session - start from now (will show 00:00:00 initially)
+            sessionStart = new Date();
         }
         
         function tick(){
