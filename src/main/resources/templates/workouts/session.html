@@ -1574,9 +1574,18 @@
     (function initTimer(){
         const el = document.getElementById('timerText');
         if (!el) return;
-        const start = startedAtIso ? new Date(startedAtIso) : new Date();
+        
+        // Always start timer from 0 for new sessions
+        // For existing sessions (resuming), calculate from start time
+        let sessionStart;
+        if (startedAtIso) {
+            sessionStart = new Date(startedAtIso);
+        } else {
+            sessionStart = new Date(); // New session, start now
+        }
+        
         function tick(){
-            const diffMs = Date.now() - start.getTime();
+            const diffMs = Date.now() - sessionStart.getTime();
             const sec = Math.floor(diffMs/1000);
             const h = String(Math.floor(sec/3600)).padStart(2,'0');
             const m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
