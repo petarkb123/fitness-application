@@ -69,12 +69,7 @@ public class WorkoutController {
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
         model.addAttribute("sessionId", s.getId());
-        // Convert LocalDateTime to ISO string in UTC for consistent cross-timezone handling
-        if (s.getStartedAt() != null) {
-            model.addAttribute("startedAt", s.getStartedAt().atZone(java.time.ZoneId.of("UTC")).toInstant().toString());
-        } else {
-            model.addAttribute("startedAt", null);
-        }
+        model.addAttribute("startedAt", s.getStartedAt());
 
         var options = workoutService.getAvailableExercises(userId)
                 .stream()

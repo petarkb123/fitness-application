@@ -1587,10 +1587,16 @@
         let sessionStart;
         
         if (startedAtIso) {
-            // Parse the ISO string from server (now in UTC with Z suffix)
-            // Format from server is: "2025-10-26T10:30:45Z"
-            const startDate = new Date(startedAtIso);
-            sessionStart = startDate.getTime();
+            // Parse the server time (assumes server's timezone)
+            // startedAtIso is a LocalDateTime from server (e.g., "2025-10-26T14:30:00")
+            // Parse it as if it were local time to get the elapsed duration
+            const serverDate = new Date(startedAtIso);
+            const now = Date.now();
+            const elapsedSeconds = Math.floor((now - serverDate.getTime()) / 1000);
+            
+            // Start the timer from the elapsed time so it continues from where it left off
+            const startTime = Date.now() - (elapsedSeconds * 1000);
+            sessionStart = startTime;
         } else {
             // New session: start from now
             sessionStart = Date.now();
