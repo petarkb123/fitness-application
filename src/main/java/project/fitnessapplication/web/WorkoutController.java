@@ -45,7 +45,23 @@ public class WorkoutController {
 
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
-        model.addAttribute("sessions", workoutService.getRecentSessions(userId, 50));
+        
+        // Get sessions and convert times to user's regional timezone
+        var sessions = workoutService.getRecentSessions(userId, 50);
+        var regionalSessions = new ArrayList<>();
+        for (var session : sessions) {
+            var builder = session.toBuilder();
+            if (session.getStartedAt() != null && u.getRegion() != null) {
+                builder.startedAt(project.fitnessapplication.config.TimezoneConfig.convertToRegionalTime(
+                    session.getStartedAt(), u.getRegion()));
+            }
+            if (session.getFinishedAt() != null && u.getRegion() != null) {
+                builder.finishedAt(project.fitnessapplication.config.TimezoneConfig.convertToRegionalTime(
+                    session.getFinishedAt(), u.getRegion()));
+            }
+            regionalSessions.add(builder.build());
+        }
+        model.addAttribute("sessions", regionalSessions);
         model.addAttribute("templates", templateService.list(userId));
 
         return "workouts/history";
@@ -163,7 +179,7 @@ public class WorkoutController {
             }
         }
 
-        var workoutView = new WorkoutView(session.getStartedAt(), session.getFinishedAt(), blocks);
+        var workoutView = new WorkoutView(session.getStartedAt(), session.getFinishedAt(), blocks, u.getRegion());
         model.addAttribute("workout", workoutView);
         model.addAttribute("totalSets", sets.size());
 

@@ -52,7 +52,7 @@ public class UserService {
     public User registerWithOnboarding(
             String username, String rawPwd, String email, String first, String last,
             String gender, String workoutFrequency, Integer heightCm, Integer weightKg,
-            LocalDate birthdate, String goal, Integer desiredWeightKg, Double weightChangeSpeedKg) {
+            LocalDate birthdate, String region, String goal, Integer desiredWeightKg, Double weightChangeSpeedKg) {
         
         if (repo.existsByUsername(username)) throw new IllegalArgumentException("Username taken");
         if (repo.existsByEmail(email)) throw new IllegalArgumentException("Email in use");
@@ -69,6 +69,7 @@ public class UserService {
                 .heightCm(heightCm)
                 .weightKg(weightKg)
                 .birthdate(birthdate)
+                .region(region)
                 .goal(goal)
                 .desiredWeightKg(desiredWeightKg)
                 .weightChangeSpeedKg(weightChangeSpeedKg)

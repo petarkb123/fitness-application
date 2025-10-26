@@ -78,6 +78,19 @@
                     </div>
                 </div>
 
+                <!-- Region Selector -->
+                <div class="region-selector">
+                    <label class="region-label">Region</label>
+                    <select name="region" id="regionSelect" class="region-select" required>
+                        <option value="">Select Your Region</option>
+                        <option value="Europe" th:selected="${region != null && region.equals('Europe')}">Europe</option>
+                        <option value="North America" th:selected="${region != null && region.equals('North America')}">North America</option>
+                        <option value="Asia" th:selected="${region != null && region.equals('Asia')}">Asia</option>
+                        <option value="Africa" th:selected="${region != null && region.equals('Africa')}">Africa</option>
+                        <option value="Oceania" th:selected="${region != null && region.equals('Oceania')}">Oceania</option>
+                        <option value="South America" th:selected="${region != null && region.equals('South America')}">South America</option>
+                    </select>
+                </div>
 
                 <button type="submit" class="btn btn-primary btn-large">
                     Continue

@@ -89,4 +89,19 @@
         padding: 0.875rem;
         font-size: 0.95rem;
     }
+
+    /* Region Selector Mobile */
+    .region-selector {
+        margin-bottom: 2rem;
+    }
+
+    .region-label {
+        font-size: 0.95rem;
+    }
+
+    .region-select {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+        padding-right: 2.5rem;
+    }
 }

@@ -4,8 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/onboarding")
@@ -34,6 +32,7 @@ public class OnboardingController {
         session.removeAttribute("onboarding_height_inches");
         session.removeAttribute("onboarding_weight_lbs");
         session.removeAttribute("onboarding_birthdate");
+        session.removeAttribute("onboarding_region");
         session.removeAttribute("onboarding_goal");
         session.removeAttribute("onboarding_desired_weight_kg");
         session.removeAttribute("onboarding_weight_change_speed_kg");
@@ -80,8 +79,12 @@ public class OnboardingController {
     public String birthdateForm(HttpSession session, Model model) {
         // Load saved data if exists
         String birthdate = (String) session.getAttribute("onboarding_birthdate");
+        String region = (String) session.getAttribute("onboarding_region");
         if (birthdate != null) {
             model.addAttribute("birthdate", birthdate);
+        }
+        if (region != null) {
+            model.addAttribute("region", region);
         }
         return "onboarding/birthdate";
     }
@@ -172,6 +175,7 @@ public class OnboardingController {
             @RequestParam String month,
             @RequestParam String day, 
             @RequestParam String year,
+            @RequestParam String region,
             HttpSession session, 
             Model model) {
         
@@ -179,7 +183,9 @@ public class OnboardingController {
         String birthdate = year + "-" + month + "-" + day;
         
         session.setAttribute("onboarding_birthdate", birthdate);
+        session.setAttribute("onboarding_region", region);
         model.addAttribute("birthdate", birthdate);
+        model.addAttribute("region", region);
         return "onboarding/goal"; // Step 7
     }
 

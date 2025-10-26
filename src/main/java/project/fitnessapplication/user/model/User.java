@@ -86,5 +86,8 @@ public class User {
     @Column(name = "weight_change_speed_kg")
     private Double weightChangeSpeedKg; // kg per week
 
+    @Column(length = 50)
+    private String region; // Europe, North America, Asia, Africa, Oceania
+
     @PreUpdate void touch() { updatedAt = LocalDateTime.now(); }
 }

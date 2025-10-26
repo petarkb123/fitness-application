@@ -32,6 +32,7 @@ public class AuthController {
                 Integer heightCm = (Integer) session.getAttribute("onboarding_height_cm");
                 Integer weightKg = (Integer) session.getAttribute("onboarding_weight_kg");
                 String birthdateStr = (String) session.getAttribute("onboarding_birthdate");
+                String region = (String) session.getAttribute("onboarding_region");
                 String goal = (String) session.getAttribute("onboarding_goal");
                 Integer desiredWeightKg = (Integer) session.getAttribute("onboarding_desired_weight_kg");
                 Double weightChangeSpeedKg = (Double) session.getAttribute("onboarding_weight_change_speed_kg");
@@ -45,7 +46,7 @@ public class AuthController {
                     f.getUsername(), f.getPassword(), f.getEmail(),
                     f.getFirstName(), f.getLastName(),
                     gender, workoutFrequency, heightCm, weightKg,
-                    birthdate, goal, desiredWeightKg, weightChangeSpeedKg
+                    birthdate, region, goal, desiredWeightKg, weightChangeSpeedKg
                 );
                 
                 // Clear onboarding session data
@@ -54,6 +55,7 @@ public class AuthController {
                 session.removeAttribute("onboarding_height_cm");
                 session.removeAttribute("onboarding_weight_kg");
                 session.removeAttribute("onboarding_birthdate");
+                session.removeAttribute("onboarding_region");
                 session.removeAttribute("onboarding_goal");
                 session.removeAttribute("onboarding_desired_weight_kg");
                 session.removeAttribute("onboarding_weight_change_speed_kg");
