@@ -11,7 +11,7 @@ public class TimezoneConfig {
     
     static {
         // Using most representative regional timezones
-        REGION_TO_TIMEZONE.put("Europe", "Europe/Paris");            // CET (UTC+1) - Central Europe
+        REGION_TO_TIMEZONE.put("Europe", "Europe/Sofia");             // EET/EEST (UTC+2 or +3) - Bulgaria
         REGION_TO_TIMEZONE.put("North America", "America/New_York"); // EST/EDT (UTC-5 or -4)
         REGION_TO_TIMEZONE.put("Asia", "Asia/Shanghai");           // CST (UTC+8) - most populated timezone in Asia
         REGION_TO_TIMEZONE.put("Africa", "Africa/Nairobi");         // EAT (UTC+3) - East Africa
