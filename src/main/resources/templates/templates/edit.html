@@ -757,21 +757,21 @@
                         dropSetsBySetNumber.get(setNumber).push(indicator);
                     });
                     
-                    // Process each set that has drop sets
+                    const groupId = generateUUID();
+                    
+                    // Single main exercise record with its target sets and groupId
+                    addHiddenInput(this, `items[${itemIndex}].exerciseId`, exerciseId);
+                    addHiddenInput(this, `items[${itemIndex}].sets`, targetSets);
+                    addHiddenInput(this, `items[${itemIndex}].orderIndex`, itemIndex);
+                    addHiddenInput(this, `items[${itemIndex}].groupId`, groupId);
+                    addHiddenInput(this, `items[${itemIndex}].groupType`, 'DROP_SET');
+                    addHiddenInput(this, `items[${itemIndex}].groupOrder`, '0');
+                    addHiddenInput(this, `items[${itemIndex}].setNumber`, null); // Main item doesn't have a specific setNumber
+                    itemIndex++;
+                    
+                    // Add drop sets for each set number that has drops
                     dropSetsBySetNumber.forEach((indicators, setNumber) => {
-                        const groupId = generateUUID();
-                        
-                        // Main exercise record for this set with drop sets
-                        addHiddenInput(this, `items[${itemIndex}].exerciseId`, exerciseId);
-                        addHiddenInput(this, `items[${itemIndex}].sets`, targetSets);
-                        addHiddenInput(this, `items[${itemIndex}].orderIndex`, itemIndex);
-                        addHiddenInput(this, `items[${itemIndex}].groupId`, groupId);
-                        addHiddenInput(this, `items[${itemIndex}].groupType`, 'DROP_SET');
-                        addHiddenInput(this, `items[${itemIndex}].groupOrder`, '0');
-                        addHiddenInput(this, `items[${itemIndex}].setNumber`, setNumber.toString());
-                        itemIndex++;
-                        
-                        // Drop sets for this specific set
+                        // For each drop set at this set number
                         for (let i = 1; i <= indicators.length; i++) {
                             addHiddenInput(this, `items[${itemIndex}].exerciseId`, exerciseId);
                             addHiddenInput(this, `items[${itemIndex}].sets`, targetSets);

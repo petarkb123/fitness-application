@@ -1212,31 +1212,43 @@
                             // Group drop sets by set number
                             const dropSetsBySetNumber = new Map();
                             dropSets.forEach(dropSet => {
-                                const setNumber = dropSet.setNumber || ex.targetSets; // fallback to last set
+                                // Use the actual setNumber from the drop set, or fallback to targetSets
+                                const setNumber = dropSet.setNumber || ex.targetSets;
                                 if (!dropSetsBySetNumber.has(setNumber)) {
                                     dropSetsBySetNumber.set(setNumber, []);
                                 }
                                 dropSetsBySetNumber.get(setNumber).push(dropSet);
                             });
                             
-                            // Add drop sets to their respective main sets
-                            dropSetsBySetNumber.forEach((sets, setNumber) => {
-                                const targetSetRow = allSetRows[setNumber - 1]; // setNumber is 1-based
-                                if (targetSetRow) {
-                                    // Mark the main set as having drops
-                                    targetSetRow.setAttribute('data-has-drops', 'true');
-                                    const groupId = ex.groupId || generateUUID();
-                                    targetSetRow.setAttribute('data-group-id', groupId);
+                            // Process sets from first to last to maintain correct order
+                            const sortedSetNumbers = Array.from(dropSetsBySetNumber.keys()).sort((a, b) => a - b);
+                            
+                            sortedSetNumbers.forEach(setNumber => {
+                                const sets = dropSetsBySetNumber.get(setNumber);
+                                
+                                // Find the main set row (setNumber is 1-based, array is 0-based)
+                                const targetSetRow = allSetRows[setNumber - 1];
+                                if (!targetSetRow) return;
+                                
+                                // Mark the main set as having drops
+                                targetSetRow.setAttribute('data-has-drops', 'true');
+                                const groupId = ex.groupId || generateUUID();
+                                targetSetRow.setAttribute('data-group-id', groupId);
+                                
+                                // Sort drop sets by groupOrder (drop level) - ascending order
+                                sets.sort((a, b) => (a.groupOrder || 0) - (b.groupOrder || 0));
+                                
+                                // Build all drop rows first, then insert them in order
+                                const dropRows = [];
+                                sets.forEach((dropSet, index) => {
+                                    const dropLevel = dropSet.groupOrder || (index + 1);
+                                    const dropRow = document.createElement('div');
+                                    dropRow.className = 'set-row drop-set-row';
+                                    dropRow.setAttribute('data-drop-level', dropLevel);
+                                    dropRow.setAttribute('data-group-id', groupId);
+                                    dropRow.style.marginLeft = (dropLevel * 20) + 'px';
                                     
-                                    // Add drop sets after this main set
-                                    sets.forEach((dropSet, index) => {
-                                        const dropLevel = dropSet.groupOrder || (index + 1);
-                                        const dropRow = document.createElement('div');
-                                        dropRow.className = 'set-row drop-set-row';
-                                        dropRow.setAttribute('data-drop-level', dropLevel);
-                                        dropRow.style.marginLeft = (dropLevel * 20) + 'px';
-                                        
-                                        dropRow.innerHTML = `
+                                    dropRow.innerHTML = `
                                   <div class="set-number"><span class="drop-badge">Drop ${dropLevel}</span></div>
                                   <div class="set-inputs">
                                     <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5">
@@ -1253,17 +1265,14 @@
                                     </button>
                                   </div>
                                 `;
-                                        
-                                        // Find where to insert (after the target main set and any existing drops for that set)
-                                        let insertAfter = targetSetRow;
-                                        let nextSibling = targetSetRow.nextElementSibling;
-                                        while (nextSibling && nextSibling.classList.contains('drop-set-row')) {
-                                            insertAfter = nextSibling;
-                                            nextSibling = nextSibling.nextElementSibling;
-                                        }
-                                        insertAfter.insertAdjacentElement('afterend', dropRow);
-                                    });
-                                }
+                                    
+                                    dropRows.push(dropRow);
+                                });
+                                
+                                // Insert all drop rows after the main set
+                                dropRows.forEach(dropRow => {
+                                    targetSetRow.insertAdjacentElement('afterend', dropRow);
+                                });
                             });
                         }
                         
@@ -1575,8 +1584,15 @@
         const el = document.getElementById('timerText');
         if (!el) return;
         
-        // Always start from now (session just started on page load)
-        const sessionStart = Date.now();
+        let sessionStart;
+        
+        if (startedAtIso) {
+            // Existing session: start from the original start time
+            sessionStart = new Date(startedAtIso).getTime();
+        } else {
+            // New session: start from now
+            sessionStart = Date.now();
+        }
         
         function tick(){
             const diffMs = Date.now() - sessionStart;

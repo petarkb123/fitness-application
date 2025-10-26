@@ -95,6 +95,10 @@ public class TemplateService {
                     .exerciseId(r.getExerciseId())
                     .targetSets(sets)
                     .position(order)
+                    .groupId(r.getGroupId())
+                    .groupType(r.getGroupType())
+                    .groupOrder(r.getGroupOrder())
+                    .setNumber(r.getSetNumber())
                     .build());
         }
 
