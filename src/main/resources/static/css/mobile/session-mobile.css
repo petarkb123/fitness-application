@@ -643,4 +643,43 @@
     border-radius: 12px;
     border: 1px dashed rgba(255, 255, 255, 0.2);
   }
+
+  /* Compact Rest Timer Mobile */
+  .compact-rest-timer {
+    padding: 0.25rem 0.75rem;
+    margin-top: 0.4rem;
+  }
+
+  .timer-controls {
+    gap: 0.5rem;
+  }
+
+  .timer-edit-btn {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .timer-countdown {
+    font-size: 1.2rem;
+  }
+
+  .timer-start-btn {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
+  }
+
+  /* Custom Timer Modal Mobile */
+  .custom-timer-modal-content {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+
+  .custom-timer-inputs {
+    gap: 1rem;
+  }
+
+  .custom-timer-input-group input {
+    padding: 0.625rem;
+    font-size: 0.95rem;
+  }
 }

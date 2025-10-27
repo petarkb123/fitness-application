@@ -267,6 +267,7 @@
     const elapsedSeconds = /*[[${elapsedSeconds}]]*/ 0;
     const draftKey = workoutSessionId ? (`workoutDraft:${workoutSessionId}`) : null;
     const lastPerformanceData = /*[[${lastPerformanceData}]]*/ {};
+    const timers = {};
 </script>
 
 <script>
@@ -367,9 +368,25 @@
         </div>
         <div class="sets-list" id="sets-${exerciseCounter}"></div>
       </div>
+      
+      <!-- Compact Rest Timer -->
+      <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+        <div class="timer-controls">
+          <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+            <i class="fas fa-edit"></i>
+          </button>
+          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+          <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+        </div>
+      </div>
     `;
 
         exercisesList.appendChild(exerciseCard);
+        
+        // Initialize timer for this exercise
+        setTimeout(() => {
+            initTimer(exerciseCounter);
+        }, 100);
         
         // Auto-create sets if targetSets is provided (from template), otherwise add one default set
         const targetSets = exercise.targetSets || 1;
@@ -803,6 +820,17 @@
         </div>
         <div class="sets-list" id="sets-${exerciseCounter}"></div>
       </div>
+      
+      <!-- Compact Rest Timer -->
+      <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+        <div class="timer-controls">
+          <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+            <i class="fas fa-edit"></i>
+          </button>
+          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+          <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+        </div>
+      </div>
     `;
         
         // Insert before the first selected card
@@ -817,6 +845,11 @@
         for (let i = 0; i < ex1SetData.length; i++) {
             addSupersetSetWithData(currentExerciseIndex, ex1SetData[i], ex2SetData[i]);
         }
+        
+        // Initialize timer for superset
+        setTimeout(() => {
+            initTimer(exerciseCounter);
+        }, 100);
         
         exerciseCounter++;
     }
@@ -923,39 +956,16 @@
         supersetCard.before(card1);
         card1.after(card2);
         
+        // Initialize timers for the new cards
+        const card1Id = parseInt(card1.id.replace('exercise-', ''));
+        const card2Id = parseInt(card2.id.replace('exercise-', ''));
+        setTimeout(() => {
+            initTimer(card1Id);
+            initTimer(card2Id);
+        }, 100);
+        
         // Remove the superset card
         supersetCard.remove();
-    }
-    
-    function createExerciseCard(exerciseId, exerciseName, exerciseMuscle) {
-        const card = document.createElement('div');
-        card.className = 'exercise-card';
-        card.id = `exercise-${exerciseCounter}`;
-        card.setAttribute('data-exercise-id', exerciseId);
-        
-        card.innerHTML = `
-      <div class="exercise-header">
-        <div class="exercise-info">
-          <h3 class="exercise-name">${exerciseName}</h3>
-          <span class="exercise-muscle">${exerciseMuscle}</span>
-        </div>
-        <button class="btn-icon btn-remove" onclick="removeExercise(${exerciseCounter})">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
-      <div class="sets-container">
-        <div class="sets-header">
-          <span>Sets</span>
-          <button class="btn btn-sm btn-outline" onclick="addSetWithExerciseId(${exerciseCounter})">
-            <i class="fas fa-plus"></i> Add Set
-          </button>
-        </div>
-        <div class="sets-list" id="sets-${exerciseCounter}"></div>
-      </div>
-    `;
-        
-        exerciseCounter++;
-        return card;
     }
     
     function createExerciseCardWithData(exerciseId, exerciseName, exerciseMuscle, setData) {
@@ -984,6 +994,17 @@
           </button>
         </div>
         <div class="sets-list" id="sets-${currentIndex}"></div>
+      </div>
+      
+      <!-- Compact Rest Timer -->
+      <div class="compact-rest-timer" id="timer-${currentIndex}">
+        <div class="timer-controls">
+          <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${currentIndex})" title="Edit Rest Time">
+            <i class="fas fa-edit"></i>
+          </button>
+          <span class="timer-countdown" id="timerDisplay-${currentIndex}">02:00</span>
+          <button type="button" class="timer-start-btn" id="timerStart-${currentIndex}" onclick="toggleTimer(${currentIndex})">Start</button>
+        </div>
       </div>
     `;
         
@@ -1130,6 +1151,17 @@
                 </div>
                 <div class="sets-list" id="sets-${exerciseCounter}"></div>
               </div>
+              
+              <!-- Compact Rest Timer -->
+              <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+                <div class="timer-controls">
+                  <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+                  <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+                </div>
+              </div>
             `;
                     
                     exercisesList.appendChild(supersetCard);
@@ -1193,6 +1225,17 @@
                     </div>
                     <div class="sets-list" id="sets-${exerciseCounter}"></div>
                   </div>
+                  
+                  <!-- Compact Rest Timer -->
+                  <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+                    <div class="timer-controls">
+                      <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+                      <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+                    </div>
+                  </div>
                 `;
                         
                         exercisesList.appendChild(card);
@@ -1230,25 +1273,25 @@
                                 const targetSetRow = allSetRows[setNumber - 1];
                                 if (!targetSetRow) return;
                                 
-                                // Mark the main set as having drops
-                                targetSetRow.setAttribute('data-has-drops', 'true');
-                                const groupId = ex.groupId || generateUUID();
-                                targetSetRow.setAttribute('data-group-id', groupId);
-                                
+                                    // Mark the main set as having drops
+                                    targetSetRow.setAttribute('data-has-drops', 'true');
+                                    const groupId = ex.groupId || generateUUID();
+                                    targetSetRow.setAttribute('data-group-id', groupId);
+                                    
                                 // Sort drop sets by groupOrder (drop level) - ascending order
                                 sets.sort((a, b) => (a.groupOrder || 0) - (b.groupOrder || 0));
                                 
                                 // Build all drop rows first, then insert them in order
                                 const dropRows = [];
-                                sets.forEach((dropSet, index) => {
-                                    const dropLevel = dropSet.groupOrder || (index + 1);
-                                    const dropRow = document.createElement('div');
-                                    dropRow.className = 'set-row drop-set-row';
-                                    dropRow.setAttribute('data-drop-level', dropLevel);
+                                    sets.forEach((dropSet, index) => {
+                                        const dropLevel = dropSet.groupOrder || (index + 1);
+                                        const dropRow = document.createElement('div');
+                                        dropRow.className = 'set-row drop-set-row';
+                                        dropRow.setAttribute('data-drop-level', dropLevel);
                                     dropRow.setAttribute('data-group-id', groupId);
-                                    dropRow.style.marginLeft = (dropLevel * 20) + 'px';
-                                    
-                                    dropRow.innerHTML = `
+                                        dropRow.style.marginLeft = (dropLevel * 20) + 'px';
+                                        
+                                        dropRow.innerHTML = `
                                   <div class="set-number"><span class="drop-badge">Drop ${dropLevel}</span></div>
                                   <div class="set-inputs">
                                     <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5">
@@ -1265,7 +1308,7 @@
                                     </button>
                                   </div>
                                 `;
-                                    
+                                        
                                     dropRows.push(dropRow);
                                 });
                                 
@@ -1294,6 +1337,13 @@
                 processed.add(i);
             }
         }
+        
+        // Initialize all timers after template load
+        setTimeout(() => {
+            for (let i = 1; i <= exerciseCounter; i++) {
+                initTimer(i);
+            }
+        }, 200);
     }
     
     function loadExistingSets() {
@@ -1686,7 +1736,18 @@
                       <button class="btn-icon btn-remove" onclick="removeExercise(${exerciseCounter})"><i class="fas fa-trash"></i></button>
                     </div>
                   </div>
-                  <div class="sets-container"><div class="sets-header"><span>Sets</span><button class="btn btn-sm btn-outline" onclick="addSupersetSet(${exerciseCounter})"><i class="fas fa-plus"></i> Add Set</button></div><div class="sets-list" id="sets-${exerciseCounter}"></div></div>`;
+                  <div class="sets-container"><div class="sets-header"><span>Sets</span><button class="btn btn-sm btn-outline" onclick="addSupersetSet(${exerciseCounter})"><i class="fas fa-plus"></i> Add Set</button></div><div class="sets-list" id="sets-${exerciseCounter}"></div></div>
+                  
+                  <!-- Compact Rest Timer -->
+                  <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+                    <div class="timer-controls">
+                      <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+                      <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+                    </div>
+                  </div>`;
                 listEl.appendChild(supersetCard);
                 const setsList = supersetCard.querySelector('.sets-list');
                 item.sets.forEach((s, idx) => {
@@ -1742,9 +1803,229 @@
         });
     }
 
+    // ========== Rest Timer Functionality ==========
+    
+    function initTimer(exerciseId) {
+        if (!timers[exerciseId]) {
+            timers[exerciseId] = {
+                interval: null,
+                seconds: 120,
+                initialSeconds: 120,
+                isRunning: false
+            };
+        }
+        // Always update the display with current timer state
+        updateTimerDisplay(exerciseId);
+    }
+    
+    function setTimerValue(exerciseId, seconds) {
+        if (!timers[exerciseId]) {
+            timers[exerciseId] = {
+                interval: null,
+                seconds: seconds,
+                initialSeconds: seconds,
+                isRunning: false
+            };
+        }
+        setTimer(exerciseId, seconds);
+    }
+    
+    function setTimer(exerciseId, seconds) {
+        // Initialize timer if it doesn't exist
+        if (!timers[exerciseId]) {
+            timers[exerciseId] = {
+                interval: null,
+                seconds: seconds,
+                initialSeconds: seconds,
+                isRunning: false
+            };
+        } else {
+            timers[exerciseId].initialSeconds = seconds;
+            timers[exerciseId].seconds = seconds;
+        }
+        
+        updateTimerDisplay(exerciseId);
+    }
+    
+    function toggleTimer(exerciseId) {
+        const timer = timers[exerciseId];
+        if (!timer) return;
+        
+        const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+        
+        if (timer.isRunning) {
+            pauseTimer(exerciseId);
+        } else {
+            startTimer(exerciseId);
+        }
+    }
+    
+    function startTimer(exerciseId) {
+        const timer = timers[exerciseId];
+        if (!timer) return;
+        
+        timer.isRunning = true;
+        const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+        startBtn.textContent = 'Pause';
+        
+        timer.interval = setInterval(() => {
+            timer.seconds--;
+            updateTimerDisplay(exerciseId);
+            
+            if (timer.seconds <= 0) {
+                timerComplete(exerciseId);
+            }
+        }, 1000);
+    }
+    
+    function pauseTimer(exerciseId) {
+        const timer = timers[exerciseId];
+        if (!timer || !timer.interval) return;
+        
+        clearInterval(timer.interval);
+        timer.interval = null;
+        timer.isRunning = false;
+        
+        const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+        startBtn.textContent = 'Start';
+    }
+    
+    function updateTimerDisplay(exerciseId) {
+        const timer = timers[exerciseId];
+        if (!timer) return;
+        
+        const minutes = Math.floor(timer.seconds / 60);
+        const seconds = timer.seconds % 60;
+        const display = document.getElementById(`timerDisplay-${exerciseId}`);
+        
+        if (display) {
+            display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }
+    
+    function timerComplete(exerciseId) {
+        const timer = timers[exerciseId];
+        if (!timer || !timer.interval) return;
+        
+        clearInterval(timer.interval);
+        timer.interval = null;
+        timer.isRunning = false;
+        timer.seconds = timer.initialSeconds; // Reset to the set time
+        
+        playTimerSound();
+        
+        const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+        startBtn.textContent = 'Start';
+        
+        updateTimerDisplay(exerciseId);
+    }
+    
+    function playTimerSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create alarm sound with alternating frequencies
+            const beepCount = 10;
+            const beepDuration = 0.25; // 250ms per beep
+            const pauseDuration = 0.25; // 250ms pause between beeps
+            
+            for (let i = 0; i < beepCount; i++) {
+                const startTime = audioContext.currentTime + (i * (beepDuration + pauseDuration));
+                
+                // Create oscillator for each beep
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // High frequency alarm tone (800Hz)
+                oscillator.frequency.setValueAtTime(800, startTime);
+                
+                // Gain envelope for each beep
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.5, startTime + 0.05);
+                gainNode.gain.linearRampToValueAtTime(0.5, startTime + beepDuration - 0.05);
+                gainNode.gain.linearRampToValueAtTime(0, startTime + beepDuration);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + beepDuration);
+            }
+        } catch (e) {
+            console.error('Could not play timer sound:', e);
+        }
+    }
+    
+    let currentEditExerciseId = null;
+    
+    function openCustomTimerModal(exerciseId) {
+        currentEditExerciseId = exerciseId;
+        const modal = document.getElementById('customTimerModal');
+        const currentTimer = timers[exerciseId];
+        const currentMins = currentTimer ? Math.floor(currentTimer.initialSeconds / 60) : 2;
+        const currentSecs = currentTimer ? currentTimer.initialSeconds % 60 : 0;
+        
+        document.getElementById('customMinutes').value = currentMins;
+        document.getElementById('customSeconds').value = currentSecs;
+        
+        modal.style.display = 'flex';
+    }
+    
+    function closeCustomTimerModal() {
+        document.getElementById('customTimerModal').style.display = 'none';
+        currentEditExerciseId = null;
+    }
+    
+    function confirmCustomTimer() {
+        if (currentEditExerciseId === null) return;
+        
+        const minutes = parseInt(document.getElementById('customMinutes').value) || 0;
+        const seconds = parseInt(document.getElementById('customSeconds').value) || 0;
+        const totalSeconds = minutes * 60 + seconds;
+        
+        if (totalSeconds > 0) {
+            setTimer(currentEditExerciseId, totalSeconds);
+        }
+        
+        closeCustomTimerModal();
+    }
+    
+    // Initialize timers for existing exercises
+    setTimeout(() => {
+        if (exerciseCounter > 0) {
+            for (let i = 1; i <= exerciseCounter; i++) {
+                initTimer(i);
+            }
+        }
+    }, 100);
+
 </script>
 
-
+<!-- Custom Timer Modal -->
+<div id="customTimerModal" class="custom-timer-modal" style="display: none;">
+    <div class="custom-timer-modal-content">
+        <div class="custom-timer-modal-header">
+            <h3>Set Rest Time</h3>
+            <button type="button" class="close-custom-timer-modal" onclick="closeCustomTimerModal()">&times;</button>
+        </div>
+        <div class="custom-timer-modal-body">
+            <div class="custom-timer-inputs">
+                <div class="custom-timer-input-group">
+                    <label>Minutes</label>
+                    <input type="number" id="customMinutes" min="0" max="59" value="2">
+                </div>
+                <div class="custom-timer-input-group">
+                    <label>Seconds</label>
+                    <input type="number" id="customSeconds" min="0" max="59" value="0">
+                </div>
+            </div>
+        </div>
+        <div class="custom-timer-modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeCustomTimerModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="confirmCustomTimer()">Set Time</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
