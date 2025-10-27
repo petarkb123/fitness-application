@@ -23,8 +23,17 @@ public class SettingsController {
     public String settings(@AuthenticationPrincipal UserDetails me, Model model) {
         var u = settings.requireByUsername(me.getUsername());
         model.addAttribute("username", u.getUsername());
+        model.addAttribute("firstName", u.getFirstName());
+        model.addAttribute("lastName", u.getLastName());
         model.addAttribute("avatarPath", u.getProfilePicture());
         model.addAttribute("navAvatar", u.getProfilePicture());
+        model.addAttribute("heightCm", u.getHeightCm());
+        model.addAttribute("weightKg", u.getWeightKg());
+        model.addAttribute("goal", u.getGoal());
+        model.addAttribute("desiredWeightKg", u.getDesiredWeightKg());
+        model.addAttribute("weightChangeSpeedKg", u.getWeightChangeSpeedKg());
+        model.addAttribute("workoutFrequency", u.getWorkoutFrequency());
+        model.addAttribute("region", u.getRegion());
         return "settings";
     }
 
@@ -91,6 +100,132 @@ public class SettingsController {
             UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
             settings.changePassword(id, currentPassword, newPassword, confirmPassword);
             ra.addFlashAttribute("successMessage", "Password changed.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-first-name")
+    public String updateFirstName(@AuthenticationPrincipal UserDetails me,
+                                   @RequestParam("firstName") String firstName,
+                                   RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateFirstName(id, firstName);
+            ra.addFlashAttribute("successMessage", "First name updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-last-name")
+    public String updateLastName(@AuthenticationPrincipal UserDetails me,
+                                 @RequestParam("lastName") String lastName,
+                                 RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateLastName(id, lastName);
+            ra.addFlashAttribute("successMessage", "Last name updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-height")
+    public String updateHeight(@AuthenticationPrincipal UserDetails me,
+                               @RequestParam("heightCm") Integer heightCm,
+                               RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateHeight(id, heightCm);
+            ra.addFlashAttribute("successMessage", "Height updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-weight")
+    public String updateWeight(@AuthenticationPrincipal UserDetails me,
+                               @RequestParam("weightKg") Integer weightKg,
+                               RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateWeight(id, weightKg);
+            ra.addFlashAttribute("successMessage", "Weight updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-goal")
+    public String updateGoal(@AuthenticationPrincipal UserDetails me,
+                             @RequestParam("goal") String goal,
+                             RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateGoal(id, goal);
+            ra.addFlashAttribute("successMessage", "Goal updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-desired-weight")
+    public String updateDesiredWeight(@AuthenticationPrincipal UserDetails me,
+                                      @RequestParam("desiredWeightKg") Integer desiredWeightKg,
+                                      RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateDesiredWeight(id, desiredWeightKg);
+            ra.addFlashAttribute("successMessage", "Desired weight updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-weight-speed")
+    public String updateWeightSpeed(@AuthenticationPrincipal UserDetails me,
+                                    @RequestParam("weightChangeSpeedKg") Double weightChangeSpeedKg,
+                                    RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateWeightChangeSpeed(id, weightChangeSpeedKg);
+            ra.addFlashAttribute("successMessage", "Weight change speed updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-workout-frequency")
+    public String updateWorkoutFrequency(@AuthenticationPrincipal UserDetails me,
+                                         @RequestParam("workoutFrequency") String workoutFrequency,
+                                         RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateWorkoutFrequency(id, workoutFrequency);
+            ra.addFlashAttribute("successMessage", "Workout frequency updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-timezone")
+    public String updateTimezone(@AuthenticationPrincipal UserDetails me,
+                                  @RequestParam("region") String region,
+                                  RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateTimezone(id, region);
+            ra.addFlashAttribute("successMessage", "Timezone updated.");
         } catch (IllegalArgumentException ex) {
             ra.addFlashAttribute("errorMessage", ex.getMessage());
         }

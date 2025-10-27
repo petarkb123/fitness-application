@@ -168,6 +168,48 @@
                             <small class="form-help">Max 64 characters</small>
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-signature"></i>
+                                First Name
+                            </label>
+                            <div class="username-field-container">
+                                <input type="text"
+                                       name="firstName"
+                                       id="firstNameInput"
+                                       class="form-input username-input"
+                                       th:value="${firstName}"
+                                       placeholder="Enter your first name"
+                                       maxlength="100"
+                                       readonly>
+                                <button type="button" id="editFirstNameBtn" class="btn btn-secondary edit-btn">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-signature"></i>
+                                Last Name
+                            </label>
+                            <div class="username-field-container">
+                                <input type="text"
+                                       name="lastName"
+                                       id="lastNameInput"
+                                       class="form-input username-input"
+                                       th:value="${lastName}"
+                                       placeholder="Enter your last name"
+                                       maxlength="100"
+                                       readonly>
+                                <button type="button" id="editLastNameBtn" class="btn btn-secondary edit-btn">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="submit" id="saveUsernameBtn" class="btn btn-primary save-btn" style="display: none;">
                                 <i class="fas fa-save"></i>
@@ -177,8 +219,121 @@
                                 <i class="fas fa-times"></i>
                                 Cancel
                             </button>
+                            <button type="submit" id="saveFirstNameBtn" class="btn btn-primary save-btn" formaction="/settings/update-first-name" style="display: none;">
+                                <i class="fas fa-save"></i>
+                                Save
+                            </button>
+                            <button type="button" id="cancelFirstNameBtn" class="btn btn-outline cancel-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
+                            <button type="submit" id="saveLastNameBtn" class="btn btn-primary save-btn" formaction="/settings/update-last-name" style="display: none;">
+                                <i class="fas fa-save"></i>
+                                Save
+                            </button>
+                            <button type="button" id="cancelLastNameBtn" class="btn btn-outline cancel-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
                         </div>
                     </form>
+                </div>
+
+                
+                <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-user-circle"></i>
+                            Personal Information
+                        </h2>
+                    </div>
+
+                    <!-- Height -->
+                    <div class="field-container">
+                        <label class="field-label">
+                            <i class="fas fa-ruler-vertical"></i>
+                            Height (cm)
+                        </label>
+                        <div class="field-display" th:text="${heightCm != null ? heightCm : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="height">Edit</button>
+                    </div>
+
+                    <!-- Weight -->
+                    <div class="field-container">
+                        <label class="field-label">
+                            <i class="fas fa-weight"></i>
+                            Weight (kg)
+                        </label>
+                        <div class="field-display" th:text="${weightKg != null ? weightKg : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="weight">Edit</button>
+                    </div>
+
+                    <!-- Goal -->
+                    <div class="field-container">
+                        <label class="field-label">
+                            <i class="fas fa-bullseye"></i>
+                            Goal
+                        </label>
+                        <div class="field-display" th:text="${goal != null ? (goal == 'LOSE_WEIGHT' ? 'Lose Weight' : (goal == 'MAINTAIN_WEIGHT' ? 'Maintain Weight' : (goal == 'GAIN_WEIGHT' ? 'Gain Weight' : goal))) : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="goal">Edit</button>
+                    </div>
+
+                    <!-- Desired Weight (shown if goal is not MAINTAIN_WEIGHT) -->
+                    <div class="field-container" th:if="${goal != 'MAINTAIN_WEIGHT'}">
+                        <label class="field-label">
+                            <i class="fas fa-balance-scale"></i>
+                            Desired Weight (kg)
+                        </label>
+                        <div class="field-display" th:text="${desiredWeightKg != null ? desiredWeightKg : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="desiredWeight">Edit</button>
+                    </div>
+
+                    <!-- Weight Change Speed (shown if goal is not MAINTAIN_WEIGHT) -->
+                    <div class="field-container" th:if="${goal != 'MAINTAIN_WEIGHT'}">
+                        <label class="field-label">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Weight Change Speed (kg/week)
+                        </label>
+                        <div class="field-display" th:text="${weightChangeSpeedKg != null ? weightChangeSpeedKg + ' kg/week' : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="weightSpeed">Edit</button>
+                    </div>
+
+                    <!-- Workout Frequency -->
+                    <div class="field-container">
+                        <label class="field-label">
+                            <i class="fas fa-calendar-check"></i>
+                            Workout Frequency
+                        </label>
+                        <div class="field-display" th:text="${workoutFrequency != null ? workoutFrequency : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="workoutFrequency">Edit</button>
+                    </div>
+
+                    <!-- Timezone -->
+                    <div class="field-container">
+                        <label class="field-label">
+                            <i class="fas fa-globe"></i>
+                            Timezone
+                        </label>
+                        <div class="field-display" th:text="${region != null ? region : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="timezone">Edit</button>
+                    </div>
+                </div>
+
+                <!-- Edit Modal -->
+                <div id="editModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="modalTitle">Edit Field</h3>
+                            <button type="button" class="close-modal-btn" id="closeModalBtn">&times;</button>
+                        </div>
+                        <div class="modal-body" id="modalBody">
+                            <!-- Dynamic content will be inserted here -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline cancel-btn" id="modalCancelBtn">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="modalSaveBtn">Save</button>
+                        </div>
+                    </div>
                 </div>
 
                 
@@ -535,6 +690,349 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
     });
+
+    // First Name functionality
+    const editFirstNameBtn = document.getElementById('editFirstNameBtn');
+    const saveFirstNameBtn = document.getElementById('saveFirstNameBtn');
+    const cancelFirstNameBtn = document.getElementById('cancelFirstNameBtn');
+    const firstNameInput = document.getElementById('firstNameInput');
+    const originalFirstName = firstNameInput.value;
+
+    editFirstNameBtn.addEventListener('click', function() {
+        firstNameInput.removeAttribute('readonly');
+        firstNameInput.focus();
+        editFirstNameBtn.style.display = 'none';
+        saveFirstNameBtn.style.display = 'inline-flex';
+        cancelFirstNameBtn.style.display = 'inline-flex';
+        firstNameInput.classList.add('editing');
+    });
+
+    cancelFirstNameBtn.addEventListener('click', function() {
+        firstNameInput.value = originalFirstName;
+        firstNameInput.setAttribute('readonly', true);
+        firstNameInput.classList.remove('editing');
+        editFirstNameBtn.style.display = 'inline-flex';
+        saveFirstNameBtn.style.display = 'none';
+        cancelFirstNameBtn.style.display = 'none';
+    });
+
+    saveFirstNameBtn.addEventListener('click', function(e) {
+        const newValue = firstNameInput.value.trim();
+        if (newValue === '') {
+            e.preventDefault();
+            showErrorMessage('First name cannot be empty');
+            return;
+        }
+        if (newValue === originalFirstName) {
+            e.preventDefault();
+            showErrorMessage('No changes made');
+            cancelFirstNameBtn.click();
+            return;
+        }
+    });
+
+    // Last Name functionality
+    const editLastNameBtn = document.getElementById('editLastNameBtn');
+    const saveLastNameBtn = document.getElementById('saveLastNameBtn');
+    const cancelLastNameBtn = document.getElementById('cancelLastNameBtn');
+    const lastNameInput = document.getElementById('lastNameInput');
+    const originalLastName = lastNameInput.value;
+
+    editLastNameBtn.addEventListener('click', function() {
+        lastNameInput.removeAttribute('readonly');
+        lastNameInput.focus();
+        editLastNameBtn.style.display = 'none';
+        saveLastNameBtn.style.display = 'inline-flex';
+        cancelLastNameBtn.style.display = 'inline-flex';
+        lastNameInput.classList.add('editing');
+    });
+
+    cancelLastNameBtn.addEventListener('click', function() {
+        lastNameInput.value = originalLastName;
+        lastNameInput.setAttribute('readonly', true);
+        lastNameInput.classList.remove('editing');
+        editLastNameBtn.style.display = 'inline-flex';
+        saveLastNameBtn.style.display = 'none';
+        cancelLastNameBtn.style.display = 'none';
+    });
+
+    saveLastNameBtn.addEventListener('click', function(e) {
+        const newValue = lastNameInput.value.trim();
+        if (newValue === '') {
+            e.preventDefault();
+            showErrorMessage('Last name cannot be empty');
+            return;
+        }
+        if (newValue === originalLastName) {
+            e.preventDefault();
+            showErrorMessage('No changes made');
+            cancelLastNameBtn.click();
+            return;
+        }
+    });
+
+    // Personal Information fields functionality
+    const editModal = document.getElementById('editModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalSaveBtn = document.getElementById('modalSaveBtn');
+    const modalCancelBtn = document.getElementById('modalCancelBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    let currentFieldType = null;
+    let currentFieldContainer = null;
+    let selectedValue = null;
+
+    function openModal(fieldType, title, options) {
+        currentFieldType = fieldType;
+        modalTitle.textContent = title;
+        modalBody.innerHTML = '';
+        selectedValue = null;
+        
+        // Show modal footer
+        document.querySelector('.modal-footer').style.display = 'flex';
+        
+        options.forEach(option => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'option-btn';
+            button.textContent = option.label;
+            button.value = option.value;
+            button.addEventListener('click', function() {
+                if (option.value === 'custom') {
+                    showCustomInput(fieldType);
+                } else {
+                    selectedValue = option.value;
+                    submitFieldUpdate();
+                    closeModal();
+                }
+            });
+            modalBody.appendChild(button);
+        });
+        
+        editModal.style.display = 'block';
+    }
+
+    function selectOption(value) {
+        submitFieldUpdate();
+        closeModal();
+    }
+
+    function showCustomInput(fieldType) {
+        let label = '';
+        switch(fieldType) {
+            case 'height': label = 'Enter your height (cm):'; break;
+            case 'weight': label = 'Enter your weight (kg):'; break;
+            case 'desiredWeight': label = 'Enter your desired weight (kg):'; break;
+            case 'weightSpeed': label = 'Enter weight change speed (kg/week):'; break;
+        }
+        
+        modalBody.innerHTML = `
+            <div class="custom-input-container">
+                <label class="custom-input-label" th:remove="tag">${label}</label>
+                <input type="text" id="customInput" class="form-input" placeholder="Enter value">
+                <div class="custom-input-actions">
+                    <button type="button" class="btn btn-outline" id="cancelCustomBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCustomBtn">Save</button>
+                </div>
+            </div>
+        `;
+        
+        // Hide modal footer
+        document.querySelector('.modal-footer').style.display = 'none';
+        
+        const customInput = document.getElementById('customInput');
+        const saveCustomBtn = document.getElementById('saveCustomBtn');
+        const cancelCustomBtn = document.getElementById('cancelCustomBtn');
+        
+        saveCustomBtn.addEventListener('click', function() {
+            const value = customInput.value.trim();
+            if (value !== '' && !isNaN(value)) {
+                selectedValue = value;
+                submitFieldUpdate();
+                closeModal();
+            }
+        });
+        
+        cancelCustomBtn.addEventListener('click', function() {
+            closeModal();
+        });
+        
+        customInput.focus();
+    }
+
+    function closeModal() {
+        editModal.style.display = 'none';
+        modalBody.innerHTML = '';
+        currentFieldType = null;
+        currentFieldContainer = null;
+    }
+
+    modalCancelBtn.addEventListener('click', closeModal);
+    closeModalBtn.addEventListener('click', closeModal);
+
+    // Click outside modal to close
+    editModal.addEventListener('click', function(e) {
+        if (e.target === editModal) {
+            closeModal();
+        }
+    });
+
+    const editFieldBtns = document.querySelectorAll('.edit-field-btn');
+    
+    editFieldBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const fieldType = this.getAttribute('data-field');
+            currentFieldContainer = this.closest('.field-container');
+            
+            switch(fieldType) {
+                case 'height':
+                    openModal(fieldType, 'Enter your height in cm', [
+                        {label: '100 cm', value: '100'},
+                        {label: '110 cm', value: '110'},
+                        {label: '120 cm', value: '120'},
+                        {label: '130 cm', value: '130'},
+                        {label: '140 cm', value: '140'},
+                        {label: '150 cm', value: '150'},
+                        {label: '160 cm', value: '160'},
+                        {label: '170 cm', value: '170'},
+                        {label: '180 cm', value: '180'},
+                        {label: '190 cm', value: '190'},
+                        {label: '200 cm', value: '200'},
+                        {label: '210 cm', value: '210'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
+                    break;
+                case 'weight':
+                    openModal(fieldType, 'Enter your weight in kg', [
+                        {label: '40 kg', value: '40'},
+                        {label: '50 kg', value: '50'},
+                        {label: '60 kg', value: '60'},
+                        {label: '70 kg', value: '70'},
+                        {label: '80 kg', value: '80'},
+                        {label: '90 kg', value: '90'},
+                        {label: '100 kg', value: '100'},
+                        {label: '110 kg', value: '110'},
+                        {label: '120 kg', value: '120'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
+                    break;
+                case 'goal':
+                    openModal(fieldType, 'Select your goal', [
+                        {label: 'Lose Weight', value: 'LOSE_WEIGHT'},
+                        {label: 'Maintain Weight', value: 'MAINTAIN_WEIGHT'},
+                        {label: 'Gain Weight', value: 'GAIN_WEIGHT'}
+                    ]);
+                    break;
+                case 'desiredWeight':
+                    openModal(fieldType, 'Enter your desired weight in kg', [
+                        {label: '50 kg', value: '50'},
+                        {label: '60 kg', value: '60'},
+                        {label: '70 kg', value: '70'},
+                        {label: '80 kg', value: '80'},
+                        {label: '90 kg', value: '90'},
+                        {label: '100 kg', value: '100'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
+                    break;
+                case 'weightSpeed':
+                    openModal(fieldType, 'Enter your weight change speed in kg/week', [
+                        {label: '0.1 kg/week', value: '0.1'},
+                        {label: '0.2 kg/week', value: '0.2'},
+                        {label: '0.3 kg/week', value: '0.3'},
+                        {label: '0.4 kg/week', value: '0.4'},
+                        {label: '0.5 kg/week', value: '0.5'},
+                        {label: '0.6 kg/week', value: '0.6'},
+                        {label: '0.7 kg/week', value: '0.7'},
+                        {label: '0.8 kg/week', value: '0.8'},
+                        {label: '0.9 kg/week', value: '0.9'},
+                        {label: '1.0 kg/week', value: '1.0'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
+                    break;
+                case 'workoutFrequency':
+                    openModal(fieldType, 'Select workout frequency', [
+                        {label: 'Low (0-2 days/week)', value: 'LOW'},
+                        {label: 'Medium (3-5 days/week)', value: 'MEDIUM'},
+                        {label: 'High (6+ days/week)', value: 'HIGH'}
+                    ]);
+                    break;
+                case 'timezone':
+                    openModal(fieldType, 'Select your timezone', [
+                        {label: 'Europe', value: 'Europe'},
+                        {label: 'North America', value: 'North America'},
+                        {label: 'Asia', value: 'Asia'},
+                        {label: 'Africa', value: 'Africa'},
+                        {label: 'Oceania', value: 'Oceania'},
+                        {label: 'South America', value: 'South America'}
+                    ]);
+                    break;
+            }
+        });
+    });
+
+    function submitFieldUpdate() {
+        let url, paramName, paramValue;
+        
+        switch(currentFieldType) {
+            case 'height':
+                url = '/settings/update-height';
+                paramName = 'heightCm';
+                paramValue = parseInt(selectedValue);
+                break;
+            case 'weight':
+                url = '/settings/update-weight';
+                paramName = 'weightKg';
+                paramValue = parseInt(selectedValue);
+                break;
+            case 'goal':
+                url = '/settings/update-goal';
+                paramName = 'goal';
+                paramValue = selectedValue;
+                break;
+            case 'desiredWeight':
+                url = '/settings/update-desired-weight';
+                paramName = 'desiredWeightKg';
+                paramValue = parseInt(selectedValue);
+                break;
+            case 'weightSpeed':
+                url = '/settings/update-weight-speed';
+                paramName = 'weightChangeSpeedKg';
+                paramValue = parseFloat(selectedValue);
+                break;
+            case 'workoutFrequency':
+                url = '/settings/update-workout-frequency';
+                paramName = 'workoutFrequency';
+                paramValue = selectedValue;
+                break;
+            case 'timezone':
+                url = '/settings/update-timezone';
+                paramName = 'region';
+                paramValue = selectedValue;
+                break;
+            default:
+                return;
+        }
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = document.querySelector('meta[name="_csrf_parameter"]').getAttribute('content');
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+        
+        const valueInput = document.createElement('input');
+        valueInput.type = 'hidden';
+        valueInput.name = paramName;
+        valueInput.value = paramValue;
+        form.appendChild(valueInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
 });
 </script>
 

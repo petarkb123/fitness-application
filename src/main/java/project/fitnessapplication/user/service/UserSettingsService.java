@@ -58,4 +58,59 @@ public class UserSettingsService {
         u.setPasswordHash(passwordEncoder.encode(newRaw));
         users.save(u);
     }
+
+    // Update user profile information
+    public void updateFirstName(UUID userId, String firstName) {
+        User u = users.findById(userId).orElseThrow();
+        u.setFirstName(firstName);
+        users.save(u);
+    }
+
+    public void updateLastName(UUID userId, String lastName) {
+        User u = users.findById(userId).orElseThrow();
+        u.setLastName(lastName);
+        users.save(u);
+    }
+
+    public void updateHeight(UUID userId, Integer heightCm) {
+        User u = users.findById(userId).orElseThrow();
+        u.setHeightCm(heightCm);
+        users.save(u);
+    }
+
+    public void updateWeight(UUID userId, Integer weightKg) {
+        User u = users.findById(userId).orElseThrow();
+        u.setWeightKg(weightKg);
+        users.save(u);
+    }
+
+    public void updateGoal(UUID userId, String goal) {
+        User u = users.findById(userId).orElseThrow();
+        u.setGoal(goal);
+        users.save(u);
+    }
+
+    public void updateDesiredWeight(UUID userId, Integer desiredWeightKg) {
+        User u = users.findById(userId).orElseThrow();
+        u.setDesiredWeightKg(desiredWeightKg);
+        users.save(u);
+    }
+
+    public void updateWeightChangeSpeed(UUID userId, Double weightChangeSpeedKg) {
+        User u = users.findById(userId).orElseThrow();
+        u.setWeightChangeSpeedKg(weightChangeSpeedKg);
+        users.save(u);
+    }
+
+    public void updateWorkoutFrequency(UUID userId, String workoutFrequency) {
+        User u = users.findById(userId).orElseThrow();
+        u.setWorkoutFrequency(workoutFrequency);
+        users.save(u);
+    }
+
+    public void updateTimezone(UUID userId, String region) {
+        User u = users.findById(userId).orElseThrow();
+        u.setRegion(region);
+        users.save(u);
+    }
 }

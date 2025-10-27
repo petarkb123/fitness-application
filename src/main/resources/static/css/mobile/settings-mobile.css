@@ -399,4 +399,76 @@
         width: 100%;
         justify-content: center;
     }
+
+    /* Personal Information Section - Mobile */
+    .field-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .field-label {
+        width: 100%;
+        font-size: 0.875rem;
+        min-width: auto;
+    }
+
+    .field-display {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+    }
+
+    .edit-field-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.625rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    /* Modal - Mobile */
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+        margin: 10% auto;
+        max-height: 85vh;
+    }
+
+    .modal-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .close-modal-btn {
+        font-size: 1.5rem;
+        width: 28px;
+        height: 28px;
+    }
+
+    .modal-body {
+        max-height: 300px;
+    }
+
+    .option-btn {
+        padding: 0.875rem;
+        font-size: 0.875rem;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+    /* Custom Input - Mobile */
+    .custom-input-actions {
+        flex-direction: column;
+    }
+
+    .custom-input-actions .btn {
+        width: 100%;
+    }
 }
