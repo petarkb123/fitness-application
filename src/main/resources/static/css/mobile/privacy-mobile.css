@@ -79,4 +79,16 @@
         align-items: center;
         white-space: nowrap;
     }
+
+    body, .dashboard-container { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
+    .content-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+    h1, h2, h3 { color:#c9ceff; text-shadow:0 1px 1px rgba(0,0,0,0.18); }
+    p, li { color:#d6dbff; }
+    a { color:#9bb0ff; text-decoration:none; }
 }

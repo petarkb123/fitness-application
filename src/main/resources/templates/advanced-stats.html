@@ -242,14 +242,14 @@
                             <div class="progress-info">
                                 <div class="progress-item">
                                     <span class="progress-label">Starting Weight</span>
-                                    <span class="progress-value" th:text="${overload.startingWeight()} + ' lbs'">0 lbs</span>
+                                    <span class="progress-value" th:text="${overload.startingWeight()} + ' kg'">0 kg</span>
                                 </div>
                                 <div class="progress-arrow">
                                     <i class="fas fa-arrow-right"></i>
                                 </div>
                                 <div class="progress-item">
                                     <span class="progress-label">Current Weight</span>
-                                    <span class="progress-value" th:text="${overload.currentWeight()} + ' lbs'">0 lbs</span>
+                                    <span class="progress-value" th:text="${overload.currentWeight()} + ' kg'">0 kg</span>
                                 </div>
                             </div>
                             <div class="progress-percent" th:classappend="${overload.progressPercent() > 0 ? 'positive' : 'neutral'}">
@@ -288,7 +288,7 @@
                         <div class="trend-stats">
                             <div class="trend-stat">
                                 <span class="trend-stat-label">Total Volume</span>
-                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.totalVolume(), 0, 'COMMA', 0, 'POINT')} + ' lbs'">0 lbs</span>
+                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.totalVolume(), 0, 'COMMA', 0, 'POINT')} + ' kg'">0 kg</span>
                             </div>
                             <div class="trend-stat">
                                 <span class="trend-stat-label">Total Sets</span>
@@ -296,7 +296,7 @@
                             </div>
                             <div class="trend-stat">
                                 <span class="trend-stat-label">Avg Per Session</span>
-                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.avgVolumePerSession(), 0, 'COMMA', 0, 'POINT')} + ' lbs'">0 lbs</span>
+                                <span class="trend-stat-value" th:text="${#numbers.formatDecimal(trend.avgVolumePerSession(), 0, 'COMMA', 0, 'POINT')} + ' kg'">0 kg</span>
                             </div>
                         </div>
 
@@ -352,7 +352,7 @@
                                     <td>
                                         <span class="record-type-badge" th:text="${pr.recordType()}">Type</span>
                                     </td>
-                                    <td th:text="${pr.weight()} + ' lbs'">0 lbs</td>
+                                    <td th:text="${pr.weight()} + ' kg'">0 kg</td>
                                     <td th:text="${pr.reps()}">0</td>
                                     <td th:text="${#temporals.format(pr.achievedDate(), 'MMM dd, yyyy')}">Date</td>
                                 </tr>
@@ -497,7 +497,7 @@
                         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }),
                     datasets: [{
-                        label: 'Volume (lbs)',
+                        label: 'Volume (kg)',
                         data: trend.weeklyData.map(w => w.volume),
                         borderColor: trend.trend === 'increasing' ? 'rgba(46, 213, 115, 1)' : 
                                     trend.trend === 'decreasing' ? 'rgba(255, 71, 87, 1)' : 
@@ -556,7 +556,7 @@
                         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }),
                     datasets: [{
-                        label: 'Max Weight (lbs)',
+                        label: 'Max Weight (kg)',
                         data: overload.progressPoints.map(p => p.weight),
                         borderColor: 'rgba(255, 159, 64, 1)',
                         backgroundColor: 'rgba(255, 159, 64, 0.1)',

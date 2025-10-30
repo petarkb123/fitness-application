@@ -369,6 +369,10 @@
             const ex2Set = ex2.sets.filter(s => s.groupType === 'SUPERSET')[i];
             return sum + (s.weight * s.reps) + (ex2Set ? ex2Set.weight * ex2Set.reps : 0);
         }, 0);
+        const totalReps = supersetSets.reduce((sum, s, i) => {
+            const ex2Set = ex2.sets.filter(s => s.groupType === 'SUPERSET')[i];
+            return sum + (parseInt(s.reps || 0, 10)) + (ex2Set ? parseInt(ex2Set.reps || 0, 10) : 0);
+        }, 0);
         
         let setsHTML = '';
         supersetSets.forEach((set1, index) => {
@@ -430,6 +434,10 @@
                     <div class="summary-stat">
                         <span class="stat-label">Sets Completed:</span>
                         <span class="stat-value">${supersetSets.length} sets</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-label">Total Reps:</span>
+                        <span class="stat-value">${totalReps} reps</span>
                     </div>
                 </div>
             </div>

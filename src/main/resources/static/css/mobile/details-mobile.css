@@ -331,19 +331,44 @@
 
   /* Superset Styling */
   .superset-card {
-    border-left: 4px solid #a855f7;
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(168, 85, 247, 0.03) 100%);
+    border-left: 0 !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 8px !important;
   }
 
-  .superset-badge {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.6rem;
-    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
-    color: white;
-    border-radius: 12px;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-    display: inline-block;
+  /* Keep .superset-badge as-is */
+
+  .superset-table {
+    margin-bottom: 0.75rem;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  }
+
+  .superset-table .table-header {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  }
+
+  .superset-set-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .superset-set-row .set-number {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; /* match normal set number */
+  }
+
+  .superset-set-row .volume {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #cfd6ff !important;
+  }
+
+  .superset-divider {
+    color: #9db0ff !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.15) !important;
   }
 
   /* Hide desktop version on mobile */

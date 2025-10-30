@@ -341,4 +341,36 @@
     }
     .header-btn i { font-size: 1.15rem !important; }
     .header-btn span { font-size: 0.65rem !important; font-weight: 600 !important; line-height: 1.1 !important; letter-spacing: -0.01em !important; }
+
+    /* Polished section title */
+    .page-header .page-title { color: #c9ceff; letter-spacing: 0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.18); }
+
+    /* Templates grid and cards */
+    .templates-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.6rem !important; }
+    .template-card {
+      background: radial-gradient(120% 140% at 85% 5%, rgba(102,126,234,0.10) 0%, rgba(44,44,74,0.85) 45%, rgba(44,44,74,0.80) 100%) !important;
+      border: 1.2px solid rgba(255,255,255,0.10) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+      padding: 0.75rem !important;
+      animation: fadeInCard 0.6s ease forwards; opacity: 0; transform: translateY(14px);
+    }
+    .template-card:nth-child(1) { animation-delay: 0.06s; }
+    .template-card:nth-child(2) { animation-delay: 0.12s; }
+    .template-card:nth-child(3) { animation-delay: 0.18s; }
+    @keyframes fadeInCard { to { opacity: 1; transform: translateY(0); } }
+
+    .template-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+    .template-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(102,126,234,0.12); color: #8ea0ff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+    .template-actions { display: flex; gap: 0.35rem; }
+    .btn-icon { width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: #e7e9ff; display: flex; align-items: center; justify-content: center; }
+    .btn-icon:active { transform: translateY(1px) scale(0.98); }
+
+    .template-name { color: #ffffff; font-weight: 700; text-shadow: 0 1px 1px rgba(0,0,0,0.25); font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .template-meta { color: #b0b8dd; font-size: 0.7rem; }
+
+    .empty-state { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+
+    /* Primary buttons */
+    .btn, .btn-primary { border: none !important; border-radius: 12px !important; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; color: #ffffff !important; font-weight: 700 !important; box-shadow: 0 6px 18px rgba(102,126,234,0.28), 0 2px 6px rgba(102,126,234,0.12) !important; }
 }
