@@ -46,6 +46,13 @@
 }
 
 @media (max-width: 480px) {
+  body {
+    background: #1a1a30 !important;
+  }
+  .dashboard-container {
+    background: #1a1a30 !important;
+  }
+  
   .main-content { margin-left: 0; padding: 0.75rem; padding-bottom: 90px; width: 100%; max-width: 100vw; overflow-x: hidden; }
   .dashboard-container { overflow-x: hidden; }
 
@@ -84,22 +91,9 @@
   .set-inputs { gap: 0.4rem; }
   .input-label { font-size: 0.75rem; min-width: auto; }
   /* MOBILE ONLY: Standardized header layout - matching other pages */
-  .top-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0;
-    margin-left: 0.2rem;
-    padding: 0.5rem 0;
-    padding-bottom: 1.2rem;
-  }
   
-  .header-left {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    gap: 0.65rem;
-  }
+  
+  
     /* Ensure mobile profile is visible on left and desktop profile is hidden */
     
     
@@ -160,7 +154,6 @@
     align-items: flex-start;
     gap: 1.5rem;
     margin-bottom: 1rem;
-    margin-top: -1.5rem;
   }
   
   .page-actions {
@@ -682,4 +675,204 @@
     padding: 0.625rem;
     font-size: 0.95rem;
   }
+  /* Visual-only header enhancements (match details) */
+  
+  .header-actions { display: none !important; }
+  .mobile-profile { display: flex !important; align-items: center; }
+  .desktop-profile { display: none !important; }
+  .profile-avatar { border-radius: 12px !important; border: 2px solid rgba(102, 126, 234, 0.22); box-shadow: 0 4px 10px rgba(102, 126, 234, 0.15); }
+  .profile-avatar .avatar-image, .profile-avatar .avatar-placeholder { width: 100%; height: 100%; object-fit: cover; border-radius: inherit !important; }
+  .header-left .page-title { display: none; }
+  .profile-name { font-size: 0.95rem; font-weight: 700; color: #ffffff; letter-spacing: -0.02em; }
+
+  /* Color consistency: header matches details */
+  
+  .profile-avatar { border-radius: 12px !important; }
+  .profile-avatar .avatar-image, .profile-avatar .avatar-placeholder { border-radius: inherit !important; object-fit: cover; }
+
+  /* Match nav bar visuals to other pages (underline active, no rounded bg) */
+  .sidebar { background: #232346cc !important; backdrop-filter: blur(18px) !important; box-shadow: 0 1px 10px #667eea22 !important; }
+  .nav-link { color: #c1c7ff !important; }
+  .nav-item.active .nav-link {
+    background: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #7487f5 !important;
+    position: relative;
+  }
+  .nav-item.active .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 16px; right: 16px; bottom: 8px;
+    height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, #72aaff 0%, #667eea 50%, #72aaff 100%);
+    box-shadow: 0 0 7px #5a8bff99;
+    pointer-events: none;
+  }
+
+  /* Action buttons: Add Exercise + Create Superset → side by side, equal width */
+  .add-exercise-section {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    background: transparent !important;
+    border: none !important; /* remove dashed frame */
+  }
+  .add-exercise-section .btn { flex: 1 1 0; width: 100%; }
+  .add-exercise-section .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border: none !important; }
+  .add-exercise-section .btn-outline { background: rgba(255,255,255,0.06) !important; color: #d6dbff !important; border: none !important; }
+
+  /* Bottom nav: unify + slightly darker purple */
+  .sidebar {
+    background: rgba(28, 28, 58, 0.92) !important; /* darker purple tone */
+    backdrop-filter: blur(18px) !important;
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.45), 0 1px 10px rgba(102,126,234,0.18) !important;
+  }
+  .nav-link { color: #c9ceff !important; }
+  .nav-item.active .nav-link { color: #8ea0ff !important; }
+  /* Hide bottom nav on session page */
+  .sidebar { display: none !important; }
+
+  /* Re-enable bottom nav on session page and match global style */
+  .sidebar {
+    display: flex !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+    height: 54px !important;
+    background: rgba(28, 28, 58, 0.92) !important;
+    backdrop-filter: blur(18px) !important;
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.45), 0 1px 10px rgba(102,126,234,0.18) !important;
+    border-top: 1px solid rgba(255,255,255,0.12) !important;
+    left: 0; right: 0; bottom: 0; top: auto;
+  }
+  .sidebar-header, .nav-section-title { display: none !important; }
+  .nav-list { padding: 0 0.25rem !important; justify-content: space-evenly !important; }
+  .nav-link { gap: 0 !important; min-height: 54px !important; padding: 0.33rem 0.30rem !important; color: #c9ceff !important; }
+  .nav-link i { font-size: 1.23rem !important; margin-bottom: 2px !important; color: #ffffff !important; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  .nav-link span { font-size: 0.63rem !important; font-weight: 500 !important; margin-top: -2px !important; }
+  .nav-item.active .nav-link { background: none !important; border-radius: 0 !important; box-shadow: none !important; color: #8ea0ff !important; position: relative; }
+  .nav-item.active .nav-link i { color: #9bb0ff !important; }
+  .nav-item.active .nav-link::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: 8px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #7fb0ff 0%, #667eea 50%, #7fb0ff 100%); box-shadow: 0 0 8px rgba(127,176,255,0.6); pointer-events: none; }
+  .page-actions { display: none !important; }
+  .add-exercise-section { display: flex; align-items: stretch; gap: 0.5rem; }
+  .add-exercise-section .btn { flex: 1 1 0; width: 100%; }
+
+  /* Identical look for the 3 action buttons */
+  .add-exercise-section .action-btn {
+    border: none !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.28), 0 2px 6px rgba(102, 126, 234, 0.12) !important;
+    transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.18s ease;
+  }
+  .add-exercise-section .action-btn:active { transform: translateY(1px) scale(0.99); filter: brightness(1.03); }
+  .add-exercise-section .action-btn i { font-size: 0.95rem; }
+
+  /* Visual-only enhancement for exercise cards */
+  .exercise-card {
+    background: radial-gradient(120% 140% at 85% 5%, rgba(102,126,234,0.10) 0%, rgba(44,44,74,0.85) 45%, rgba(44,44,74,0.80) 100%) !important;
+    border: 1.2px solid rgba(255,255,255,0.10) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  }
+  .exercise-card .exercise-header { border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .exercise-name { color: #ffffff; text-shadow: 0 1px 1px rgba(0,0,0,0.25); }
+  .sets-header { color: #9db0ff; text-shadow: 0 1px 1px rgba(0,0,0,0.15); }
+  .set-row { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
+  .set-row:active { background: rgba(102,126,234,0.07); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+
+  /* Superset card visual polish */
+  .superset-card {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.10) 0%, rgba(168, 85, 247, 0.05) 60%, rgba(44,44,74,0.85) 100%) !important;
+    border-left: 4px solid #a855f7 !important;
+    border: 1px solid rgba(168,85,247,0.25) !important;
+    box-shadow: 0 10px 28px rgba(168,85,247,0.20), 0 2px 6px rgba(0,0,0,0.18) !important;
+  }
+  .superset-badge { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%) !important; color: #fff !important; }
+
+  /* Rest timer visual-only enhancement */
+  .compact-rest-timer {
+    background: linear-gradient(135deg, rgba(46,48,86,0.35) 0%, rgba(46,48,86,0.18) 100%) !important;
+    border: 1px solid rgba(255,255,255,0.10) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.20) inset, 0 4px 16px rgba(0,0,0,0.22) !important;
+    color: #d6dbff !important;
+  }
+  .timer-countdown { color: #ffffff; font-weight: 800; text-shadow: 0 1px 1px rgba(0,0,0,0.25); }
+  .timer-start-btn { background: rgba(102,126,234,0.20); color: #cdd5ff; border: 1px solid rgba(102,126,234,0.35); border-radius: 8px; }
+  .timer-edit-btn { background: rgba(255,255,255,0.06); color: #e2e6ff; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; }
+}
+
+@media (max-width: 480px) {
+  /* Normalize flow: content should start below header without extra offset */
+  /* Remove extra divider under exercise header to avoid double line */
+  .exercise-card .exercise-header { border-bottom: none !important; }
+  /* Final alignment with other pages: header spacing and backgrounds */
+  body, .dashboard-container {
+    background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important;
+  }
+  .main-content {
+    background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important;
+    padding: 1rem 1.25rem !important;
+    padding-bottom: 90px !important;
+  }
+  
+  /* Final header alignment fix */
+  
+  /* Match details page exactly: header + content spacing */
+  body, .dashboard-container { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
+  .main-content {
+    background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important;
+    margin-left: 0 !important;
+    padding: 1rem 1.25rem !important;
+    padding-bottom: 90px !important;
+    padding-top: 0 !important; /* ensure no extra offset */
+  }
+  .header-left { margin-top: 0 !important; }
+  /* Safe-area aware top spacing to match other pages */
+  .mobile-profile { margin-top: 0 !important; }
+
+  /* Standard mobile header — match details page exactly */
+  .header-left { display: flex !important; align-items: center !important; flex: 1 !important; gap: 0.65rem !important; margin-top: 0 !important; }
+  .header-left .page-title { display: none !important; }
+  .mobile-profile { display: flex !important; align-items: center !important; margin-top: 0 !important; }
+  .profile-avatar { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
+  .profile-avatar .avatar-image, .profile-avatar .avatar-placeholder { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit !important; }
+
+  /* Ensure content is not pushed down inconsistently */
+  .main-content { padding-top: 0 !important; }
+
+  /* FINAL SESSION HEADER OVERRIDES (higher specificity) */
+  .main-content > .top-header {
+    background: linear-gradient(180deg, rgba(26,26,48,0.97) 0%, rgba(20,20,40,0.0) 100%) !important;
+    backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: none !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 0.75rem) 0 1rem 0 !important;
+    margin: 0 0 0.3rem 0 !important;
+    min-height: 62px !important;
+    max-height: 70px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0 !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .main-content > .top-header .header-actions { display: none !important; }
+  .main-content > .top-header .desktop-profile { display: none !important; }
+  .main-content > .top-header .mobile-profile { display: flex !important; align-items: center !important; margin-top: 0 !important; }
+  .main-content > .top-header .profile-avatar { width: 40px !important; height: 40px !important; border-radius: 12px !important; border: 2px solid rgba(102, 126, 234, 0.22); box-shadow: 0 4px 10px rgba(102, 126, 234, 0.15); }
+  .main-content > .top-header .profile-avatar .avatar-image,
+  .main-content > .top-header .profile-avatar .avatar-placeholder { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit !important; }
+
+  /* Content offset: match details (no extra top padding beyond header block spacing) */
+  .main-content { padding-top: 0 !important; }
 }
