@@ -29,7 +29,6 @@ public class RestDayService {
         RestDay restDay = RestDay.builder()
                 .userId(userId)
                 .date(request.date())
-                .reason(request.reason())
                 .notes(request.notes())
                 .active(true)
                 .build();
@@ -62,7 +61,6 @@ public class RestDayService {
         }
 
         existingRestDay.setDate(request.date());
-        existingRestDay.setReason(request.reason());
         existingRestDay.setNotes(request.notes());
         return RestDayDto.fromEntity(restDayRepository.save(existingRestDay));
     }

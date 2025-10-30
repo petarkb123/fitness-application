@@ -36,10 +36,6 @@ public class RestDay {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "reason", nullable = false, length = 50)
-    private RestDayReason reason;
-
     @Column(name = "notes", length = 500)
     private String notes;
 

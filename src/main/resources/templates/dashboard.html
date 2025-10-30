@@ -135,29 +135,51 @@
         
         <div class="dashboard-content">
             
+            <!-- Hero Welcome Section with gradient -->
             <div class="welcome-section">
-                <h2 class="welcome-title">Welcome back!</h2>
-                <p class="welcome-subtitle">Ready to continue your fitness journey?</p>
+                <div class="welcome-gradient"></div>
+                <div class="welcome-content">
+                    <h2 class="welcome-title">Welcome back!</h2>
+                    <p class="welcome-subtitle">Ready to crush your fitness goals?</p>
+                    <div class="welcome-stats-quick">
+                        <div class="welcome-stat">
+                            <span class="stat-mini-label">This Week</span>
+                            <span class="stat-mini-value" th:text="${#aggregates.sum(summary.days.![sessions])}">0</span>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="welcome-stat">
+                            <span class="stat-mini-label">Total Sets</span>
+                            <span class="stat-mini-value" th:text="${#aggregates.sum(summary.days.![sets])}">0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            
-            <div class="quick-actions">
-                <a href="/workouts" class="action-card primary">
-                    <div class="action-icon">
+            <!-- Main CTA - Prominent Start Workout -->
+            <div class="primary-cta-container">
+                <a href="/workouts" class="primary-cta-card">
+                    <div class="cta-icon-wrapper">
                         <i class="fas fa-play"></i>
                     </div>
-                    <div class="action-content">
-                        <h3>Start Workout</h3>
-                        <p>Begin a new training session</p>
+                    <div class="cta-content">
+                        <h3>Start New Workout</h3>
+                        <p>Begin your training session now</p>
+                    </div>
+                    <div class="cta-arrow">
+                        <i class="fas fa-arrow-right"></i>
                     </div>
                 </a>
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="quick-actions">
                 <a href="/exercises" class="action-card">
                     <div class="action-icon">
                         <i class="fas fa-dumbbell"></i>
                     </div>
                     <div class="action-content">
-                        <h3>Manage Exercises</h3>
-                        <p>Add or edit your exercises</p>
+                        <h3>My Exercises</h3>
+                        <p>Manage your library</p>
                     </div>
                 </a>
                 <a href="/templates" class="action-card">
@@ -165,8 +187,26 @@
                         <i class="fas fa-clipboard-list"></i>
                     </div>
                     <div class="action-content">
-                        <h3>Workout Templates</h3>
-                        <p>Create workout routines</p>
+                        <h3>Templates</h3>
+                        <p>Workout plans</p>
+                    </div>
+                </a>
+                <a href="/workouts" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>History</h3>
+                        <p>Past workouts</p>
+                    </div>
+                </a>
+                <a href="/stats/weekly" class="action-card">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Analytics</h3>
+                        <p>Track progress</p>
                     </div>
                 </a>
             </div>
@@ -263,18 +303,6 @@
       </div>
       <div id="restFields">
         <div class="form-group">
-          <label for="schReason">Reason</label>
-          <select id="schReason" name="reason">
-            <option value="PLANNED">Planned</option>
-            <option value="SICK">Sick</option>
-            <option value="TRAVEL">Travel</option>
-            <option value="INJURY">Injury</option>
-            <option value="WORK">Work</option>
-            <option value="FAMILY">Family</option>
-            <option value="OTHER">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
           <label for="schNotes">Notes</label>
           <textarea id="schNotes" name="notes" placeholder="Optional" maxlength="500"></textarea>
         </div>
@@ -317,6 +345,12 @@
         document.getElementById('schType').value = 'REST';
         showTypeFields();
         document.getElementById('schErr').style.display='none';
+        
+        // Clear all form fields
+        document.getElementById('schNotes').value = '';
+        document.getElementById('schTemplate').value = '';
+        document.getElementById('schWNotes').value = '';
+        
         // If something exists on this date, show delete
         const info = getExistingForDate(todayIso);
         document.getElementById('schDeleteBtn').style.display = info ? 'inline-block' : 'none';
@@ -356,7 +390,7 @@
         }
         let res;
         if (t==='REST') {
-            const payload = { date, reason: document.getElementById('schReason').value, notes: document.getElementById('schNotes').value || null };
+            const payload = { date, notes: document.getElementById('schNotes').value || null };
             res = await fetch('/api/rest-days', { method:'POST', headers:{'Content-Type':'application/json',[header]:token}, body: JSON.stringify(payload), credentials:'same-origin' });
         } else {
             const tpl = document.getElementById('schTemplate').value;
@@ -407,7 +441,7 @@
             grid.className = 'calendar-grid';
             // Build rest map from server model
             const restList = /*[[${restDays}]]*/ [];
-            const restMap = new Map((restList||[]).map(r => [r.date, { id: r.id, reason: r.reason, kind:'REST' }]));
+            const restMap = new Map((restList||[]).map(r => [r.date, { id: r.id, notes: r.notes, kind:'REST' }]));
             // scheduled workouts
             fetchScheduledForMonth(year, month).then(scheduledMap => {
             // store globally for later duplicate checks
@@ -428,7 +462,7 @@
                 const num = document.createElement('div'); num.className='cal-num'; num.textContent=d.getDate(); cell.appendChild(num);
                 if (rinfo) {
                     cell.classList.add('has-rest');
-                    const badge=document.createElement('span'); badge.className='cal-reason'; badge.textContent=rinfo.reason; cell.appendChild(badge);
+                    const badge=document.createElement('span'); badge.className='cal-reason'; badge.textContent='Rest'; cell.appendChild(badge);
                 }
                 const sw = scheduledMap.get(iso);
                 if (sw) {
@@ -445,12 +479,16 @@
                     document.getElementById('schDeleteBtn').style.display = (existsRest || existsWorkout) ? 'inline-block' : 'none';
                     // Prefill fields based on existing type
                     if (existsRest) {
+                        const rData = restMap.get(iso);
                         document.getElementById('schType').value = 'REST';
                         showTypeFields();
-                        document.getElementById('schReason').value = restMap.get(iso).reason;
+                        document.getElementById('schNotes').value = rData.notes || '';
                     } else if (existsWorkout) {
+                        const wData = scheduledMap.get(iso);
                         document.getElementById('schType').value = 'WORKOUT';
                         showTypeFields();
+                        document.getElementById('schTemplate').value = wData.templateId;
+                        document.getElementById('schWNotes').value = wData.notes || '';
                     }
                 });
                 grid.appendChild(cell);

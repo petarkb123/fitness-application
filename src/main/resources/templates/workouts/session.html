@@ -171,11 +171,15 @@
                 </div>
                 
                 <div class="add-exercise-section">
-                    <button class="btn btn-primary" onclick="openAddExerciseModal()">
+                    <button class="btn btn-primary action-btn" onclick="finishWorkout()" title="Finish and save workout">
+                        <i class="fas fa-check"></i>
+                        Finish Workout
+                    </button>
+                    <button class="btn btn-primary action-btn" onclick="openAddExerciseModal()">
                         <i class="fas fa-plus"></i>
                         Add Exercise
                     </button>
-                    <button class="btn btn-outline" onclick="createSuperset()" title="Merge 2 selected exercises into superset">
+                    <button class="btn btn-primary action-btn" onclick="createSuperset()" title="Merge 2 selected exercises into superset">
                         <i class="fas fa-link"></i>
                         Create Superset
                     </button>
@@ -395,12 +399,14 @@
         }
         
         exerciseCounter++;
+        try { saveDraft(); } catch(_) {}
     }
 
     function addSetWithExerciseId(exerciseIndex) {
         const exerciseCard = document.getElementById(`exercise-${exerciseIndex}`);
         const exerciseId = exerciseCard ? exerciseCard.getAttribute('data-exercise-id') : null;
         addSet(exerciseIndex, false, 0, exerciseId);
+        try { saveDraft(); } catch(_) {}
     }
     
     function addSet(exerciseIndex, isDropSet = false, dropSetLevel = 0, exerciseId = null) {
@@ -447,6 +453,7 @@
     `;
         setsList.appendChild(row);
         renumberSets(exerciseIndex);
+        try { saveDraft(); } catch(_) {}
         
         // Apply hints if they exist - do this after DOM is inserted
         setTimeout(() => {
@@ -520,6 +527,7 @@
         
         insertAfter.after(dropRow);
         renumberSets(exerciseIndex);
+        try { saveDraft(); } catch(_) {}
     }
     
     function renumberSets(exerciseIndex) {
@@ -535,6 +543,7 @@
                 row.querySelector('.set-number').innerHTML = `${mainSetNum}`;
             }
         });
+        try { saveDraft(); } catch(_) {}
     }
 
     function removeSet(btn) {
@@ -554,6 +563,7 @@
         
         row.remove();
         renumberSets(exerciseIndex);
+        try { saveDraft(); } catch(_) {}
     }
 
     function removeExercise(exIdx) {
@@ -562,6 +572,7 @@
         const list = document.getElementById('exercisesList');
         const empty = document.getElementById('emptyWorkout');
         if (list.children.length === 0 && empty) empty.style.display = 'block';
+        try { saveDraft(); } catch(_) {}
     }
 
     // ---------- submit ----------
@@ -852,6 +863,7 @@
         }, 100);
         
         exerciseCounter++;
+        try { saveDraft(); } catch(_) {}
     }
     
     function addSupersetSetWithData(exerciseIndex, ex1Data, ex2Data) {
@@ -889,6 +901,7 @@
         </div>
     `;
         setsList.appendChild(row);
+        try { saveDraft(); } catch(_) {}
     }
     
     function addSupersetSet(exerciseIndex) {
@@ -926,6 +939,7 @@
         </div>
     `;
         setsList.appendChild(row);
+        try { saveDraft(); } catch(_) {}
     }
     
     function revertSuperset(exerciseIndex, ex1Id, ex1Name, ex1Muscle, ex2Id, ex2Name, ex2Muscle) {
@@ -966,6 +980,7 @@
         
         // Remove the superset card
         supersetCard.remove();
+        try { saveDraft(); } catch(_) {}
     }
     
     function createExerciseCardWithData(exerciseId, exerciseName, exerciseMuscle, setData) {
@@ -1610,22 +1625,26 @@
         populateExerciseSelect();
         attachAutosaveHandlers();
 
+        // Prefer local draft if present (keeps supersets/groups when continuing)
+        try {
+            if (loadDraftIfAny && loadDraftIfAny()) {
+                return; // draft loaded, skip server/template
+            }
+        } catch (_) {}
+
         // If continuing and we have persisted sets, load them
         if (existingSets && existingSets.length > 0) {
             loadExistingSets();
-            return; // template/draft not needed
+            return; // template not needed
         }
 
-        // If starting from a template, preload; otherwise try draft
+        // If starting from a template, preload
         const templateId = new URLSearchParams(location.search).get('templateId');
         if (templateId) {
             fetch(`/workouts/templates/${templateId}/exercises`)
                 .then(r => r.json())
                 .then(list => loadTemplateExercises(list))
                 .catch(err => console.error('Template preload failed:', err));
-        } else {
-            // No template and no existing sets → restore local draft if present
-            setTimeout(loadDraftIfAny, 0);
         }
     });
 
@@ -1694,13 +1713,13 @@
     }
 
     function loadDraftIfAny(){
-        if (!draftKey) return;
+        if (!draftKey) return false;
         let raw = null;
         try { raw = localStorage.getItem(draftKey); } catch(_) {}
-        if (!raw) return;
+        if (!raw) return false;
         let data = null;
-        try { data = JSON.parse(raw); } catch(_) { return; }
-        if (!Array.isArray(data) || data.length === 0) return;
+        try { data = JSON.parse(raw); } catch(_) { return false; }
+        if (!Array.isArray(data) || data.length === 0) return false;
 
         const listEl = document.getElementById('exercisesList');
         const empty = document.getElementById('emptyWorkout');
@@ -1786,11 +1805,9 @@
                         inputs[0].value = s.weight || '';
                         inputs[1].value = s.reps || '';
                     } else {
-                        // add drop after last set or after previous drop
                         const mainExists = setsList.querySelector('.set-row:not(.drop-set-row):last-child');
                         if (!mainExists) { addSet(idx); }
                         const lastMain = setsList.querySelector('.set-row:not(.drop-set-row):last-child');
-                        // simulate drop add and then set values
                         const dropBtn = lastMain.querySelector('.btn-drop');
                         if (dropBtn) { addDropSet(dropBtn); }
                         const lastRow = setsList.lastElementChild;
@@ -1801,6 +1818,7 @@
                 });
             }
         });
+        return true;
     }
 
     // ========== Rest Timer Functionality ==========

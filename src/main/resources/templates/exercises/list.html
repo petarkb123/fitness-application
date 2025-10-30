@@ -150,7 +150,7 @@
 
             
             <div class="exercise-section" th:if="${not #lists.isEmpty(exercises)}">
-                <h2 class="section-title my-exercises-title">My exercises</h2>
+                <h2 class="section-title my-exercises-title">My exercises <span class="title-accent"></span></h2>
                 <div class="exercises-grid">
                     <div class="exercise-card" th:each="exercise : ${exercises}" th:if="${!exercise.builtIn}">
                         <div class="exercise-header">
@@ -181,18 +181,18 @@
             
             
             <div class="exercise-section" th:if="${not #lists.isEmpty(exercises)}">
-                <h2 class="section-title muscle-group-title">Exercise Library by Muscle Group</h2>
+                <h2 class="section-title muscle-group-title">Exercise Library by Muscle Group <span class="title-accent"></span></h2>
                 <div class="muscle-groups-container">
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('chest')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('chest')" aria-expanded="false">
                             <h3 class="muscle-group-title">CHEST</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'CHEST'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="chest-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="chest-content">
+                        <div class="muscle-group-content collapsible" id="chest-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'CHEST']}">
@@ -213,13 +213,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('back')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('back')" aria-expanded="false">
                             <h3 class="muscle-group-title">BACK</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'BACK'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="back-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="back-content">
+                        <div class="muscle-group-content collapsible" id="back-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'BACK']}">
@@ -240,13 +240,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('legs')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('legs')" aria-expanded="false">
                             <h3 class="muscle-group-title">LEGS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'LEGS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="legs-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="legs-content">
+                        <div class="muscle-group-content collapsible" id="legs-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'LEGS']}">
@@ -267,13 +267,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('shoulders')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('shoulders')" aria-expanded="false">
                             <h3 class="muscle-group-title">SHOULDERS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'SHOULDERS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="shoulders-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="shoulders-content">
+                        <div class="muscle-group-content collapsible" id="shoulders-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'SHOULDERS']}">
@@ -294,13 +294,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('biceps')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('biceps')" aria-expanded="false">
                             <h3 class="muscle-group-title">BICEPS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'BICEPS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="biceps-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="biceps-content">
+                        <div class="muscle-group-content collapsible" id="biceps-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'BICEPS']}">
@@ -321,13 +321,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('triceps')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('triceps')" aria-expanded="false">
                             <h3 class="muscle-group-title">TRICEPS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'TRICEPS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="triceps-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="triceps-content">
+                        <div class="muscle-group-content collapsible" id="triceps-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'TRICEPS']}">
@@ -348,13 +348,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('forearms')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('forearms')" aria-expanded="false">
                             <h3 class="muscle-group-title">FOREARMS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'FOREARMS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="forearms-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="forearms-content">
+                        <div class="muscle-group-content collapsible" id="forearms-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'FOREARMS']}">
@@ -375,13 +375,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('hamstrings')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('hamstrings')" aria-expanded="false">
                             <h3 class="muscle-group-title">HAMSTRINGS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'HAMSTRINGS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="hamstrings-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="hamstrings-content">
+                        <div class="muscle-group-content collapsible" id="hamstrings-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'HAMSTRINGS']}">
@@ -402,13 +402,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('calves')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('calves')" aria-expanded="false">
                             <h3 class="muscle-group-title">CALVES</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'CALVES'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="calves-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="calves-content">
+                        <div class="muscle-group-content collapsible" id="calves-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'CALVES']}">
@@ -429,13 +429,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('core')">
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('core')" aria-expanded="false">
                             <h3 class="muscle-group-title">CORE</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'CORE'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="core-icon"></i>
                         </div>
-                        <div class="muscle-group-content" id="core-content">
+                        <div class="muscle-group-content collapsible" id="core-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'CORE']}">
@@ -473,10 +473,10 @@
     </main>
 </div>
 
-<div class="modal" id="addModal">
+<div class="modal" id="addModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle" style="display:none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Create New Exercise</h2>
+            <h2 id="addModalTitle">Create New Exercise</h2>
             <button class="btn-close" onclick="closeAddModal()">
                 <i class="fas fa-times"></i>
             </button>
@@ -536,19 +536,41 @@
     function toggleMuscleGroup(groupName) {
         const content = document.getElementById(groupName + '-content');
         const icon = document.getElementById(groupName + '-icon');
+        const header = icon ? icon.parentElement : null;
 
-        if (content.style.display === 'none' || content.style.display === '') {
+        if (!content) return;
+
+        const isOpen = content.classList.contains('open');
+
+        // Measure for smooth height animation
+        if (!isOpen) {
             content.style.display = 'block';
-            icon.style.transform = 'rotate(180deg)';
+            const fullHeight = content.scrollHeight + 'px';
+            content.style.maxHeight = '0px';
+            requestAnimationFrame(() => {
+                content.classList.add('open');
+                content.setAttribute('aria-hidden', 'false');
+                if (header) header.setAttribute('aria-expanded', 'true');
+                content.style.maxHeight = fullHeight;
+            });
+            if (icon) icon.classList.add('rotated');
         } else {
-            content.style.display = 'none';
-            icon.style.transform = 'rotate(0deg)';
+            const currentHeight = content.scrollHeight + 'px';
+            content.style.maxHeight = currentHeight; // set current to enable transition
+            requestAnimationFrame(() => {
+                content.classList.remove('open');
+                content.setAttribute('aria-hidden', 'true');
+                if (header) header.setAttribute('aria-expanded', 'false');
+                content.style.maxHeight = '0px';
+            });
+            if (icon) icon.classList.remove('rotated');
         }
     }
 
     function openAddModal() {
         const modal = document.getElementById('addModal');
         modal.style.display = 'flex';
+        modal.classList.add('open');
         
         // Focus on the first input field
         setTimeout(() => {
@@ -561,6 +583,7 @@
     
     function closeAddModal() {
         const modal = document.getElementById('addModal');
+        modal.classList.remove('open');
         modal.style.display = 'none';
         
         // Reset form
@@ -582,7 +605,9 @@
             const icon = document.getElementById(group + '-icon');
             if (content && icon) {
                 content.style.display = 'none';
-                icon.style.transform = 'rotate(0deg)';
+                content.style.maxHeight = '0px';
+                content.classList.remove('open');
+                icon.classList.remove('rotated');
             }
         });
 
