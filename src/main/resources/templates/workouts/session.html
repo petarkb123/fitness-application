@@ -1444,6 +1444,17 @@
                             </div>
                             <div class="sets-list" id="sets-${exerciseCounter}"></div>
                         </div>
+                        
+                        <!-- Compact Rest Timer -->
+                        <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+                          <div class="timer-controls">
+                            <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+                            <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+                          </div>
+                        </div>
                     `;
                     
                     exercisesList.appendChild(supersetCard);
@@ -1529,6 +1540,17 @@
                         </button>
                     </div>
                     <div class="sets-list" id="sets-${exerciseCounter}"></div>
+                </div>
+                
+                <!-- Compact Rest Timer -->
+                <div class="compact-rest-timer" id="timer-${exerciseCounter}">
+                  <div class="timer-controls">
+                    <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+                    <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
+                  </div>
                 </div>
             `;
             
@@ -1619,6 +1641,12 @@
             
             exerciseCounter++;
         }
+        // Initialize all timers after existing sets load
+        setTimeout(() => {
+            for (let i = 1; i <= exerciseCounter; i++) {
+                try { initTimer(i); } catch(_) {}
+            }
+        }, 200);
     }
     
     document.addEventListener('DOMContentLoaded', function () {
@@ -1864,17 +1892,19 @@
     
     function getRestKey(exerciseIndex) {
         const card = document.getElementById(`exercise-${exerciseIndex}`);
-        let keyBase = `card:${exerciseIndex}`;
-        if (card) {
-            if (card.getAttribute('data-is-superset') === 'true') {
-                const a = String(card.getAttribute('data-exercise-id-1') || '');
-                const b = String(card.getAttribute('data-exercise-id-2') || '');
-                const pair = [a, b].sort(); // normalize order to ensure stable key
-                keyBase = `superset:${pair[0]}+${pair[1]}`;
-            } else {
-                const exId = card.getAttribute('data-exercise-id') || '';
-                if (exId) keyBase = `regular:${exId}`;
-            }
+        if (!card) return null; // card not found, no key
+        
+        let keyBase;
+        if (card.getAttribute('data-is-superset') === 'true') {
+            const a = String(card.getAttribute('data-exercise-id-1') || '');
+            const b = String(card.getAttribute('data-exercise-id-2') || '');
+            if (!a || !b) return null; // incomplete data
+            const pair = [a, b].sort(); // normalize order to ensure stable key
+            keyBase = `superset:${pair[0]}+${pair[1]}`;
+        } else {
+            const exId = card.getAttribute('data-exercise-id') || '';
+            if (!exId) return null; // no exercise ID
+            keyBase = `regular:${exId}`;
         }
         const sid = workoutSessionId ? `${workoutSessionId}:` : '';
         return `restTimer:${sid}${keyBase}`;
@@ -1892,6 +1922,7 @@
         // Rehydrate from storage if a rest was in progress/paused
         try {
             const restKey = getRestKey(exerciseId);
+            if (!restKey) return; // can't get a stable key, skip rehydration
             const data = JSON.parse(localStorage.getItem(restKey) || '{}');
             if (typeof data.initialSeconds === 'number' && timers[exerciseId].initialSeconds === 0) {
                 timers[exerciseId].initialSeconds = data.initialSeconds;
@@ -1947,8 +1978,14 @@
                 isRunning: false
             };
         } else {
-            timers[exerciseId].initialSeconds = seconds;
-            timers[exerciseId].seconds = seconds;
+            const timer = timers[exerciseId];
+            // If timer is running, pause it first to save current state
+            if (timer.isRunning) {
+                pauseTimer(exerciseId);
+            }
+            // Now update the duration
+            timer.initialSeconds = seconds;
+            timer.seconds = seconds;
         }
         
         updateTimerDisplay(exerciseId);
@@ -1973,6 +2010,8 @@
 
         // Persist rest end time to survive background (key based on exercise ids)
         const restKey = getRestKey(exerciseId);
+        if (!restKey) return; // can't get stable key, can't persist
+        
         // If timer has no duration set (00:00), fall back to last initialSeconds or a sane default (120s)
         if (!timer.seconds || timer.seconds <= 0) {
             timer.seconds = (timer.initialSeconds && timer.initialSeconds > 0) ? timer.initialSeconds : 120;
@@ -2003,6 +2042,14 @@
         const timer = timers[exerciseId];
         if (!timer) return;
         const restKey = getRestKey(exerciseId);
+        if (!restKey) { // no key to persist to, just pause locally
+            if (timer.interval) { clearInterval(timer.interval); timer.interval = null; }
+            timer.isRunning = false;
+            const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+            startBtn.textContent = 'Start';
+            updateTimerDisplay(exerciseId);
+            return;
+        }
         // Freeze remaining seconds and remove endAt
         try {
             const data = JSON.parse(localStorage.getItem(restKey) || '{}');
@@ -2035,7 +2082,9 @@
         const timer = timers[exerciseId];
         if (!timer) return;
         const restKey = getRestKey(exerciseId);
-        try { localStorage.removeItem(restKey); } catch(_) {}
+        if (restKey) {
+            try { localStorage.removeItem(restKey); } catch(_) {}
+        }
         if (timer.interval) clearInterval(timer.interval);
         timer.interval = null;
         timer.isRunning = false;
