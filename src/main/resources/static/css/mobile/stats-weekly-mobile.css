@@ -179,9 +179,7 @@
         font-weight: 600;
     }
 
-    .header-left .page-title {
-        display: none;
-    }
+    /* removed duplicate; final override exists later */
 
     .header-right {
         flex-shrink: 0;
@@ -190,11 +188,7 @@
         gap: 0.5rem;
     }
     
-    .page-title {
-        font-size: 1.5rem;
-        margin-bottom: 0;
-        margin-top: 0.25rem;
-    }
+    /* removed duplicate; final values defined in section header near bottom */
     
 
     .header-actions {
@@ -227,15 +221,7 @@
 
    
 
-    .page-header .page-title {
-        font-size: 1.5rem;
-        margin-top: 0.15rem;
-    }
-    
-    .page-subtitle {
-        font-size: 0.9rem;
-        margin-top: 0.15rem;
-    }
+    /* removed duplicate; unified .page-header/.page-subtitle set below */
 
     /* Content layout */
     .stats-overview {
@@ -501,6 +487,49 @@
 
   /* Polished section titles */
   .section-title { color: #c9ceff; font-weight: 800; letter-spacing: 0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.18); margin: 0.4rem 0 0.6rem 0; }
+  /* Page header - centered, no container chrome */
+  .page-header {
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 2rem 0 2rem 0 !important;
+    box-shadow: none !important;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    animation: fadeInHeader 0.45s ease both;
+    align-items: flex-start;
+    text-align: left;
+  }
+  @keyframes fadeInHeader { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page-title-section { display: flex; align-items: center; gap: 0.6rem; }
+  .page-title-section i { font-size: 1.15rem; color: #9bb0ff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
+  .page-header .page-title {
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    padding-top: 0.25rem !important;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.85) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .page-header .page-subtitle {
+    color: #b0b8dd !important;
+    margin: 0.4rem 0 0 0 !important;
+    font-size: 0.95rem !important;
+  }
+
+  .page-header::after { display: none !important; content: none !important; }
+
+  .page-header .page-actions { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
+  .page-header .page-actions .btn { min-height: 40px; padding: 0.5rem 0.8rem; font-weight: 700; border-radius: 10px; }
 
   /* Dashboard-like glass cards */
   .stat-card, .day-card, .chart-card {

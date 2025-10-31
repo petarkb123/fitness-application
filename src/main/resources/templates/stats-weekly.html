@@ -140,7 +140,6 @@
             <div class="page-header">
                 <div class="page-title-section">
                     <h1 class="page-title">
-                        <i class="fas fa-chart-line"></i>
                         Weekly Statistics
                     </h1>
                     <p class="page-subtitle" th:text="'Week of ' + ${#temporals.format(summary.from, 'MMM dd')} + ' - ' + ${#temporals.format(summary.to, 'MMM dd, yyyy')}">Week Range</p>
@@ -203,7 +202,7 @@
                 <div class="advanced-stats-button-container">
                     <a href="/stats/advanced" class="btn btn-primary btn-advanced">
                         <i class="fas fa-chart-pie"></i>
-                        View Advanced Training Data Analysis
+                        View Advanced Analysis
                     </a>
                 </div>
             </div>

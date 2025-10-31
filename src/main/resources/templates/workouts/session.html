@@ -379,7 +379,7 @@
           <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
             <i class="fas fa-edit"></i>
           </button>
-          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">00:00</span>
           <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
         </div>
       </div>
@@ -838,7 +838,7 @@
           <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
             <i class="fas fa-edit"></i>
           </button>
-          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">00:00</span>
           <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
         </div>
       </div>
@@ -1017,7 +1017,7 @@
           <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${currentIndex})" title="Edit Rest Time">
             <i class="fas fa-edit"></i>
           </button>
-          <span class="timer-countdown" id="timerDisplay-${currentIndex}">02:00</span>
+          <span class="timer-countdown" id="timerDisplay-${currentIndex}">00:00</span>
           <button type="button" class="timer-start-btn" id="timerStart-${currentIndex}" onclick="toggleTimer(${currentIndex})">Start</button>
         </div>
       </div>
@@ -1173,7 +1173,7 @@
                   <button type="button" class="timer-edit-btn" onclick="openCustomTimerModal(${exerciseCounter})" title="Edit Rest Time">
                     <i class="fas fa-edit"></i>
                   </button>
-                  <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">02:00</span>
+          <span class="timer-countdown" id="timerDisplay-${exerciseCounter}">00:00</span>
                   <button type="button" class="timer-start-btn" id="timerStart-${exerciseCounter}" onclick="toggleTimer(${exerciseCounter})">Start</button>
                 </div>
               </div>
@@ -1648,23 +1648,56 @@
         }
     });
 
-    // ---- timer ----
-    (function initTimer(){
+    // ---- workout length timer (timestamp-based, resilient to background) ----
+    (function initWorkoutLengthTimer(){
         const el = document.getElementById('timerText');
         if (!el) return;
-        
-        // Server already calculated elapsed seconds to avoid timezone issues
-        let currentSeconds = elapsedSeconds;
-        
-        function tick(){
-            currentSeconds++;
-            const h = String(Math.floor(currentSeconds/3600)).padStart(2,'0');
-            const m = String(Math.floor((currentSeconds%3600)/60)).padStart(2,'0');
-            const s = String(currentSeconds%60).padStart(2,'0');
+
+        const key = workoutSessionId ? (`workoutTimer:${workoutSessionId}`) : 'workoutTimer';
+        function loadState(){
+            try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch(_) { return {}; }
+        }
+        function saveState(s){
+            try { localStorage.setItem(key, JSON.stringify(s)); } catch(_) {}
+        }
+
+        // Initialize from server elapsedSeconds if no prior state
+        const now = Date.now();
+        let state = loadState();
+        if (!state.workoutStartAt) {
+            // back-calc startAt from server elapsed
+            state = { workoutStartAt: now - (elapsedSeconds*1000), accumulatedMs: 0, resumeAt: now };
+            saveState(state);
+        } else if (state.resumeAt == null) {
+            // if previously paused, keep accumulatedMs and no resumeAt
+        } else {
+            // running; keep resumeAt
+        }
+
+        function getElapsedMs(){
+            const s = loadState();
+            const running = s.resumeAt ? (Date.now() - s.resumeAt) : 0;
+            return (s.accumulatedMs || 0) + running;
+        }
+        function render(){
+            const ms = getElapsedMs();
+            const totalSec = Math.floor(ms/1000);
+            const h = String(Math.floor(totalSec/3600)).padStart(2,'0');
+            const m = String(Math.floor((totalSec%3600)/60)).padStart(2,'0');
+            const s = String(totalSec%60).padStart(2,'0');
             el.textContent = `${h}:${m}:${s}`;
         }
-        tick(); // Display initial time
-        setInterval(tick, 1000);
+
+        // lightweight update loop only while visible
+        function startVisibleLoop(){
+            if (document.visibilityState === 'visible') {
+                render();
+            }
+        }
+        render();
+        const intervalId = setInterval(startVisibleLoop, 500);
+        document.addEventListener('visibilitychange', render);
+        window.addEventListener('beforeunload', () => clearInterval(intervalId));
     })();
 
     // ---- autosave (localStorage) ----
@@ -1818,20 +1851,76 @@
                 });
             }
         });
+        // Initialize timers after draft rebuild (rehydrates any running rests)
+        setTimeout(() => {
+            for (let i = 1; i <= exerciseCounter; i++) {
+                try { initTimer(i); } catch(_) {}
+            }
+        }, 200);
         return true;
     }
 
     // ========== Rest Timer Functionality ==========
     
+    function getRestKey(exerciseIndex) {
+        const card = document.getElementById(`exercise-${exerciseIndex}`);
+        let keyBase = `card:${exerciseIndex}`;
+        if (card) {
+            if (card.getAttribute('data-is-superset') === 'true') {
+                const a = String(card.getAttribute('data-exercise-id-1') || '');
+                const b = String(card.getAttribute('data-exercise-id-2') || '');
+                const pair = [a, b].sort(); // normalize order to ensure stable key
+                keyBase = `superset:${pair[0]}+${pair[1]}`;
+            } else {
+                const exId = card.getAttribute('data-exercise-id') || '';
+                if (exId) keyBase = `regular:${exId}`;
+            }
+        }
+        const sid = workoutSessionId ? `${workoutSessionId}:` : '';
+        return `restTimer:${sid}${keyBase}`;
+    }
+
     function initTimer(exerciseId) {
         if (!timers[exerciseId]) {
             timers[exerciseId] = {
                 interval: null,
-                seconds: 120,
-                initialSeconds: 120,
+                seconds: 0,
+                initialSeconds: 0,
                 isRunning: false
             };
         }
+        // Rehydrate from storage if a rest was in progress/paused
+        try {
+            const restKey = getRestKey(exerciseId);
+            const data = JSON.parse(localStorage.getItem(restKey) || '{}');
+            if (typeof data.initialSeconds === 'number' && timers[exerciseId].initialSeconds === 0) {
+                timers[exerciseId].initialSeconds = data.initialSeconds;
+            }
+            if (data.paused) {
+                timers[exerciseId].isRunning = false;
+                timers[exerciseId].seconds = data.remainingSeconds ?? 0;
+            } else if (data.endAt) {
+                const remainingMs = Math.max(0, data.endAt - Date.now());
+                timers[exerciseId].seconds = Math.ceil(remainingMs / 1000);
+                if (timers[exerciseId].seconds > 0) {
+                    // start visible update loop
+                    if (timers[exerciseId].interval) clearInterval(timers[exerciseId].interval);
+                    timers[exerciseId].isRunning = true;
+                    const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+                    if (startBtn) startBtn.textContent = 'Pause';
+                    timers[exerciseId].interval = setInterval(() => {
+                        const d = JSON.parse(localStorage.getItem(restKey) || '{}');
+                        const rem = Math.max(0, (d.endAt || 0) - Date.now());
+                        timers[exerciseId].seconds = Math.ceil(rem / 1000);
+                        updateTimerDisplay(exerciseId);
+                        if (timers[exerciseId].seconds <= 0) timerComplete(exerciseId);
+                    }, 500);
+                } else {
+                    timerComplete(exerciseId);
+                }
+            }
+        } catch(_) {}
+
         // Always update the display with current timer state
         updateTimerDisplay(exerciseId);
     }
@@ -1881,31 +1970,52 @@
     function startTimer(exerciseId) {
         const timer = timers[exerciseId];
         if (!timer) return;
-        
+
+        // Persist rest end time to survive background (key based on exercise ids)
+        const restKey = getRestKey(exerciseId);
+        // If timer has no duration set (00:00), fall back to last initialSeconds or a sane default (120s)
+        if (!timer.seconds || timer.seconds <= 0) {
+            timer.seconds = (timer.initialSeconds && timer.initialSeconds > 0) ? timer.initialSeconds : 120;
+            if (!timer.initialSeconds || timer.initialSeconds <= 0) timer.initialSeconds = timer.seconds;
+            updateTimerDisplay(exerciseId);
+        }
+        const endAt = Date.now() + (timer.seconds * 1000);
+        try { localStorage.setItem(restKey, JSON.stringify({ endAt, initialSeconds: timer.initialSeconds })); } catch(_) {}
+
         timer.isRunning = true;
         const startBtn = document.getElementById(`timerStart-${exerciseId}`);
         startBtn.textContent = 'Pause';
-        
+
+        // While visible, update display using timestamp math
+        if (timer.interval) clearInterval(timer.interval);
         timer.interval = setInterval(() => {
-            timer.seconds--;
+            const data = JSON.parse(localStorage.getItem(restKey) || '{}');
+            const remainingMs = Math.max(0, (data.endAt || 0) - Date.now());
+            timer.seconds = Math.ceil(remainingMs / 1000);
             updateTimerDisplay(exerciseId);
-            
             if (timer.seconds <= 0) {
                 timerComplete(exerciseId);
             }
-        }, 1000);
+        }, 500);
     }
     
     function pauseTimer(exerciseId) {
         const timer = timers[exerciseId];
-        if (!timer || !timer.interval) return;
-        
-        clearInterval(timer.interval);
-        timer.interval = null;
+        if (!timer) return;
+        const restKey = getRestKey(exerciseId);
+        // Freeze remaining seconds and remove endAt
+        try {
+            const data = JSON.parse(localStorage.getItem(restKey) || '{}');
+            const remainingMs = Math.max(0, (data.endAt || 0) - Date.now());
+            timer.seconds = Math.ceil(remainingMs / 1000);
+            localStorage.setItem(restKey, JSON.stringify({ paused: true, remainingSeconds: timer.seconds, initialSeconds: timer.initialSeconds }));
+        } catch(_) {}
+
+        if (timer.interval) { clearInterval(timer.interval); timer.interval = null; }
         timer.isRunning = false;
-        
         const startBtn = document.getElementById(`timerStart-${exerciseId}`);
         startBtn.textContent = 'Start';
+        updateTimerDisplay(exerciseId);
     }
     
     function updateTimerDisplay(exerciseId) {
@@ -1923,9 +2033,10 @@
     
     function timerComplete(exerciseId) {
         const timer = timers[exerciseId];
-        if (!timer || !timer.interval) return;
-        
-        clearInterval(timer.interval);
+        if (!timer) return;
+        const restKey = getRestKey(exerciseId);
+        try { localStorage.removeItem(restKey); } catch(_) {}
+        if (timer.interval) clearInterval(timer.interval);
         timer.interval = null;
         timer.isRunning = false;
         timer.seconds = timer.initialSeconds; // Reset to the set time
@@ -1937,6 +2048,45 @@
         
         updateTimerDisplay(exerciseId);
     }
+
+    // Rehydrate rest timers when coming back to the app (lock screen/background)
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'visible') return;
+        // For each timer on screen, recompute remaining from storage
+        for (let i = 1; i <= exerciseCounter; i++) {
+            const timer = timers[i];
+            if (!timer) continue;
+            const restKey = getRestKey(i);
+            try {
+                const data = JSON.parse(localStorage.getItem(restKey) || '{}');
+                if (data.paused) {
+                    timer.isRunning = false;
+                    timer.seconds = data.remainingSeconds ?? timer.seconds;
+                    if (timer.interval) { clearInterval(timer.interval); timer.interval = null; }
+                    updateTimerDisplay(i);
+                } else if (data.endAt) {
+                    const remainingMs = Math.max(0, data.endAt - Date.now());
+                    timer.seconds = Math.ceil(remainingMs / 1000);
+                    if (timer.seconds <= 0) {
+                        timerComplete(i);
+                    } else {
+                        // restart visible loop
+                        if (timer.interval) clearInterval(timer.interval);
+                        timer.isRunning = true;
+                        const startBtn = document.getElementById(`timerStart-${i}`);
+                        if (startBtn) startBtn.textContent = 'Pause';
+                        timer.interval = setInterval(() => {
+                            const d = JSON.parse(localStorage.getItem(restKey) || '{}');
+                            const rem = Math.max(0, (d.endAt || 0) - Date.now());
+                            timer.seconds = Math.ceil(rem / 1000);
+                            updateTimerDisplay(i);
+                            if (timer.seconds <= 0) timerComplete(i);
+                        }, 500);
+                    }
+                }
+            } catch(_) {}
+        }
+    });
     
     function playTimerSound() {
         try {

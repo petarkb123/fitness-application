@@ -1,0 +1,26 @@
+/* Shared canonical mobile header/title styles (must be loaded LAST) */
+@media (max-width: 480px) {
+  .top-header {
+    background: linear-gradient(180deg, rgba(26,26,48,0.97) 0%, rgba(20,20,40,0.0) 100%) !important;
+    backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    box-shadow: none !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 0.75rem) 0 1rem 0 !important;
+    margin: 0 0 0.3rem 0 !important;
+    min-height: 62px !important; max-height: 70px !important;
+    position: sticky !important; top: 0 !important; z-index: 100 !important;
+    display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 0 !important;
+  }
+  .header-left { display: flex !important; align-items: center !important; flex: 1 !important; gap: 0.65rem !important; }
+  .header-right { flex-shrink: 0 !important; display: flex !important; align-items: center !important; gap: 0.5rem !important; }
+  .header-left .page-title { display: none !important; }
+  .mobile-profile { display: flex !important; align-items: center !important; margin-top: 0 !important; }
+  .desktop-profile { display: none !important; }
+  .profile-avatar { width: 40px !important; height: 40px !important; border-radius: 12px !important; border: 2px solid rgba(102,126,234,0.22) !important; box-shadow: 0 4px 10px rgba(102,126,234,0.15) !important; }
+  .profile-avatar .avatar-image, .profile-avatar .avatar-placeholder { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit !important; }
+  .page-header { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+  .page-title { font-size: 1.5rem !important; margin-bottom: 0 !important; margin-top: 0.25rem !important; }
+  .page-subtitle { font-size: 0.9rem !important; margin-top: 0.15rem !important; }
+  body, .dashboard-container, .main-content { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
+}
+

@@ -206,10 +206,6 @@
         align-items: center;
     }
     
-    .profile-avatar {
-        width: 40px;
-        height: 40px;
-    }
     
     .profile-name {
         font-size: 1rem;
@@ -300,7 +296,7 @@
     .header-left .page-title { display: none !important; }
     .mobile-profile { display: flex !important; align-items: center !important; margin-top: 0 !important; }
     .desktop-profile, .header-actions { display: none !important; }
-    .profile-avatar { width: 40px !important; height: 40px !important; border-radius: 12px !important; border: 2px solid rgba(102,126,234,0.22); box-shadow: 0 4px 10px rgba(102,126,234,0.15); }
+    .profile-avatar { width: 42px !important; height: 42px !important; border-radius: 12px !important; border: 2px solid rgba(102,126,234,0.22); box-shadow: 0 4px 10px rgba(102,126,234,0.15); }
     .profile-avatar .avatar-image, .profile-avatar .avatar-placeholder { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit !important; }
 
     /* Modern compact bottom nav and underline active */
@@ -343,7 +339,7 @@
     .header-btn span { font-size: 0.65rem !important; font-weight: 600 !important; line-height: 1.1 !important; letter-spacing: -0.01em !important; }
 
     /* Polished section title */
-    .page-header .page-title { color: #c9ceff; letter-spacing: 0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.18); }
+    .page-header .page-title { color: #ffffff !important; letter-spacing: 0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.18); }
 
     /* Templates grid and cards */
     .templates-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.6rem !important; }
