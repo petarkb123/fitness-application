@@ -49,7 +49,7 @@ public class WebSecurityConfig {
                                 "/terms", "/privacy",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/actuator/**",
                                 "/media/**", "/workouts/templates/*/exercises",
-                                "/onboarding/**"
+                                "/onboarding/**", "/manifest.json", "/sw.js"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

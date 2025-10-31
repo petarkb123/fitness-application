@@ -59,13 +59,22 @@ public class AdvancedStatsService {
         double avgPerWeek = totalWorkouts / weeksCount;
 
         
+        // Calculate day of week for current week only
+        LocalDate today = LocalDate.now();
+        LocalDate currentWeekStart = today.with(DayOfWeek.MONDAY);
+        LocalDate currentWeekEnd = currentWeekStart.plusDays(6);
+        
         Map<String, Integer> byDayOfWeek = new LinkedHashMap<>();
         for (DayOfWeek day : DayOfWeek.values()) {
             byDayOfWeek.put(day.name(), 0);
         }
         for (WorkoutSession s : sessions) {
-            String dayName = s.getStartedAt().getDayOfWeek().name();
-            byDayOfWeek.put(dayName, byDayOfWeek.get(dayName) + 1);
+            LocalDate sessionDate = s.getStartedAt().toLocalDate();
+            // Only count sessions from the current week
+            if (!sessionDate.isBefore(currentWeekStart) && !sessionDate.isAfter(currentWeekEnd)) {
+                String dayName = s.getStartedAt().getDayOfWeek().name();
+                byDayOfWeek.put(dayName, byDayOfWeek.get(dayName) + 1);
+            }
         }
 
         
@@ -426,6 +435,16 @@ public class AdvancedStatsService {
         }
 
         
+        exercisePRs.sort((a, b) -> b.achievedDate().compareTo(a.achievedDate()));
+
+        // Filter to only keep the most recent PR per exercise
+        Map<UUID, PersonalRecordsDto.ExercisePR> latestPRByExercise = new LinkedHashMap<>();
+        for (PersonalRecordsDto.ExercisePR pr : exercisePRs) {
+            latestPRByExercise.putIfAbsent(pr.exerciseId(), pr);
+        }
+        exercisePRs = new ArrayList<>(latestPRByExercise.values());
+        
+        // Re-sort by date after filtering
         exercisePRs.sort((a, b) -> b.achievedDate().compareTo(a.achievedDate()));
 
         

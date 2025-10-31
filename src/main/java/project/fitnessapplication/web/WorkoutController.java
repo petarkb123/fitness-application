@@ -70,7 +70,8 @@ public class WorkoutController {
     @GetMapping("/session")
     public String session(@AuthenticationPrincipal UserDetails me,
                           @RequestParam(required = false) UUID sessionId,
-                          Model model) {
+                          @RequestParam(required = false) UUID templateId,
+                          RedirectAttributes ra) {
         var u = users.findByUsernameOrThrow(me.getUsername());
         var userId = u.getId();
 
@@ -81,10 +82,33 @@ public class WorkoutController {
         if (!Objects.equals(s.getUserId(), userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        
+        // Redirect to include sessionId in URL so refresh doesn't create new session
+        ra.addAttribute("sessionId", s.getId());
+        if (templateId != null) {
+            ra.addAttribute("templateId", templateId);
+        }
+        return "redirect:/workouts/session";
+    }
+    
+    @GetMapping(value = "/session", params = "sessionId")
+    public String sessionWithId(@AuthenticationPrincipal UserDetails me,
+                                @RequestParam UUID sessionId,
+                                @RequestParam(required = false) UUID templateId,
+                                Model model) {
+        var u = users.findByUsernameOrThrow(me.getUsername());
+        var userId = u.getId();
+        
+        var s = workoutService.findById(sessionId).orElseThrow();
+        
+        if (!Objects.equals(s.getUserId(), userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
         model.addAttribute("sessionId", s.getId());
+        
         // Calculate elapsed seconds to avoid timezone issues
         if (s.getStartedAt() != null) {
             long elapsedSeconds = java.time.Duration.between(s.getStartedAt(), java.time.LocalDateTime.now()).getSeconds();
@@ -105,12 +129,7 @@ public class WorkoutController {
                 .toList();
 
         model.addAttribute("exercises", options);
-
-        if (sessionId != null) {
-            model.addAttribute("existingSets", workoutService.getSessionSets(s.getId()));
-        } else {
-            model.addAttribute("existingSets", java.util.Collections.emptyList());
-        }
+        model.addAttribute("existingSets", workoutService.getSessionSets(s.getId()));
         
         // Get last performance data for each exercise
         java.util.Map<String, project.fitnessapplication.workout.dto.LastPerformanceData> lastPerformanceData = new java.util.HashMap<>();

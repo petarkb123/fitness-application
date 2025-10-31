@@ -6,7 +6,12 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a30">
     <title>FitPower - Workout Session</title>
+    <link rel="manifest" th:href="@{/manifest.json}">
     <link rel="stylesheet" th:href="@{/css/desktop/session.css}">
     <link rel="stylesheet" th:href="@{/css/mobile/session-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -269,7 +274,9 @@
     const existingSetsRaw = /*[[${existingSets}]]*/ null;
     const existingSets = existingSetsRaw || [];
     const elapsedSeconds = /*[[${elapsedSeconds}]]*/ 0;
-    const draftKey = workoutSessionId ? (`workoutDraft:${workoutSessionId}`) : null;
+    // Use temporary draft key if no sessionId yet (allows saving drafts before session is created)
+    const TEMP_DRAFT_KEY = 'workoutDraft:temp';
+    const getDraftKey = () => workoutSessionId ? (`workoutDraft:${workoutSessionId}`) : TEMP_DRAFT_KEY;
     const lastPerformanceData = /*[[${lastPerformanceData}]]*/ {};
     const timers = {};
 </script>
@@ -461,7 +468,8 @@
                 const inputs = row.querySelectorAll('.hint-input');
                 inputs.forEach(input => {
                     const hint = input.getAttribute('data-hint');
-                    if (hint) {
+                    // Only apply hint if the input is empty
+                    if (hint && !input.value) {
                         input.value = hint;
                         input.classList.add('hint-value');
                         input.addEventListener('focus', function() {
@@ -469,7 +477,14 @@
                                 this.value = '';
                                 this.classList.remove('hint-value');
                             }
-                        }, { once: true });
+                        });
+                        input.addEventListener('blur', function() {
+                            const hintValue = this.getAttribute('data-hint');
+                            if (hintValue && !this.value) {
+                                this.value = hintValue;
+                                this.classList.add('hint-value');
+                            }
+                        });
                     }
                 });
             }
@@ -504,6 +519,39 @@
             nextSibling = nextSibling.nextElementSibling;
         }
         
+        // Find the main set this drop set belongs to
+        let mainSetRow = currentRow;
+        while (mainSetRow && mainSetRow.classList.contains('drop-set-row')) {
+            mainSetRow = mainSetRow.previousElementSibling;
+        }
+        
+        // Get main set number
+        let mainSetNumber = null;
+        if (mainSetRow && !mainSetRow.classList.contains('drop-set-row')) {
+            const allMainSets = Array.from(setsList.querySelectorAll('.set-row:not(.drop-set-row)'));
+            mainSetNumber = allMainSets.indexOf(mainSetRow) + 1;
+        }
+        
+        // Get exercise ID for hint lookup
+        const exerciseCard = document.getElementById(`exercise-${exerciseIndex}`);
+        const exerciseId = exerciseCard ? exerciseCard.getAttribute('data-exercise-id') : null;
+        
+        // Get hints from last performance data for this specific drop set
+        let weightHint = '';
+        let repsHint = '';
+        if (exerciseId && mainSetNumber && lastPerformanceData[String(exerciseId)]) {
+            const lastData = lastPerformanceData[String(exerciseId)];
+            const setData = lastData.sets && lastData.sets[mainSetNumber];
+            // Look for the drop set at this level
+            if (setData && setData.dropSets && Array.isArray(setData.dropSets)) {
+                const dropSetData = setData.dropSets.find(ds => ds.groupOrder === nextDropLevel);
+                if (dropSetData) {
+                    if (dropSetData.weight) weightHint = dropSetData.weight.toString();
+                    if (dropSetData.reps) repsHint = dropSetData.reps.toString();
+                }
+            }
+        }
+        
         const dropRow = document.createElement('div');
         dropRow.className = 'set-row drop-set-row';
         dropRow.setAttribute('data-drop-level', nextDropLevel);
@@ -512,9 +560,9 @@
         dropRow.innerHTML = `
       <div class="set-number"><span class="drop-badge">Drop ${nextDropLevel}</span></div>
       <div class="set-inputs">
-        <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5">
+        <input type="number" class="form-input hint-input" placeholder="Weight" min="0" step="0.5" data-hint="${weightHint}">
         <span class="input-label">kg</span>
-        <input type="number" class="form-input" placeholder="Reps" min="1">
+        <input type="number" class="form-input hint-input" placeholder="Reps" min="1" data-hint="${repsHint}">
         <span class="input-label">reps</span>
       </div>
       <div class="set-actions">
@@ -528,6 +576,34 @@
         insertAfter.after(dropRow);
         renumberSets(exerciseIndex);
         try { saveDraft(); } catch(_) {}
+        
+        // Apply hints if they exist - do this after DOM is inserted
+        setTimeout(() => {
+            if (weightHint || repsHint) {
+                const inputs = dropRow.querySelectorAll('.hint-input');
+                inputs.forEach(input => {
+                    const hint = input.getAttribute('data-hint');
+                    // Only apply hint if the input is empty
+                    if (hint && !input.value) {
+                        input.value = hint;
+                        input.classList.add('hint-value');
+                        input.addEventListener('focus', function() {
+                            if (this.classList.contains('hint-value')) {
+                                this.value = '';
+                                this.classList.remove('hint-value');
+                            }
+                        });
+                        input.addEventListener('blur', function() {
+                            const hintValue = this.getAttribute('data-hint');
+                            if (hintValue && !this.value) {
+                                this.value = hintValue;
+                                this.classList.add('hint-value');
+                            }
+                        });
+                    }
+                });
+            }
+        }, 0);
     }
     
     function renumberSets(exerciseIndex) {
@@ -595,9 +671,20 @@
                 const ex2Sets = [];
                 
                 card.querySelectorAll('.superset-set-row').forEach((row, setIndex) => {
-                    const inputs = row.querySelectorAll('input');
-                    const w1 = inputs[0].value, r1 = inputs[1].value;
-                    const w2 = inputs[2].value, r2 = inputs[3].value;
+                    const inputs = row.querySelectorAll('input[placeholder]');
+                    // Don't save hint values
+                    const isEx1WeightHint = inputs[0]?.classList.contains('hint-value');
+                    const isEx1RepsHint = inputs[1]?.classList.contains('hint-value');
+                    const isEx2WeightHint = inputs[2]?.classList.contains('hint-value');
+                    const isEx2RepsHint = inputs[3]?.classList.contains('hint-value');
+                    
+                    // Skip this set if any input is a hint
+                    if (isEx1WeightHint || isEx1RepsHint || isEx2WeightHint || isEx2RepsHint) {
+                        return;
+                    }
+                    
+                    const w1 = inputs[0]?.value, r1 = inputs[1]?.value;
+                    const w2 = inputs[2]?.value, r2 = inputs[3]?.value;
                     
                     const weight1 = w1 ? parseFloat(w1) : 0;
                     const reps1 = r1 ? parseInt(r1, 10) : 0;
@@ -712,8 +799,22 @@
         })
             .then(r => { 
                 if (r.ok) {
-                    // Clear draft on success
-                    try { if (draftKey) localStorage.removeItem(draftKey); } catch(_) {}
+                    // Clear draft and rest timers on success (both session-specific and temp)
+                    try {
+                        const draftKey = getDraftKey();
+                        if (draftKey) localStorage.removeItem(draftKey);
+                        localStorage.removeItem(TEMP_DRAFT_KEY);
+                        
+                        // Clear all rest timers for this session
+                        const sessionPrefix = workoutSessionId ? `restTimer:${workoutSessionId}:` : 'restTimer:temp:';
+                        const tempPrefix = 'restTimer:temp:';
+                        for (let i = localStorage.length - 1; i >= 0; i--) {
+                            const key = localStorage.key(i);
+                            if (key && (key.startsWith(sessionPrefix) || key.startsWith(tempPrefix))) {
+                                localStorage.removeItem(key);
+                            }
+                        }
+                    } catch(_) {}
                     window.location.href = '/workouts'; 
                 } else {
                     r.text().then(() => {
@@ -776,17 +877,23 @@
         
         card1.querySelectorAll('.set-row:not(.drop-set-row)').forEach(row => {
             const inputs = row.querySelectorAll('input[placeholder]');
+            // Don't copy hint values - treat them as empty
+            const isWeightHint = inputs[0]?.classList.contains('hint-value');
+            const isRepsHint = inputs[1]?.classList.contains('hint-value');
             ex1SetData.push({
-                weight: inputs[0]?.value || '',
-                reps: inputs[1]?.value || ''
+                weight: isWeightHint ? '' : (inputs[0]?.value || ''),
+                reps: isRepsHint ? '' : (inputs[1]?.value || '')
             });
         });
         
         card2.querySelectorAll('.set-row:not(.drop-set-row)').forEach(row => {
             const inputs = row.querySelectorAll('input[placeholder]');
+            // Don't copy hint values - treat them as empty
+            const isWeightHint = inputs[0]?.classList.contains('hint-value');
+            const isRepsHint = inputs[1]?.classList.contains('hint-value');
             ex2SetData.push({
-                weight: inputs[0]?.value || '',
-                reps: inputs[1]?.value || ''
+                weight: isWeightHint ? '' : (inputs[0]?.value || ''),
+                reps: isRepsHint ? '' : (inputs[1]?.value || '')
             });
         });
         
@@ -851,10 +958,21 @@
         card1.remove();
         card2.remove();
         
-        // Add superset sets with preserved data
+        // Add superset sets with preserved data using addSupersetSet for proper hint handling
         const currentExerciseIndex = exerciseCounter;
+        const setsList = document.getElementById(`sets-${currentExerciseIndex}`);
+        
         for (let i = 0; i < ex1SetData.length; i++) {
-            addSupersetSetWithData(currentExerciseIndex, ex1SetData[i], ex2SetData[i]);
+            addSupersetSet(currentExerciseIndex);
+            const lastRow = setsList.lastElementChild;
+            if (lastRow && (ex1SetData[i].weight || ex1SetData[i].reps || ex2SetData[i].weight || ex2SetData[i].reps)) {
+                const inputs = lastRow.querySelectorAll('input[placeholder]');
+                // Only set values if they're not empty (hints will be applied by addSupersetSet if values are empty)
+                if (inputs[0] && ex1SetData[i].weight) inputs[0].value = ex1SetData[i].weight;
+                if (inputs[1] && ex1SetData[i].reps) inputs[1].value = ex1SetData[i].reps;
+                if (inputs[2] && ex2SetData[i].weight) inputs[2].value = ex2SetData[i].weight;
+                if (inputs[3] && ex2SetData[i].reps) inputs[3].value = ex2SetData[i].reps;
+            }
         }
         
         // Initialize timer for superset
@@ -866,50 +984,33 @@
         try { saveDraft(); } catch(_) {}
     }
     
-    function addSupersetSetWithData(exerciseIndex, ex1Data, ex2Data) {
-        const setsList = document.getElementById(`sets-${exerciseIndex}`);
-        const setNumber = setsList.children.length + 1;
-        const card = document.getElementById(`exercise-${exerciseIndex}`);
-        const ex1Name = card.querySelector('.exercise-name').textContent.split('+')[0].replace('SUPERSET', '').trim();
-        const ex2Name = card.querySelector('.exercise-name').textContent.split('+')[1].trim();
-        
-        const row = document.createElement('div');
-        row.className = 'set-row superset-set-row';
-        row.innerHTML = `
-        <div class="set-number">${setNumber}</div>
-        <div class="set-inputs">
-          <div class="exercise-input-group">
-            <span class="exercise-label">${ex1Name}</span>
-            <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="1" value="${ex1Data.weight}">
-            <span class="input-label">kg</span>
-            <input type="number" class="form-input" placeholder="Reps" min="1" data-exercise="1" value="${ex1Data.reps}">
-            <span class="input-label">reps</span>
-          </div>
-          <div class="superset-divider">+</div>
-          <div class="exercise-input-group">
-            <span class="exercise-label">${ex2Name}</span>
-            <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="2" value="${ex2Data.weight}">
-            <span class="input-label">kg</span>
-            <input type="number" class="form-input" placeholder="Reps" min="1" data-exercise="2" value="${ex2Data.reps}">
-            <span class="input-label">reps</span>
-          </div>
-        </div>
-        <div class="set-actions">
-          <button class="btn-icon btn-remove" onclick="removeSet(this)">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-    `;
-        setsList.appendChild(row);
-        try { saveDraft(); } catch(_) {}
-    }
-    
     function addSupersetSet(exerciseIndex) {
         const setsList = document.getElementById(`sets-${exerciseIndex}`);
         const setNumber = setsList.children.length + 1;
         const card = document.getElementById(`exercise-${exerciseIndex}`);
+        const ex1Id = card.getAttribute('data-exercise-id-1');
+        const ex2Id = card.getAttribute('data-exercise-id-2');
         const ex1Name = card.querySelector('.exercise-name').textContent.split('+')[0].replace('SUPERSET', '').trim();
         const ex2Name = card.querySelector('.exercise-name').textContent.split('+')[1].trim();
+        
+        // Get hints for both exercises
+        let ex1WeightHint = '', ex1RepsHint = '', ex2WeightHint = '', ex2RepsHint = '';
+        if (ex1Id && lastPerformanceData[String(ex1Id)]) {
+            const lastData = lastPerformanceData[String(ex1Id)];
+            const setData = lastData.sets && lastData.sets[setNumber];
+            if (setData) {
+                if (setData.weight) ex1WeightHint = setData.weight.toString();
+                if (setData.reps) ex1RepsHint = setData.reps.toString();
+            }
+        }
+        if (ex2Id && lastPerformanceData[String(ex2Id)]) {
+            const lastData = lastPerformanceData[String(ex2Id)];
+            const setData = lastData.sets && lastData.sets[setNumber];
+            if (setData) {
+                if (setData.weight) ex2WeightHint = setData.weight.toString();
+                if (setData.reps) ex2RepsHint = setData.reps.toString();
+            }
+        }
         
         const row = document.createElement('div');
         row.className = 'set-row superset-set-row';
@@ -918,17 +1019,17 @@
         <div class="set-inputs">
           <div class="exercise-input-group">
             <span class="exercise-label">${ex1Name}</span>
-            <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="1">
+            <input type="number" class="form-input hint-input" placeholder="Weight" min="0" step="0.5" data-exercise="1" data-hint="${ex1WeightHint}">
             <span class="input-label">kg</span>
-            <input type="number" class="form-input" placeholder="Reps" min="1" data-exercise="1">
+            <input type="number" class="form-input hint-input" placeholder="Reps" min="1" data-exercise="1" data-hint="${ex1RepsHint}">
             <span class="input-label">reps</span>
           </div>
           <div class="superset-divider">+</div>
           <div class="exercise-input-group">
             <span class="exercise-label">${ex2Name}</span>
-            <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="2">
+            <input type="number" class="form-input hint-input" placeholder="Weight" min="0" step="0.5" data-exercise="2" data-hint="${ex2WeightHint}">
             <span class="input-label">kg</span>
-            <input type="number" class="form-input" placeholder="Reps" min="1" data-exercise="2">
+            <input type="number" class="form-input hint-input" placeholder="Reps" min="1" data-exercise="2" data-hint="${ex2RepsHint}">
             <span class="input-label">reps</span>
           </div>
         </div>
@@ -939,6 +1040,33 @@
         </div>
     `;
         setsList.appendChild(row);
+        
+        // Apply hints if they exist
+        setTimeout(() => {
+            const inputs = row.querySelectorAll('.hint-input');
+            inputs.forEach(input => {
+                const hint = input.getAttribute('data-hint');
+                // Only apply hint if the input is empty
+                if (hint && !input.value) {
+                    input.value = hint;
+                    input.classList.add('hint-value');
+                    input.addEventListener('focus', function() {
+                        if (this.classList.contains('hint-value')) {
+                            this.value = '';
+                            this.classList.remove('hint-value');
+                        }
+                    });
+                    input.addEventListener('blur', function() {
+                        const hintValue = this.getAttribute('data-hint');
+                        if (hintValue && !this.value) {
+                            this.value = hintValue;
+                            this.classList.add('hint-value');
+                        }
+                    });
+                }
+            });
+        }, 0);
+        
         try { saveDraft(); } catch(_) {}
     }
     
@@ -952,27 +1080,57 @@
         
         supersetCard.querySelectorAll('.superset-set-row').forEach(row => {
             const inputs = row.querySelectorAll('input[placeholder]');
+            // Don't copy hint values - treat them as empty
+            const isEx1WeightHint = inputs[0]?.classList.contains('hint-value');
+            const isEx1RepsHint = inputs[1]?.classList.contains('hint-value');
+            const isEx2WeightHint = inputs[2]?.classList.contains('hint-value');
+            const isEx2RepsHint = inputs[3]?.classList.contains('hint-value');
             ex1SetData.push({
-                weight: inputs[0]?.value || '',
-                reps: inputs[1]?.value || ''
+                weight: isEx1WeightHint ? '' : (inputs[0]?.value || ''),
+                reps: isEx1RepsHint ? '' : (inputs[1]?.value || '')
             });
             ex2SetData.push({
-                weight: inputs[2]?.value || '',
-                reps: inputs[3]?.value || ''
+                weight: isEx2WeightHint ? '' : (inputs[2]?.value || ''),
+                reps: isEx2RepsHint ? '' : (inputs[3]?.value || '')
             });
         });
         
-        // Create two separate exercise cards with preserved data
-        const card1 = createExerciseCardWithData(ex1Id, ex1Name, ex1Muscle, ex1SetData);
-        const card2 = createExerciseCardWithData(ex2Id, ex2Name, ex2Muscle, ex2SetData);
+        // Create two separate exercise cards
+        const card1 = createEmptyExerciseCard(ex1Id, ex1Name, ex1Muscle);
+        const card2 = createEmptyExerciseCard(ex2Id, ex2Name, ex2Muscle);
         
         // Insert the new cards where the superset was
         supersetCard.before(card1);
         card1.after(card2);
         
-        // Initialize timers for the new cards
+        // Get the exercise indices
         const card1Id = parseInt(card1.id.replace('exercise-', ''));
         const card2Id = parseInt(card2.id.replace('exercise-', ''));
+        
+        // Add sets with preserved data using addSet for proper hint handling
+        const setsList1 = document.getElementById(`sets-${card1Id}`);
+        ex1SetData.forEach((data) => {
+            addSet(card1Id, false, 0, ex1Id);
+            const lastRow = setsList1.lastElementChild;
+            if (lastRow && (data.weight || data.reps)) {
+                const inputs = lastRow.querySelectorAll('input');
+                if (inputs[0] && data.weight) inputs[0].value = data.weight;
+                if (inputs[1] && data.reps) inputs[1].value = data.reps;
+            }
+        });
+        
+        const setsList2 = document.getElementById(`sets-${card2Id}`);
+        ex2SetData.forEach((data) => {
+            addSet(card2Id, false, 0, ex2Id);
+            const lastRow = setsList2.lastElementChild;
+            if (lastRow && (data.weight || data.reps)) {
+                const inputs = lastRow.querySelectorAll('input');
+                if (inputs[0] && data.weight) inputs[0].value = data.weight;
+                if (inputs[1] && data.reps) inputs[1].value = data.reps;
+            }
+        });
+        
+        // Initialize timers for the new cards
         setTimeout(() => {
             initTimer(card1Id);
             initTimer(card2Id);
@@ -983,7 +1141,7 @@
         try { saveDraft(); } catch(_) {}
     }
     
-    function createExerciseCardWithData(exerciseId, exerciseName, exerciseMuscle, setData) {
+    function createEmptyExerciseCard(exerciseId, exerciseName, exerciseMuscle) {
         const card = document.createElement('div');
         card.className = 'exercise-card';
         const currentIndex = exerciseCounter;
@@ -1024,31 +1182,6 @@
     `;
         
         exerciseCounter++;
-        
-        // Add sets with preserved data
-        const setsList = card.querySelector('.sets-list');
-        setData.forEach((data, index) => {
-            const setNumber = index + 1;
-            const row = document.createElement('div');
-            row.className = 'set-row';
-            row.innerHTML = `
-        <div class="set-number">${setNumber}</div>
-        <div class="set-inputs">
-          <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" value="${data.weight}">
-          <span class="input-label">kg</span>
-          <input type="number" class="form-input" placeholder="Reps" min="1" value="${data.reps}">
-          <span class="input-label">reps</span>
-        </div>
-        <div class="set-actions">
-          <button class="btn-icon btn-drop" onclick="addDropSet(this)" title="Add drop set"><i class="fas fa-layer-group"></i></button>
-          <button class="btn-icon btn-remove" onclick="removeSet(this)">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      `;
-            setsList.appendChild(row);
-        });
-        
         return card;
     }
 
@@ -1296,10 +1429,30 @@
                                 // Sort drop sets by groupOrder (drop level) - ascending order
                                 sets.sort((a, b) => (a.groupOrder || 0) - (b.groupOrder || 0));
                                 
+                                // Get exercise ID for hint lookup
+                                const exerciseId = ex.id;
+                                
                                 // Build all drop rows first, then insert them in order
                                 const dropRows = [];
                                     sets.forEach((dropSet, index) => {
                                         const dropLevel = dropSet.groupOrder || (index + 1);
+                                        
+                                        // Get hints from last performance data for this specific drop set
+                                        let weightHint = '';
+                                        let repsHint = '';
+                                        if (exerciseId && lastPerformanceData[String(exerciseId)]) {
+                                            const lastData = lastPerformanceData[String(exerciseId)];
+                                            const setData = lastData.sets && lastData.sets[setNumber];
+                                            // Look for the drop set at this level
+                                            if (setData && setData.dropSets && Array.isArray(setData.dropSets)) {
+                                                const dropSetData = setData.dropSets.find(ds => ds.groupOrder === dropLevel);
+                                                if (dropSetData) {
+                                                    if (dropSetData.weight) weightHint = dropSetData.weight.toString();
+                                                    if (dropSetData.reps) repsHint = dropSetData.reps.toString();
+                                                }
+                                            }
+                                        }
+                                        
                                         const dropRow = document.createElement('div');
                                         dropRow.className = 'set-row drop-set-row';
                                         dropRow.setAttribute('data-drop-level', dropLevel);
@@ -1309,9 +1462,9 @@
                                         dropRow.innerHTML = `
                                   <div class="set-number"><span class="drop-badge">Drop ${dropLevel}</span></div>
                                   <div class="set-inputs">
-                                    <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5">
+                                    <input type="number" class="form-input hint-input" placeholder="Weight" min="0" step="0.5" data-hint="${weightHint}">
                                     <span class="input-label">kg</span>
-                                    <input type="number" class="form-input" placeholder="Reps" min="1">
+                                    <input type="number" class="form-input hint-input" placeholder="Reps" min="1" data-hint="${repsHint}">
                                     <span class="input-label">reps</span>
                                   </div>
                                   <div class="set-actions">
@@ -1330,6 +1483,32 @@
                                 // Insert all drop rows after the main set
                                 dropRows.forEach(dropRow => {
                                     targetSetRow.insertAdjacentElement('afterend', dropRow);
+                                    
+                                    // Apply hints if they exist - do this after DOM is inserted
+                                    setTimeout(() => {
+                                        const inputs = dropRow.querySelectorAll('.hint-input');
+                                        inputs.forEach(input => {
+                                            const hint = input.getAttribute('data-hint');
+                                            // Only apply hint if the input is empty
+                                            if (hint && !input.value) {
+                                                input.value = hint;
+                                                input.classList.add('hint-value');
+                                                input.addEventListener('focus', function() {
+                                                    if (this.classList.contains('hint-value')) {
+                                                        this.value = '';
+                                                        this.classList.remove('hint-value');
+                                                    }
+                                                });
+                                                input.addEventListener('blur', function() {
+                                                    const hintValue = this.getAttribute('data-hint');
+                                                    if (hintValue && !this.value) {
+                                                        this.value = hintValue;
+                                                        this.classList.add('hint-value');
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }, 0);
                                 });
                             });
                         }
@@ -1468,25 +1647,23 @@
                         
                         const setNumber = i + 1;
                         const row = document.createElement('div');
-                        row.className = 'superset-set-container';
+                        row.className = 'set-row superset-set-row';
                         row.innerHTML = `
                             <div class="set-number">${setNumber}</div>
-                            <div class="superset-set-group">
-                                <div class="exercise-label">${ex1.name}</div>
-                                <div class="set-inputs">
-                                    <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" value="${set1 ? set1.weight || '' : ''}">
+                            <div class="set-inputs">
+                                <div class="exercise-input-group">
+                                    <span class="exercise-label">${ex1.name}</span>
+                                    <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="1" value="${set1 ? set1.weight || '' : ''}">
                                     <span class="input-label">kg</span>
-                                    <input type="number" class="form-input" placeholder="Reps" min="1" value="${set1 ? set1.reps || '' : ''}">
+                                    <input type="number" class="form-input" placeholder="Reps" min="1" data-exercise="1" value="${set1 ? set1.reps || '' : ''}">
                                     <span class="input-label">reps</span>
                                 </div>
-                            </div>
-                            <div class="superset-divider"></div>
-                            <div class="superset-set-group">
-                                <div class="exercise-label">${ex2.name}</div>
-                                <div class="set-inputs">
-                                    <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" value="${set2 ? set2.weight || '' : ''}">
+                                <div class="superset-divider">+</div>
+                                <div class="exercise-input-group">
+                                    <span class="exercise-label">${ex2.name}</span>
+                                    <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="2" value="${set2 ? set2.weight || '' : ''}">
                                     <span class="input-label">kg</span>
-                                    <input type="number" class="form-input" placeholder="Reps" min="1" value="${set2 ? set2.reps || '' : ''}">
+                                    <input type="number" class="form-input" placeholder="Reps" min="1" data-exercise="2" value="${set2 ? set2.reps || '' : ''}">
                                     <span class="input-label">reps</span>
                                 </div>
                             </div>
@@ -1653,6 +1830,39 @@
         populateExerciseSelect();
         attachAutosaveHandlers();
 
+        // Migrate temp draft and rest timers to session-specific keys if we now have a sessionId
+        if (workoutSessionId) {
+            try {
+                // Migrate temp draft
+                const tempDraft = localStorage.getItem(TEMP_DRAFT_KEY);
+                if (tempDraft) {
+                    const sessionKey = `workoutDraft:${workoutSessionId}`;
+                    const existingDraft = localStorage.getItem(sessionKey);
+                    // Only migrate if there's no existing session draft
+                    if (!existingDraft) {
+                        localStorage.setItem(sessionKey, tempDraft);
+                        localStorage.removeItem(TEMP_DRAFT_KEY);
+                    }
+                }
+                
+                // Migrate temp rest timers
+                const tempPrefix = 'restTimer:temp:';
+                const sessionPrefix = `restTimer:${workoutSessionId}:`;
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith(tempPrefix)) {
+                        const newKey = key.replace(tempPrefix, sessionPrefix);
+                        const existingTimer = localStorage.getItem(newKey);
+                        // Only migrate if there's no existing session timer
+                        if (!existingTimer) {
+                            localStorage.setItem(newKey, localStorage.getItem(key));
+                            localStorage.removeItem(key);
+                        }
+                    }
+                }
+            } catch(_) {}
+        }
+
         // Prefer local draft if present (keeps supersets/groups when continuing)
         try {
             if (loadDraftIfAny && loadDraftIfAny()) {
@@ -1732,7 +1942,6 @@
     let autosaveTimer = null;
     function attachAutosaveHandlers(){
         document.addEventListener('input', function(e){
-            if (!draftKey) return;
             if (!e.target.closest('.workout-session')) return;
             if (autosaveTimer) clearTimeout(autosaveTimer);
             autosaveTimer = setTimeout(saveDraft, 400);
@@ -1740,6 +1949,7 @@
     }
 
     function saveDraft(){
+        const draftKey = getDraftKey();
         if (!draftKey) return;
         const cards = Array.from(document.querySelectorAll('.exercise-card'));
         const draft = [];
@@ -1748,13 +1958,18 @@
             if (isSuperset) {
                 const ex1Id = card.getAttribute('data-exercise-id-1');
                 const ex2Id = card.getAttribute('data-exercise-id-2');
-                const rows = Array.from(card.querySelectorAll('.superset-set-row, .superset-set-container'));
+                const rows = Array.from(card.querySelectorAll('.superset-set-row'));
                 const sets = rows.map(row => {
-                    const inputs = row.querySelectorAll('input');
+                    const inputs = row.querySelectorAll('input[placeholder]');
+                    // Don't save hint values to draft
+                    const isEx1WeightHint = inputs[0]?.classList.contains('hint-value');
+                    const isEx1RepsHint = inputs[1]?.classList.contains('hint-value');
+                    const isEx2WeightHint = inputs[2]?.classList.contains('hint-value');
+                    const isEx2RepsHint = inputs[3]?.classList.contains('hint-value');
                     return {
                         type: 'SUPERSET',
-                        ex1: { weight: inputs[0]?.value || '', reps: inputs[1]?.value || '' },
-                        ex2: { weight: inputs[2]?.value || '', reps: inputs[3]?.value || '' }
+                        ex1: { weight: isEx1WeightHint ? '' : (inputs[0]?.value || ''), reps: isEx1RepsHint ? '' : (inputs[1]?.value || '') },
+                        ex2: { weight: isEx2WeightHint ? '' : (inputs[2]?.value || ''), reps: isEx2RepsHint ? '' : (inputs[3]?.value || '') }
                     };
                 });
                 draft.push({ kind:'SUPERSET', ex1Id, ex2Id, sets });
@@ -1762,10 +1977,13 @@
                 const exerciseId = card.getAttribute('data-exercise-id');
                 const rows = Array.from(card.querySelectorAll('.set-row'));
                 const sets = rows.map(row => {
-                    const inputs = row.querySelectorAll('input');
+                    const inputs = row.querySelectorAll('input[placeholder]');
                     const isDrop = row.classList.contains('drop-set-row');
                     const dropLevel = parseInt(row.getAttribute('data-drop-level')||'0');
-                    return { type: isDrop ? 'DROP' : 'MAIN', level: dropLevel, weight: inputs[0]?.value||'', reps: inputs[1]?.value||'' };
+                    // Don't save hint values to draft
+                    const isHintWeight = inputs[0]?.classList.contains('hint-value');
+                    const isHintReps = inputs[1]?.classList.contains('hint-value');
+                    return { type: isDrop ? 'DROP' : 'MAIN', level: dropLevel, weight: isHintWeight ? '' : (inputs[0]?.value||''), reps: isHintReps ? '' : (inputs[1]?.value||'') };
                 });
                 draft.push({ kind:'REGULAR', exerciseId, sets });
             }
@@ -1774,9 +1992,27 @@
     }
 
     function loadDraftIfAny(){
+        const draftKey = getDraftKey();
         if (!draftKey) return false;
+        
+        // Try to load from session-specific key first, then temp key
         let raw = null;
-        try { raw = localStorage.getItem(draftKey); } catch(_) {}
+        try {
+            if (workoutSessionId) {
+                raw = localStorage.getItem(`workoutDraft:${workoutSessionId}`);
+            }
+            // If no session-specific draft, try temp draft
+            if (!raw) {
+                raw = localStorage.getItem(TEMP_DRAFT_KEY);
+                // If we loaded temp draft and now have a session, migrate it
+                if (raw && workoutSessionId) {
+                    try {
+                        localStorage.setItem(`workoutDraft:${workoutSessionId}`, raw);
+                        localStorage.removeItem(TEMP_DRAFT_KEY);
+                    } catch(_) {}
+                }
+            }
+        } catch(_) {}
         if (!raw) return false;
         let data = null;
         try { data = JSON.parse(raw); } catch(_) { return false; }
@@ -1829,27 +2065,19 @@
                     </div>
                   </div>`;
                 listEl.appendChild(supersetCard);
+                exerciseCounter++;
                 const setsList = supersetCard.querySelector('.sets-list');
                 item.sets.forEach((s, idx) => {
-                    const row = document.createElement('div');
-                    row.className = 'set-row superset-set-row';
-                    row.innerHTML = `
-                        <div class="set-number">${idx+1}</div>
-                        <div class="set-inputs">
-                          <div class="exercise-input-group"><span class="exercise-label">${ex1.name}</span>
-                            <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" value="${s.ex1?.weight||''}"><span class="input-label">kg</span>
-                            <input type="number" class="form-input" placeholder="Reps" min="1" value="${s.ex1?.reps||''}"><span class="input-label">reps</span>
-                          </div>
-                          <div class="superset-divider">+</div>
-                          <div class="exercise-input-group"><span class="exercise-label">${ex2.name}</span>
-                            <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" value="${s.ex2?.weight||''}"><span class="input-label">kg</span>
-                            <input type="number" class="form-input" placeholder="Reps" min="1" value="${s.ex2?.reps||''}"><span class="input-label">reps</span>
-                          </div>
-                        </div>
-                        <div class="set-actions"><button class="btn-icon btn-remove" onclick="removeSet(this)"><i class="fas fa-trash"></i></button></div>`;
-                    setsList.appendChild(row);
+                    addSupersetSet(exerciseCounter-1);
+                    const lastRow = setsList.lastElementChild;
+                    if (lastRow && (s.ex1?.weight || s.ex1?.reps || s.ex2?.weight || s.ex2?.reps)) {
+                        const inputs = lastRow.querySelectorAll('input[placeholder]');
+                        if (inputs[0] && s.ex1?.weight) inputs[0].value = s.ex1.weight;
+                        if (inputs[1] && s.ex1?.reps) inputs[1].value = s.ex1.reps;
+                        if (inputs[2] && s.ex2?.weight) inputs[2].value = s.ex2.weight;
+                        if (inputs[3] && s.ex2?.reps) inputs[3].value = s.ex2.reps;
+                    }
                 });
-                exerciseCounter++;
             } else if (item.kind === 'REGULAR') {
                 const ex = exercises.find(e => String(e.id)===String(item.exerciseId));
                 if (!ex) return;
@@ -1860,14 +2088,14 @@
                 // Rebuild sets with drop structure
                 item.sets.forEach(s => {
                     if (s.type === 'MAIN') {
-                        addSet(idx);
+                        addSet(idx, false, 0, item.exerciseId);
                         const last = setsList.lastElementChild;
                         const inputs = last.querySelectorAll('input');
                         inputs[0].value = s.weight || '';
                         inputs[1].value = s.reps || '';
                     } else {
                         const mainExists = setsList.querySelector('.set-row:not(.drop-set-row):last-child');
-                        if (!mainExists) { addSet(idx); }
+                        if (!mainExists) { addSet(idx, false, 0, item.exerciseId); }
                         const lastMain = setsList.querySelector('.set-row:not(.drop-set-row):last-child');
                         const dropBtn = lastMain.querySelector('.btn-drop');
                         if (dropBtn) { addDropSet(dropBtn); }
@@ -1906,7 +2134,8 @@
             if (!exId) return null; // no exercise ID
             keyBase = `regular:${exId}`;
         }
-        const sid = workoutSessionId ? `${workoutSessionId}:` : '';
+        // Use temporary session prefix if no sessionId yet (like with drafts)
+        const sid = workoutSessionId ? `${workoutSessionId}:` : 'temp:';
         return `restTimer:${sid}${keyBase}`;
     }
 
@@ -1922,32 +2151,33 @@
         // Rehydrate from storage if a rest was in progress/paused
         try {
             const restKey = getRestKey(exerciseId);
-            if (!restKey) return; // can't get a stable key, skip rehydration
-            const data = JSON.parse(localStorage.getItem(restKey) || '{}');
-            if (typeof data.initialSeconds === 'number' && timers[exerciseId].initialSeconds === 0) {
-                timers[exerciseId].initialSeconds = data.initialSeconds;
-            }
-            if (data.paused) {
-                timers[exerciseId].isRunning = false;
-                timers[exerciseId].seconds = data.remainingSeconds ?? 0;
-            } else if (data.endAt) {
-                const remainingMs = Math.max(0, data.endAt - Date.now());
-                timers[exerciseId].seconds = Math.ceil(remainingMs / 1000);
-                if (timers[exerciseId].seconds > 0) {
-                    // start visible update loop
-                    if (timers[exerciseId].interval) clearInterval(timers[exerciseId].interval);
-                    timers[exerciseId].isRunning = true;
-                    const startBtn = document.getElementById(`timerStart-${exerciseId}`);
-                    if (startBtn) startBtn.textContent = 'Pause';
-                    timers[exerciseId].interval = setInterval(() => {
-                        const d = JSON.parse(localStorage.getItem(restKey) || '{}');
-                        const rem = Math.max(0, (d.endAt || 0) - Date.now());
-                        timers[exerciseId].seconds = Math.ceil(rem / 1000);
-                        updateTimerDisplay(exerciseId);
-                        if (timers[exerciseId].seconds <= 0) timerComplete(exerciseId);
-                    }, 500);
-                } else {
-                    timerComplete(exerciseId);
+            if (restKey) { // only try to rehydrate if we have a stable key
+                const data = JSON.parse(localStorage.getItem(restKey) || '{}');
+                if (typeof data.initialSeconds === 'number' && timers[exerciseId].initialSeconds === 0) {
+                    timers[exerciseId].initialSeconds = data.initialSeconds;
+                }
+                if (data.paused) {
+                    timers[exerciseId].isRunning = false;
+                    timers[exerciseId].seconds = data.remainingSeconds ?? 0;
+                } else if (data.endAt) {
+                    const remainingMs = Math.max(0, data.endAt - Date.now());
+                    timers[exerciseId].seconds = Math.ceil(remainingMs / 1000);
+                    if (timers[exerciseId].seconds > 0) {
+                        // start visible update loop
+                        if (timers[exerciseId].interval) clearInterval(timers[exerciseId].interval);
+                        timers[exerciseId].isRunning = true;
+                        const startBtn = document.getElementById(`timerStart-${exerciseId}`);
+                        if (startBtn) startBtn.textContent = 'Pause';
+                        timers[exerciseId].interval = setInterval(() => {
+                            const d = JSON.parse(localStorage.getItem(restKey) || '{}');
+                            const rem = Math.max(0, (d.endAt || 0) - Date.now());
+                            timers[exerciseId].seconds = Math.ceil(rem / 1000);
+                            updateTimerDisplay(exerciseId);
+                            if (timers[exerciseId].seconds <= 0) timerComplete(exerciseId);
+                        }, 500);
+                    } else {
+                        timerComplete(exerciseId);
+                    }
                 }
             }
         } catch(_) {}

@@ -163,24 +163,55 @@ public class WorkoutService {
             return project.fitnessapplication.workout.dto.LastPerformanceData.empty();
         }
         
-        // Get the most recent session's sets and create a map by setNumber
-        var setsMap = new HashMap<Integer, project.fitnessapplication.workout.dto.LastPerformanceData.SetData>();
-        
-        // Get the first session's UUID to get only the most recent workout
+        // Get the most recent session's UUID to get only the most recent workout
         UUID mostRecentSessionId = sets.get(0).getSessionId();
         
-        for (WorkoutSet set : sets) {
-            // Only process sets from the most recent session
-            if (!set.getSessionId().equals(mostRecentSessionId)) {
-                break;
-            }
-            
+        // Fetch all sets from the most recent session (including drop sets)
+        List<WorkoutSet> allSetsFromSession = setRepo.findAllBySessionId(mostRecentSessionId);
+        
+        // Filter to only sets for this exercise
+        List<WorkoutSet> exerciseSets = allSetsFromSession.stream()
+            .filter(s -> s.getExerciseId().equals(exerciseId) && s.getWeight() != null && s.getReps() != null)
+            .collect(Collectors.toList());
+        
+        // Create a map by setNumber -> {weight, reps, dropSets}
+        var setsMap = new HashMap<Integer, project.fitnessapplication.workout.dto.LastPerformanceData.SetData>();
+        
+        for (WorkoutSet set : exerciseSets) {
             Integer setNum = set.getSetNumber();
-            if (setNum != null && (set.getWeight() != null || set.getReps() != null)) {
-                setsMap.put(setNum, project.fitnessapplication.workout.dto.LastPerformanceData.SetData.builder()
-                    .weight(set.getWeight())
-                    .reps(set.getReps())
+            if (setNum == null) continue;
+            
+            // Check if this is a drop set
+            if (set.getGroupType() == project.fitnessapplication.workout.model.SetGroupType.DROP_SET 
+                && set.getGroupOrder() != null && set.getGroupOrder() > 0) {
+                // This is a drop set - add it to the main set's dropSets list
+                setsMap.computeIfAbsent(setNum, k -> project.fitnessapplication.workout.dto.LastPerformanceData.SetData.builder()
+                    .dropSets(new ArrayList<>())
                     .build());
+                
+                setsMap.get(setNum).getDropSets().add(
+                    project.fitnessapplication.workout.dto.LastPerformanceData.DropSetData.builder()
+                        .groupOrder(set.getGroupOrder())
+                        .weight(set.getWeight())
+                        .reps(set.getReps())
+                        .build()
+                );
+            } else {
+                // This is a main set
+                setsMap.compute(setNum, (k, existing) -> {
+                    var builder = project.fitnessapplication.workout.dto.LastPerformanceData.SetData.builder()
+                        .weight(set.getWeight())
+                        .reps(set.getReps());
+                    
+                    // Preserve any existing drop sets
+                    if (existing != null && existing.getDropSets() != null) {
+                        builder.dropSets(existing.getDropSets());
+                    } else {
+                        builder.dropSets(new ArrayList<>());
+                    }
+                    
+                    return builder.build();
+                });
             }
         }
         
