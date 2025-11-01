@@ -90,10 +90,8 @@
         
         <header class="top-header">
             <div class="header-left">
-                <h1 class="page-title">Settings</h1>
-            </div>
-            <div class="header-right">
-                <div class="user-profile">
+                <!-- Mobile only: User profile above title -->
+                <div class="user-profile mobile-profile">
                     <div class="profile-avatar avatar-preview">
                         <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
                         <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
@@ -103,6 +101,28 @@
                     <div class="profile-info">
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
+                </div>
+                <h1 class="page-title">Settings</h1>
+            </div>
+            <div class="header-right">
+                <!-- Desktop only: User profile in top right (original) -->
+                <div class="user-profile desktop-profile">
+                    <div class="profile-avatar avatar-preview">
+                        <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
+                        <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name" th:text="${username}">User</span>
+                    </div>
+                </div>
+                <!-- Mobile only: Home Page button -->
+                <div class="header-actions">
+                    <a href="/" class="header-btn">
+                        <i class="fas fa-home"></i>
+                        <span>Home Page</span>
+                    </a>
                 </div>
             </div>
         </header>

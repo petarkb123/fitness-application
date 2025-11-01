@@ -68,9 +68,7 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1024px) {
-    .main-content {
-        padding: 1.5rem;
-    }
+   
 
     .template-form {
         padding: 1.5rem;
@@ -197,6 +195,16 @@
         color: #667eea !important;
     }
 
+    .page-header {
+        width: 100%;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 1rem 0 2rem 0 !important;
+        box-shadow: none !important;
+    }
+
     .nav-link:hover {
         background: rgba(255,255,255,0.06) !important;
         transform: none !important;
@@ -204,11 +212,12 @@
 
     .main-content {
         margin-left: 0;
-        padding: 1rem;
-        padding-bottom: 85px;
+        padding: 1rem 1.25rem;
+        padding-bottom: 90px;
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden;
+        background: linear-gradient(180deg, rgba(26, 26, 48, 0.98) 0%, rgba(20, 20, 40, 0.98) 100%);
     }
     
     /* MOBILE ONLY: Reorganize header layout */
@@ -297,11 +306,7 @@
     
 
     /* Additional mobile styles for smaller screens */
-    .main-content {
-        padding: 0.5rem;
-        padding-bottom: 62px;
-    }
-
+   
     .template-form {
         padding: 0.875rem;
     }
@@ -426,7 +431,6 @@
 @media (max-width: 480px) {
   /* Unified backgrounds */
   body, .dashboard-container { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
-  .main-content { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
 
   /* Sticky gradient header (no buttons) */
   .top-header { background: linear-gradient(180deg, rgba(26,26,48,0.97) 0%, rgba(20,20,40,0.0) 100%) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; box-shadow: none !important; padding: calc(env(safe-area-inset-top, 0px) + 0.75rem) 0 1rem 0 !important; margin: 0 0 0.3rem 0 !important; min-height: 62px !important; max-height: 70px !important; position: sticky !important; top: 0 !important; z-index: 100 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; }

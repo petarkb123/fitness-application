@@ -53,7 +53,6 @@
     background: #1a1a30 !important;
   }
   
-  .main-content { margin-left: 0; padding: 0.75rem; padding-bottom: 90px; width: 100%; max-width: 100vw; overflow-x: hidden; }
   .dashboard-container { overflow-x: hidden; }
 
   .section-title {
@@ -150,11 +149,14 @@
 
   /* MOBILE ONLY: Standard page header layout */
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-  }
+    width: 100%;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 1rem 0 2rem 0 !important;
+    box-shadow: none !important;
+}
   
   .page-actions {
     display: flex;
@@ -168,7 +170,7 @@
     min-height: 40px;
   }
 
-  .page-header .page-title { font-size: 1.5rem; margin-top: 0.25rem; margin-bottom: 0; }
+   .page-title { font-size: 1.5rem; margin-top: 0.25rem; margin-bottom: 0; }
   .page-subtitle { font-size: 0.9rem; margin-top: 0.15rem; }
   
   /* Exercise Cards - More Compact */
@@ -816,22 +818,20 @@
     background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important;
   }
   .main-content {
-    background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important;
-    padding: 1rem 1.25rem !important;
-    padding-bottom: 90px !important;
-  }
+    margin-left: 0;
+    padding: 1rem 1.25rem;
+    padding-bottom: 90px;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    background: linear-gradient(180deg, rgba(26, 26, 48, 0.98) 0%, rgba(20, 20, 40, 0.98) 100%);
+}
   
   /* Final header alignment fix */
   
   /* Match details page exactly: header + content spacing */
   body, .dashboard-container { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
-  .main-content {
-    background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important;
-    margin-left: 0 !important;
-    padding: 1rem 1.25rem !important;
-    padding-bottom: 90px !important;
-    padding-top: 0 !important; /* ensure no extra offset */
-  }
+  
   .header-left { margin-top: 0 !important; }
   /* Safe-area aware top spacing to match other pages */
   .mobile-profile { margin-top: 0 !important; }
@@ -844,7 +844,6 @@
   .profile-avatar .avatar-image, .profile-avatar .avatar-placeholder { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit !important; }
 
   /* Ensure content is not pushed down inconsistently */
-  .main-content { padding-top: 0 !important; }
 
   /* FINAL SESSION HEADER OVERRIDES (higher specificity) */
   .main-content > .top-header {
@@ -875,7 +874,6 @@
   .main-content > .top-header .profile-avatar .avatar-placeholder { width: 100% !important; height: 100% !important; object-fit: cover !important; border-radius: inherit !important; }
 
   /* Content offset: match details (no extra top padding beyond header block spacing) */
-  .main-content { padding-top: 0 !important; }
 }
 
 /* Superset revert (reset) button — purple outline to match create/edit */

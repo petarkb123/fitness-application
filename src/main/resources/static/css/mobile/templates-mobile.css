@@ -136,11 +136,12 @@
 
     .main-content {
         margin-left: 0;
-        padding: 0.75rem;
+        padding: 1rem 1.25rem;
         padding-bottom: 90px;
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden;
+        background: linear-gradient(180deg, rgba(26, 26, 48, 0.98) 0%, rgba(20, 20, 40, 0.98) 100%);
     }
     
     .dashboard-container {
@@ -149,7 +150,12 @@
 
     /* STANDARDIZED HEADER LAYOUT - SAME AS DASHBOARD */
     
-    
+    .page-title-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom  : 0.5rem;
+    }
     
     /* Hide page title in header on mobile */
     .header-left .page-title {
@@ -212,14 +218,9 @@
         font-weight: 600;
     }
 
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-       
-    }
+    
 
-    .page-header .page-title {
+     .page-title {
         font-size: 1.5rem;
     }
     
@@ -272,7 +273,6 @@
 
     /* Unified background like dashboard/details */
     body, .dashboard-container { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
-    .main-content { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
 
     /* Sticky header with gradient/blur and identical spacing */
     .top-header {
@@ -339,7 +339,24 @@
     .header-btn span { font-size: 0.65rem !important; font-weight: 600 !important; line-height: 1.1 !important; letter-spacing: -0.01em !important; }
 
     /* Polished section title */
-    .page-header .page-title { color: #ffffff !important; letter-spacing: 0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.18); }
+    .page-title { color: #ffffff !important; letter-spacing: 0.2px; text-shadow: 0 1px 1px rgba(0,0,0,0.18); }
+
+    .page-header {
+        width: 100%;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 2rem 0 2rem 0 !important;
+        box-shadow: none !important;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        animation: fadeInHeader 0.45s ease both;
+        align-items: flex-start;
+        text-align: left;
+      }
 
     /* Templates grid and cards */
     .templates-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.6rem !important; }

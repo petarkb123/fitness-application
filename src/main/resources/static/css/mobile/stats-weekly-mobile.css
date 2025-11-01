@@ -130,11 +130,12 @@
     /* Main content and layout */
     .main-content {
         margin-left: 0;
-        padding: 0.75rem;
+        padding: 1rem 1.25rem;
         padding-bottom: 90px;
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden;
+        background: linear-gradient(180deg, rgba(26, 26, 48, 0.98) 0%, rgba(20, 20, 40, 0.98) 100%);
     }
 
     .dashboard-container {
@@ -440,7 +441,6 @@
 
   /* Unified backgrounds */
   body, .dashboard-container { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
-  .main-content { background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%) !important; }
 
   /* Sticky gradient header like details */
   .top-header {
@@ -508,7 +508,7 @@
 
   .page-title-section { display: flex; align-items: center; gap: 0.6rem; }
   .page-title-section i { font-size: 1.15rem; color: #9bb0ff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
-  .page-header .page-title {
+ .page-title {
     margin: 0 !important;
     line-height: 1.2 !important;
     font-size: 1.75rem !important;
@@ -520,16 +520,15 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .page-header .page-subtitle {
+  .page-subtitle {
     color: #b0b8dd !important;
     margin: 0.4rem 0 0 0 !important;
     font-size: 0.95rem !important;
   }
 
-  .page-header::after { display: none !important; content: none !important; }
 
-  .page-header .page-actions { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
-  .page-header .page-actions .btn { min-height: 40px; padding: 0.5rem 0.8rem; font-weight: 700; border-radius: 10px; }
+   .page-actions { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
+ .page-actions .btn { min-height: 40px; padding: 0.5rem 0.8rem; font-weight: 700; border-radius: 10px; }
 
   /* Dashboard-like glass cards */
   .stat-card, .day-card, .chart-card {
