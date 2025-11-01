@@ -95,6 +95,7 @@ public class WorkoutController {
     public String sessionWithId(@AuthenticationPrincipal UserDetails me,
                                 @RequestParam UUID sessionId,
                                 @RequestParam(required = false) UUID templateId,
+                                @RequestParam(required = false, defaultValue = "false") boolean edit,
                                 Model model) {
         var u = users.findByUsernameOrThrow(me.getUsername());
         var userId = u.getId();
@@ -108,14 +109,24 @@ public class WorkoutController {
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
         model.addAttribute("sessionId", s.getId());
+        model.addAttribute("isEditMode", edit);
         
-        // Calculate elapsed seconds to avoid timezone issues
-        if (s.getStartedAt() != null) {
+        // Calculate elapsed seconds to avoid timezone issues (only for in-progress workouts)
+        if (!edit && s.getStartedAt() != null) {
             long elapsedSeconds = java.time.Duration.between(s.getStartedAt(), java.time.LocalDateTime.now()).getSeconds();
             if (elapsedSeconds < 0) elapsedSeconds = 0; // Handle timezone edge cases
             model.addAttribute("elapsedSeconds", elapsedSeconds);
         } else {
             model.addAttribute("elapsedSeconds", 0);
+        }
+        
+        // For edit mode, provide original workout duration
+        if (edit && s.getStartedAt() != null && s.getFinishedAt() != null) {
+            long durationSeconds = java.time.Duration.between(s.getStartedAt(), s.getFinishedAt()).getSeconds();
+            if (durationSeconds < 0) durationSeconds = 0;
+            model.addAttribute("workoutDurationSeconds", durationSeconds);
+        } else {
+            model.addAttribute("workoutDurationSeconds", 0);
         }
 
         var options = workoutService.getAvailableExercises(userId)
@@ -201,6 +212,7 @@ public class WorkoutController {
         var workoutView = new WorkoutView(session.getStartedAt(), session.getFinishedAt(), blocks, u.getRegion());
         model.addAttribute("workout", workoutView);
         model.addAttribute("totalSets", sets.size());
+        model.addAttribute("sessionId", id); // Add sessionId for edit button
 
         return "workouts/details";
     }
@@ -257,6 +269,50 @@ public class WorkoutController {
         }
     }
 
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> updateWorkout(@PathVariable UUID id,
+                                          @AuthenticationPrincipal UserDetails me,
+                                          @RequestBody FinishWorkoutRequest body) {
+        if (body == null || body.getSessionId() == null || !id.equals(body.getSessionId())) {
+            return ResponseEntity.badRequest().body("Invalid sessionId");
+        }
+
+        var u = users.findByUsernameOrThrow(me.getUsername());
+        
+        List<ExerciseSetData> exerciseSets = null;
+        if (body.getExercises() != null && !body.getExercises().isEmpty()) {
+            exerciseSets = body.getExercises().stream()
+                    .filter(ex -> ex != null && ex.getExerciseId() != null)
+                    .map(ex -> new ExerciseSetData(
+                            ex.getExerciseId(),
+                            ex.getSets() == null ? List.of() : ex.getSets().stream()
+                                    .filter(set -> set != null)
+                                    .map(set -> new SetData(
+                                            set.getWeight(),
+                                            set.getReps(),
+                                            set.getGroupId(),
+                                            set.getGroupType(),
+                                            set.getGroupOrder(),
+                                            set.getSetNumber()
+                                    ))
+                                    .toList()
+                    ))
+                    .toList();
+        }
+        
+        try {
+            workoutService.updateSessionWithSets(body.getSessionId(), u.getId(), exerciseSets,
+                                                 body.getStartedAt(), body.getFinishedAt());
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Session not found");
+            }
+            return ResponseEntity.badRequest().body(e.getReason());
+        }
+    }
 
     @GetMapping("/templates/{templateId}/exercises")
     @ResponseBody

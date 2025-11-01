@@ -147,15 +147,33 @@
                         Workout Session
                     </h1>
                     <p class="page-subtitle">Log your sets and track your progress</p>
-                    <div id="sessionTimer" style="margin-top:6px; color:#b8bdfd; font-weight:600;">
+                    <div id="sessionTimer" style="margin-top:6px; color:#b8bdfd; font-weight:600; display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; gap:8px;">
                         <i class="fas fa-clock"></i>
                         <span id="timerText">00:00:00</span>
+                        <!-- Edit mode timer controls -->
+                        <button id="timerEditBtn" onclick="showTimerEditInputs()" style="display:none; width:50px; min-height:32px; padding:0.3rem 0.25rem; background:rgba(102,126,234,0.3); border:1px solid rgba(102,126,234,0.5); border-radius:6px; color:#fff; cursor:pointer; font-size:0.8rem;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <!-- Inline edit inputs (hidden by default) -->
+                        <div id="timerEditInputs" style="display:none; margin-top:6px; flex-direction:row; align-items:center; gap:3px;">
+                            <input type="number" id="timerHours" min="0" max="23" placeholder="H" style="width:50px; min-height:32px; padding:0.3rem 0.25rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; text-align:center; font-size:0.8rem;">
+                            <span style="color:#b8bdfd; font-size:0.9rem;">:</span>
+                            <input type="number" id="timerMinutes" min="0" max="59" placeholder="M" style="width:50px; min-height:32px; padding:0.3rem 0.25rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; text-align:center; font-size:0.8rem;">
+                            <span style="color:#b8bdfd; font-size:0.9rem;">:</span>
+                            <input type="number" id="timerSeconds" min="0" max="59" placeholder="S" style="width:50px; min-height:32px; padding:0.3rem 0.25rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; text-align:center; font-size:0.8rem;">
+                            <button onclick="saveTimerEdit()" style="width:50px; min-height:32px; padding:0.3rem 0.25rem; background:rgba(34,197,94,0.8); border:1px solid rgba(34,197,94,1); border-radius:6px; color:#fff; cursor:pointer; font-size:0.8rem;">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button onclick="cancelTimerEdit()" style="width:50px; min-height:32px; padding:0.3rem 0.25rem; background:rgba(239,68,68,0.8); border:1px solid rgba(239,68,68,1); border-radius:6px; color:#fff; cursor:pointer; font-size:0.8rem;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-success" onclick="finishWorkout()">
                         <i class="fas fa-check"></i>
-                        Finish Workout
+                        <span th:text="${isEditMode} ? 'Save Changes' : 'Finish Workout'">Finish Workout</span>
                     </button>
                 </div>
             </div>
@@ -176,9 +194,9 @@
                 </div>
                 
                 <div class="add-exercise-section">
-                    <button class="btn btn-primary action-btn" onclick="finishWorkout()" title="Finish and save workout">
+                    <button class="btn btn-primary action-btn" onclick="finishWorkout()" th:attr="title=${isEditMode} ? 'Save changes' : 'Finish and save workout'">
                         <i class="fas fa-check"></i>
-                        Finish Workout
+                        <span th:text="${isEditMode} ? 'Save Changes' : 'Finish Workout'">Finish Workout</span>
                     </button>
                     <button class="btn btn-primary action-btn" onclick="openAddExerciseModal()">
                         <i class="fas fa-plus"></i>
@@ -274,6 +292,8 @@
     const existingSetsRaw = /*[[${existingSets}]]*/ null;
     const existingSets = existingSetsRaw || [];
     const elapsedSeconds = /*[[${elapsedSeconds}]]*/ 0;
+    const isEditMode = /*[[${isEditMode}]]*/ false;
+    const workoutDurationSeconds = /*[[${workoutDurationSeconds}]]*/ 0;
     // Use temporary draft key if no sessionId yet (allows saving drafts before session is created)
     const TEMP_DRAFT_KEY = 'workoutDraft:temp';
     const getDraftKey = () => workoutSessionId ? (`workoutDraft:${workoutSessionId}`) : TEMP_DRAFT_KEY;
@@ -792,18 +812,42 @@
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
         const csrfToken  = document.querySelector('meta[name="_csrf"]').content;
 
-        fetch('/workouts/finish', {
-            method: 'POST',
+        // In edit mode, get the current timer duration and send to update endpoint
+        if (isEditMode && window.getTimerElapsedMs) {
+            // Calculate duration from timer state
+            const durationMs = window.getTimerElapsedMs();
+            
+            // Calculate start time as now minus duration, and finish time as now
+            const now = new Date();
+            const startedAt = new Date(now.getTime() - durationMs);
+            const finishedAt = now;
+            
+            // Convert to ISO format for backend
+            payload.startedAt = startedAt.toISOString();
+            payload.finishedAt = finishedAt.toISOString();
+        }
+
+        const endpoint = isEditMode && workoutSessionId 
+            ? `/workouts/${workoutSessionId}`
+            : '/workouts/finish';
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        fetch(endpoint, {
+            method: method,
             headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
             body: JSON.stringify(payload)
         })
             .then(r => { 
                 if (r.ok) {
-                    // Clear draft and rest timers on success (both session-specific and temp)
+                    // Clear draft, rest timers, and workout timer on success (both session-specific and temp)
                     try {
                         const draftKey = getDraftKey();
                         if (draftKey) localStorage.removeItem(draftKey);
                         localStorage.removeItem(TEMP_DRAFT_KEY);
+                        
+                        // Clear workout timer
+                        const workoutTimerKey = workoutSessionId ? (`workoutTimer:${workoutSessionId}`) : 'workoutTimer';
+                        localStorage.removeItem(workoutTimerKey);
                         
                         // Clear all rest timers for this session
                         const sessionPrefix = workoutSessionId ? `restTimer:${workoutSessionId}:` : 'restTimer:temp:';
@@ -1650,7 +1694,7 @@
                         row.className = 'set-row superset-set-row';
                         row.innerHTML = `
                             <div class="set-number">${setNumber}</div>
-                            <div class="set-inputs">
+                                <div class="set-inputs">
                                 <div class="exercise-input-group">
                                     <span class="exercise-label">${ex1.name}</span>
                                     <input type="number" class="form-input" placeholder="Weight" min="0" step="0.5" data-exercise="1" value="${set1 ? set1.weight || '' : ''}">
@@ -1887,11 +1931,14 @@
     });
 
     // ---- workout length timer (timestamp-based, resilient to background) ----
+    // Save timer key globally for edit functions
+    const timerKey = workoutSessionId ? (`workoutTimer:${workoutSessionId}`) : 'workoutTimer';
+    
     (function initWorkoutLengthTimer(){
         const el = document.getElementById('timerText');
         if (!el) return;
-
-        const key = workoutSessionId ? (`workoutTimer:${workoutSessionId}`) : 'workoutTimer';
+        
+        const key = timerKey;
         function loadState(){
             try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch(_) { return {}; }
         }
@@ -1899,12 +1946,16 @@
             try { localStorage.setItem(key, JSON.stringify(s)); } catch(_) {}
         }
 
-        // Initialize from server elapsedSeconds if no prior state
+        // Initialize from server elapsedSeconds or workoutDurationSeconds (edit mode) if no prior state
         const now = Date.now();
         let state = loadState();
         if (!state.workoutStartAt) {
-            // back-calc startAt from server elapsed
-            state = { workoutStartAt: now - (elapsedSeconds*1000), accumulatedMs: 0, resumeAt: now };
+            // In edit mode, initialize with fixed duration; otherwise back-calc from elapsed
+            if (isEditMode && workoutDurationSeconds > 0) {
+                state = { workoutStartAt: now - (workoutDurationSeconds*1000), accumulatedMs: workoutDurationSeconds*1000, resumeAt: null };
+            } else {
+                state = { workoutStartAt: now - (elapsedSeconds*1000), accumulatedMs: 0, resumeAt: now };
+            }
             saveState(state);
         } else if (state.resumeAt == null) {
             // if previously paused, keep accumulatedMs and no resumeAt
@@ -1933,10 +1984,100 @@
             }
         }
         render();
-        const intervalId = setInterval(startVisibleLoop, 500);
-        document.addEventListener('visibilitychange', render);
-        window.addEventListener('beforeunload', () => clearInterval(intervalId));
+        
+        // In edit mode, show edit button and stop the timer from running
+        if (isEditMode) {
+            const editBtn = document.getElementById('timerEditBtn');
+            if (editBtn) editBtn.style.display = 'inline-block';
+            // Timer should not auto-update in edit mode
+            const intervalId = setInterval(() => {
+                // Only update if not in edit mode
+                if (!isEditMode && document.visibilityState === 'visible') {
+                    render();
+                }
+            }, 500);
+            document.addEventListener('visibilitychange', () => {
+                if (!isEditMode) render();
+            });
+            window.addEventListener('beforeunload', () => clearInterval(intervalId));
+        } else {
+            const intervalId = setInterval(startVisibleLoop, 500);
+            document.addEventListener('visibilitychange', render);
+            window.addEventListener('beforeunload', () => clearInterval(intervalId));
+        }
+        
+        // Store render function globally for edit mode
+        window.renderTimer = render;
+        window.loadTimerState = loadState;
+        window.saveTimerState = saveState;
     })();
+    
+    // Inline timer editing functions for edit mode
+    window.showTimerEditInputs = function() {
+        if (!isEditMode) return;
+        
+        // Parse current time
+        const ms = getTimerElapsedMs();
+        const totalSec = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSec / 3600);
+        const minutes = Math.floor((totalSec % 3600) / 60);
+        const seconds = totalSec % 60;
+        
+        // Populate inputs
+        document.getElementById('timerHours').value = hours;
+        document.getElementById('timerMinutes').value = minutes;
+        document.getElementById('timerSeconds').value = seconds;
+        
+        // Show inputs and hide edit button
+        document.getElementById('timerEditInputs').style.display = 'flex';
+        document.getElementById('timerEditBtn').style.display = 'none';
+        document.getElementById('timerText').style.display = 'none';
+    };
+    
+    window.saveTimerEdit = function() {
+        if (!isEditMode) return;
+        
+        const hours = parseInt(document.getElementById('timerHours').value) || 0;
+        const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
+        const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
+        
+        // Validate inputs
+        if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) {
+            alert('Invalid time values. Hours: 0-23, Minutes: 0-59, Seconds: 0-59');
+            return;
+        }
+        
+        // Calculate total milliseconds
+        const totalMs = (hours * 3600 + minutes * 60 + seconds) * 1000;
+        
+        // Save to state
+        const s = window.loadTimerState();
+        window.saveTimerState({ ...s, accumulatedMs: totalMs, workoutStartAt: s.workoutStartAt || Date.now() });
+        
+        // Update display
+        if (window.renderTimer) window.renderTimer();
+        
+        // Hide inputs and show edit button
+        document.getElementById('timerEditInputs').style.display = 'none';
+        document.getElementById('timerEditBtn').style.display = 'inline-block';
+        document.getElementById('timerText').style.display = 'inline';
+    };
+    
+    window.cancelTimerEdit = function() {
+        if (!isEditMode) return;
+        
+        // Hide inputs and show edit button
+        document.getElementById('timerEditInputs').style.display = 'none';
+        document.getElementById('timerEditBtn').style.display = 'inline-block';
+        document.getElementById('timerText').style.display = 'inline';
+    };
+    
+    // Expose getElapsedMs for finishWorkout
+    window.getTimerElapsedMs = function() {
+        const s = window.loadTimerState();
+        const running = s.resumeAt ? (Date.now() - s.resumeAt) : 0;
+        return (s.accumulatedMs || 0) + running;
+    };
 
     // ---- autosave (localStorage) ----
     let autosaveTimer = null;
@@ -2138,7 +2279,7 @@
         const sid = workoutSessionId ? `${workoutSessionId}:` : 'temp:';
         return `restTimer:${sid}${keyBase}`;
     }
-
+    
     function initTimer(exerciseId) {
         if (!timers[exerciseId]) {
             timers[exerciseId] = {
@@ -2250,11 +2391,11 @@
         }
         const endAt = Date.now() + (timer.seconds * 1000);
         try { localStorage.setItem(restKey, JSON.stringify({ endAt, initialSeconds: timer.initialSeconds })); } catch(_) {}
-
+        
         timer.isRunning = true;
         const startBtn = document.getElementById(`timerStart-${exerciseId}`);
         startBtn.textContent = 'Pause';
-
+        
         // While visible, update display using timestamp math
         if (timer.interval) clearInterval(timer.interval);
         timer.interval = setInterval(() => {
@@ -2274,7 +2415,7 @@
         const restKey = getRestKey(exerciseId);
         if (!restKey) { // no key to persist to, just pause locally
             if (timer.interval) { clearInterval(timer.interval); timer.interval = null; }
-            timer.isRunning = false;
+        timer.isRunning = false;
             const startBtn = document.getElementById(`timerStart-${exerciseId}`);
             startBtn.textContent = 'Start';
             updateTimerDisplay(exerciseId);

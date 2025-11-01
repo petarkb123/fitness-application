@@ -131,10 +131,12 @@
             
             <div class="page-header">
                 <div class="page-title-section">
-                    <a href="/workouts" class="back-link">
-                        <i class="fas fa-arrow-left"></i>
-                        Back to Workouts
-                    </a>
+                    <div class="header-actions-container">
+                        <a href="/workouts" class="back-link">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Workouts
+                        </a>
+                    </div>
                     <h1 class="page-title">
                         <i class="fas fa-chart-bar"></i>
                         <span class="details-mobile-title-text">Workout Details</span>
@@ -182,6 +184,14 @@
                     </div>
                 </div>
             </div></div>
+
+            <!-- Edit Workout Button -->
+            <div style="margin: 1.5rem 0; display: flex; justify-content: center;">
+                <a th:href="@{|/workouts/session?sessionId=${sessionId}&edit=true|}" class="btn btn-primary" style="width: 100%; max-width: 500px; padding: 0.75rem 1.5rem; font-size: 1.1rem; text-align: center;">
+                    <i class="fas fa-edit"></i>
+                    Edit Workout
+                </a>
+            </div>
 
             
             <div class="workout-exercises">

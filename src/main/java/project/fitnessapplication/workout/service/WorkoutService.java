@@ -146,6 +146,71 @@ public class WorkoutService {
     }
     
     @Transactional
+    public void updateSessionWithSets(UUID sessionId, UUID userId, List<ExerciseSetData> exerciseSets, 
+                                     LocalDateTime startedAt, LocalDateTime finishedAt) {
+        var session = sessionRepo.findById(sessionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        
+        if (!Objects.equals(session.getUserId(), userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found");
+        }
+        
+        // Update sets if provided
+        if (exerciseSets != null && !exerciseSets.isEmpty()) {
+            setRepo.deleteBySessionId(sessionId);
+            var toSave = new ArrayList<WorkoutSet>();
+            
+            int exerciseOrderIndex = 0;
+            for (var exData : exerciseSets) {
+                var exercise = exerciseRepo.findById(exData.exerciseId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Exercise not found"));
+                
+                boolean ownerOk = Objects.equals(exercise.getOwnerUserId(), userId) ||
+                        Objects.equals(exercise.getOwnerUserId(), SystemDefault.SYSTEM_USER_ID);
+                if (!ownerOk) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Exercise not accessible");
+                }
+                
+                if (exData.sets() != null) {
+                    for (var setData : exData.sets()) {
+                        int reps = (setData.reps() == null) ? 0 : Math.max(0, setData.reps());
+                        double weight = (setData.weight() == null) ? 0.0 : Math.max(0.0, setData.weight());
+                        if (reps <= 0 || weight <= 0.0) continue;
+                        
+                        toSave.add(WorkoutSet.builder()
+                                .sessionId(sessionId)
+                                .exerciseId(exercise.getId())
+                                .reps(reps)
+                                .weight(java.math.BigDecimal.valueOf(weight))
+                                .groupId(setData.groupId())
+                                .groupType(setData.groupType())
+                                .groupOrder(setData.groupOrder())
+                                .setNumber(setData.setNumber())
+                                .exerciseOrder(exerciseOrderIndex)
+                                .build());
+                    }
+                    exerciseOrderIndex++;
+                }
+            }
+            if (!toSave.isEmpty()) {
+                setRepo.saveAll(toSave);
+            }
+        }
+        
+        // Update timestamps if provided
+        if (startedAt != null) {
+            session.setStartedAt(startedAt);
+        }
+        if (finishedAt != null) {
+            session.setFinishedAt(finishedAt);
+        }
+        
+        // Ensure session is marked as finished
+        session.setStatus(SessionStatus.FINISHED);
+        sessionRepo.save(session);
+    }
+    
+    @Transactional
     public void deleteSession(UUID sessionId, UUID userId) {
         var session = sessionRepo.findById(sessionId);
         if (session.isEmpty() || !Objects.equals(session.get().getUserId(), userId)) {
