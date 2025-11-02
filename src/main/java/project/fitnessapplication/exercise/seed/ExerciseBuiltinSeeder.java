@@ -168,21 +168,7 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
 
     private void upsert(String name, MuscleGroup mg, Equipment eq, java.util.UUID owner) {
         repo.findByNameIgnoreCaseAndOwnerUserId(name, owner).ifPresentOrElse(
-                e -> {
-                    // Update existing exercise if muscle group or equipment changed
-                    boolean changed = false;
-                    if (e.getPrimaryMuscle() != mg) {
-                        e.setPrimaryMuscle(mg);
-                        changed = true;
-                    }
-                    if (e.getEquipment() != eq) {
-                        e.setEquipment(eq);
-                        changed = true;
-                    }
-                    if (changed) {
-                        repo.save(e);
-                    }
-                }, 
+                e -> {}, 
                 () -> {
                     var ex = new Exercise();
                     ex.setOwnerUserId(owner);
