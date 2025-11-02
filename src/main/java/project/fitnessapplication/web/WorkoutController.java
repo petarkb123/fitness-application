@@ -125,7 +125,12 @@ public class WorkoutController {
             long durationSeconds = java.time.Duration.between(s.getStartedAt(), s.getFinishedAt()).getSeconds();
             if (durationSeconds < 0) durationSeconds = 0;
             model.addAttribute("workoutDurationSeconds", durationSeconds);
-            model.addAttribute("originalStartedAt", s.getStartedAt().toString());
+            
+            // Convert startedAt from UTC to regional time for proper JavaScript Date parsing
+            var regionalStartedAt = (u.getRegion() != null) 
+                ? project.fitnessapplication.config.TimezoneConfig.convertFromUtcToRegionalTime(s.getStartedAt(), u.getRegion())
+                : s.getStartedAt();
+            model.addAttribute("originalStartedAt", regionalStartedAt.toString());
         } else {
             model.addAttribute("workoutDurationSeconds", 0);
             model.addAttribute("originalStartedAt", "");

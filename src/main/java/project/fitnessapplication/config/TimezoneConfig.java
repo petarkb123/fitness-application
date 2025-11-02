@@ -46,5 +46,22 @@ public class TimezoneConfig {
                 .withZoneSameInstant(userZone)
                 .toLocalDateTime();
     }
+    
+    /**
+     * Converts a LocalDateTime stored in UTC to the user's regional timezone.
+     * Use this when the database stores timestamps in UTC.
+     */
+    public static LocalDateTime convertFromUtcToRegionalTime(LocalDateTime utcTime, String region) {
+        if (utcTime == null) return null;
+        
+        ZoneId utcZone = ZoneId.of("UTC");
+        ZoneId userZone = getZoneIdForRegion(region);
+        
+        // Convert from UTC to user regional timezone
+        return utcTime
+                .atZone(utcZone)
+                .withZoneSameInstant(userZone)
+                .toLocalDateTime();
+    }
 }
 
