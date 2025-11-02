@@ -2,35 +2,47 @@
 
 The PostgreSQL database has a check constraint that prevents the QUADS value. Here's how to fix it:
 
-## Option 1: Via Railway PostgreSQL Console (Recommended)
+## Option 1: Via Railway PostgreSQL Console (Recommended - KEEPS YOUR DATA!)
 
-1. Go to your Railway project dashboard
-2. Click on your PostgreSQL database service
-3. Click on the "Query" tab or "Connect" to open a database console
-4. Run these commands in order:
+1. Go to https://railway.app and log in
+2. Click on your **Fitness Application project**
+3. You'll see two services: one for your app, one for **PostgreSQL**
+4. Click on the **PostgreSQL** service (not your app service)
+5. Click on the **"Data"** tab at the top
+6. You'll see a SQL query editor on the right side
+7. Copy and paste these commands one at a time, clicking "Run" after each:
 
 ```sql
 -- First, update all LEGS values to QUADS
 UPDATE exercises SET primary_muscle = 'QUADS' WHERE primary_muscle = 'LEGS';
-
--- Drop the old check constraint
-ALTER TABLE exercises DROP CONSTRAINT IF EXISTS exercises_primary_muscle_check;
-
--- Hibernate's ddl-auto=update will recreate the constraint with the correct values on next startup
 ```
 
-## Option 2: Via psql Command Line
+Then run this second command:
 
-If you have PostgreSQL client installed:
+```sql
+-- Drop the old check constraint
+ALTER TABLE exercises DROP CONSTRAINT IF EXISTS exercises_primary_muscle_check;
+```
 
-1. Connect to your Railway PostgreSQL database
-2. Run the same SQL commands as above
+## Option 2: Redeploy Database (LOSES ALL DATA!)
+
+**⚠️ WARNING: This will delete ALL your data!**
+
+If you don't care about losing user data, workouts, templates, etc.:
+
+1. In Railway dashboard, click on your PostgreSQL service
+2. Click **"Settings"** → **"Delete"**
+3. Confirm deletion
+4. Click **"+ New"** → **"Database"** → **"Add PostgreSQL"** again
+5. The app will restart and create a fresh database
 
 ## After the Fix
 
-1. The app will automatically restart
-2. The seeder will run and create/update all exercises with correct QUADS values
-3. Everything should work normally
+1. Go back to your **app service** (not database)
+2. Click **"Deployments"** → **"Redeploy"**
+3. The app will restart
+4. The seeder will run and create/update all exercises with correct QUADS values
+5. Everything should work normally
 
 ## Why This Happened
 
