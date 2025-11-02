@@ -242,13 +242,13 @@
                         <div class="muscle-group-header" onclick="toggleMuscleGroup('legs')" aria-expanded="false">
                             <h3 class="muscle-group-title">LEGS</h3>
                             <span class="exercise-count"
-                                  th:text="${exercises.?[builtIn and primaryMuscle.name() == 'LEGS'].size()} + ' exercises'">0 exercises</span>
+                                  th:text="${exercises.?[builtIn and primaryMuscle.name() == 'QUADS'].size()} + ' exercises'">0 exercises</span>
                             <i class="fas fa-chevron-down muscle-group-icon" id="legs-icon"></i>
                         </div>
                         <div class="muscle-group-content collapsible" id="legs-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
-                                     th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'LEGS']}">
+                                     th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'QUADS']}">
                                     <div class="exercise-header">
                                         <div class="exercise-icon"><i class="fas fa-dumbbell"></i></div>
                                         <div class="exercise-badges"><span class="badge badge-builtin">Built-in</span></div>

@@ -29,12 +29,22 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
         upsert("Dumbbell Bench Press", MuscleGroup.CHEST, Equipment.DUMBBELL, SYS);
         upsert("Incline Bench Press", MuscleGroup.CHEST, Equipment.BARBELL, SYS);
         upsert("Decline Bench Press", MuscleGroup.CHEST, Equipment.BARBELL, SYS);
-        upsert("Inline Machine Press", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
+        upsert("Incline Machine Press", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
         upsert("Flat Machine Press", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
         upsert("Machine Bench Press", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
         upsert("Incline Machine Fly", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
+        upsert("Incline Dumbbell Press", MuscleGroup.CHEST, Equipment.DUMBBELL, SYS);
+        upsert("Decline Dumbbell Press", MuscleGroup.CHEST, Equipment.DUMBBELL, SYS);
+        upsert("Dumbbell Fly", MuscleGroup.CHEST, Equipment.DUMBBELL, SYS);
+        upsert("Incline Dumbbell Fly", MuscleGroup.CHEST, Equipment.DUMBBELL, SYS);
+        upsert("Cable Fly (High to Low)", MuscleGroup.CHEST, Equipment.CABLE, SYS);
+        upsert("Cable Fly (Low to High)", MuscleGroup.CHEST, Equipment.CABLE, SYS);
+        upsert("Pec Deck Fly", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
+        upsert("Smith Machine Bench Press", MuscleGroup.CHEST, Equipment.MACHINE, SYS);
+        upsert("Weighted Push-Ups", MuscleGroup.CHEST, Equipment.OTHER, SYS);
         upsert("Push-Ups", MuscleGroup.CHEST, Equipment.BODYWEIGHT, SYS);
-        upsert("Chest Dips", MuscleGroup.CHEST, Equipment.BODYWEIGHT, SYS);
+
+
 
         
         upsert("Pull-Ups", MuscleGroup.BACK, Equipment.BODYWEIGHT, SYS);
@@ -46,6 +56,15 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
         upsert("Deadlifts", MuscleGroup.BACK, Equipment.BARBELL, SYS);
         upsert("Chest Supported Row", MuscleGroup.BACK, Equipment.MACHINE, SYS);
         upsert("Straight-Arm Pulldowns", MuscleGroup.BACK, Equipment.CABLE, SYS);
+        upsert("Rack Pull", MuscleGroup.BACK, Equipment.BARBELL, SYS);
+        upsert("Single-Arm Dumbbell Row", MuscleGroup.BACK, Equipment.DUMBBELL, SYS);
+        upsert("Chest-Supported Dumbbell Row", MuscleGroup.BACK, Equipment.DUMBBELL, SYS);
+        upsert("Seated Cable Row", MuscleGroup.BACK, Equipment.CABLE, SYS);
+        upsert("One-Arm Cable Row", MuscleGroup.BACK, Equipment.CABLE, SYS);
+        upsert("Wide-Grip Lat Pulldown", MuscleGroup.BACK, Equipment.CABLE, SYS);
+        upsert("Close-Grip Lat Pulldown", MuscleGroup.BACK, Equipment.CABLE, SYS);
+        upsert("Neutral-Grip Lat Pulldown", MuscleGroup.BACK, Equipment.CABLE, SYS);
+        upsert("Machine Row", MuscleGroup.BACK, Equipment.MACHINE, SYS);
 
         
         upsert("Barbell Curl", MuscleGroup.BICEPS, Equipment.BARBELL, SYS);
@@ -55,16 +74,26 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
         upsert("Preacher Hammer Curl", MuscleGroup.BICEPS, Equipment.MACHINE, SYS);
         upsert("Cable Hammer Curl", MuscleGroup.BICEPS, Equipment.CABLE, SYS);
         upsert("Concentration Curl", MuscleGroup.BICEPS, Equipment.DUMBBELL, SYS);
-        upsert("Bayesan curl", MuscleGroup.BICEPS, Equipment.CABLE, SYS);
+        upsert("Bayesian curl", MuscleGroup.BICEPS, Equipment.CABLE, SYS);
         upsert("Cable Curl", MuscleGroup.BICEPS, Equipment.CABLE, SYS);
+        upsert("EZ-Bar Curl", MuscleGroup.BICEPS, Equipment.BARBELL, SYS);
+        upsert("Reverse Curl", MuscleGroup.BICEPS, Equipment.BARBELL, SYS);
+        upsert("Incline Dumbbell Curl", MuscleGroup.BICEPS, Equipment.DUMBBELL, SYS);
+        upsert("Spider Curl", MuscleGroup.BICEPS, Equipment.DUMBBELL, SYS);
+        upsert("Concentration Cable Curl", MuscleGroup.BICEPS, Equipment.CABLE, SYS);
+        upsert("Machine Biceps Curl", MuscleGroup.BICEPS, Equipment.MACHINE, SYS);
 
         
         upsert("Close-Grip Bench Press", MuscleGroup.TRICEPS, Equipment.BARBELL, SYS);
         upsert("Tricep Dips", MuscleGroup.TRICEPS, Equipment.BODYWEIGHT, SYS);
         upsert("JM Press", MuscleGroup.TRICEPS, Equipment.MACHINE, SYS);
-        upsert("Overhead Tricep Extension", MuscleGroup.TRICEPS, Equipment.DUMBBELL, SYS);
+        upsert("Overhead Tricep Extension", MuscleGroup.TRICEPS, Equipment.CABLE, SYS);
         upsert("Skull Crushers", MuscleGroup.TRICEPS, Equipment.BARBELL, SYS);
         upsert("Tricep Pushdowns", MuscleGroup.TRICEPS, Equipment.CABLE, SYS);
+        upsert("Single-Arm Cable Pushdown", MuscleGroup.TRICEPS, Equipment.CABLE, SYS);
+        upsert("Machine Dip", MuscleGroup.TRICEPS, Equipment.MACHINE, SYS);
+
+
 
         
         upsert("Overhead Press", MuscleGroup.SHOULDERS, Equipment.BARBELL, SYS);
@@ -76,12 +105,17 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
         upsert("Front Raises", MuscleGroup.SHOULDERS, Equipment.CABLE, SYS);
         upsert("Rear Delt Flyes", MuscleGroup.SHOULDERS, Equipment.MACHINE, SYS);
         upsert("Upright Rows", MuscleGroup.SHOULDERS, Equipment.CABLE, SYS);
+        upsert("Seated Dumbbell Shoulder Press", MuscleGroup.SHOULDERS, Equipment.DUMBBELL, SYS);
+        upsert("Machine Shoulder Press", MuscleGroup.SHOULDERS, Equipment.MACHINE, SYS);
+        upsert("Rear Delt Cable Fly", MuscleGroup.SHOULDERS, Equipment.CABLE, SYS);
+        upsert("Cable Face Pull", MuscleGroup.SHOULDERS, Equipment.CABLE, SYS);
+        upsert("Cable Y-Raise", MuscleGroup.SHOULDERS, Equipment.CABLE, SYS);
+        upsert("Barbell Upright Row", MuscleGroup.SHOULDERS, Equipment.BARBELL, SYS);
 
         
         upsert("Wrist Curls", MuscleGroup.FOREARMS, Equipment.BARBELL, SYS);
-        upsert("Reverse Wrist Curls", MuscleGroup.FOREARMS, Equipment.BARBELL, SYS);
-        upsert("Cable Foreamr Curl", MuscleGroup.FOREARMS, Equipment.CABLE, SYS);
-        upsert("Farmer’s Carry", MuscleGroup.FOREARMS, Equipment.DUMBBELL, SYS);
+        upsert("Cable Forearm Curl", MuscleGroup.FOREARMS, Equipment.CABLE, SYS);
+        upsert("Behind-the-Back Wrist Curl", MuscleGroup.FOREARMS, Equipment.BARBELL, SYS);
 
         
         upsert("Plank", MuscleGroup.CORE, Equipment.BODYWEIGHT, SYS);
@@ -91,16 +125,19 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
         upsert("Bicycle Crunches", MuscleGroup.CORE, Equipment.BODYWEIGHT, SYS);
         upsert("Ab Rollouts", MuscleGroup.CORE, Equipment.OTHER, SYS);
         upsert("Sit-Ups", MuscleGroup.CORE, Equipment.BODYWEIGHT, SYS);
-        upsert("V-Ups", MuscleGroup.CORE, Equipment.BODYWEIGHT, SYS);
-        upsert("Mountain Climbers", MuscleGroup.CORE, Equipment.BODYWEIGHT, SYS);
+ 
 
         
-        upsert("Back Squat", MuscleGroup.LEGS, Equipment.BARBELL, SYS);
-        upsert("Hack Squat", MuscleGroup.LEGS, Equipment.MACHINE, SYS);
-        upsert("Front Squat", MuscleGroup.LEGS, Equipment.BARBELL, SYS);
-        upsert("Leg Extension", MuscleGroup.LEGS, Equipment.MACHINE, SYS);
-        upsert("Bulgarian Split Squat", MuscleGroup.LEGS, Equipment.DUMBBELL, SYS);
-        upsert("Walking Lunges", MuscleGroup.LEGS, Equipment.DUMBBELL, SYS);
+        upsert("Back Squat", MuscleGroup.QUADS, Equipment.BARBELL, SYS);
+        upsert("Hack Squat", MuscleGroup.QUADS, Equipment.MACHINE, SYS);
+        upsert("Front Squat", MuscleGroup.QUADS, Equipment.BARBELL, SYS);
+        upsert("Leg Extension", MuscleGroup.QUADS, Equipment.MACHINE, SYS);
+        upsert("Bulgarian Split Squat", MuscleGroup.QUADS, Equipment.DUMBBELL, SYS);
+        upsert("Walking Lunges", MuscleGroup.QUADS, Equipment.DUMBBELL, SYS);
+        upsert("Leg Press", MuscleGroup.QUADS, Equipment.MACHINE, SYS);
+        upsert("Smith Machine Squat", MuscleGroup.QUADS, Equipment.MACHINE, SYS);
+        upsert("Goblet Squat", MuscleGroup.QUADS, Equipment.DUMBBELL, SYS);
+        upsert("Belt Squat", MuscleGroup.QUADS, Equipment.MACHINE, SYS);
 
         
         upsert("Romanian Deadlift", MuscleGroup.HAMSTRINGS, Equipment.BARBELL, SYS);
@@ -108,6 +145,8 @@ public class ExerciseBuiltinSeeder implements ApplicationRunner {
         upsert("Good Mornings", MuscleGroup.HAMSTRINGS, Equipment.BARBELL, SYS);
         upsert("Seated Leg Curl", MuscleGroup.HAMSTRINGS, Equipment.MACHINE, SYS);
         upsert("Lying Leg Curl", MuscleGroup.HAMSTRINGS, Equipment.MACHINE, SYS);
+        upsert("Back Extension", MuscleGroup.HAMSTRINGS, Equipment.OTHER, SYS);
+
 
         
         upsert("Standing Calf Raises", MuscleGroup.CALVES, Equipment.MACHINE, SYS);

@@ -314,7 +314,7 @@
 
     function optgroupsFor(prefix, arr) {
         const by = groupByMuscle(arr);
-        const order = ['CHEST','BACK','LEGS','SHOULDERS','BICEPS','TRICEPS','FOREARMS','HAMSTRINGS','CALVES','CORE','OTHER'];
+        const order = ['CHEST','BACK','QUADS','SHOULDERS','BICEPS','TRICEPS','FOREARMS','HAMSTRINGS','CALVES','CORE','OTHER'];
         return order
             .filter(k => by[k] && by[k].length)
             .map(k => {

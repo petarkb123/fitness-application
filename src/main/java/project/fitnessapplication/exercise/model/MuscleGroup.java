@@ -4,13 +4,12 @@ public enum MuscleGroup {
     CHEST,
     BACK,
     SHOULDERS,
-    LEGS,
+    QUADS,
     BICEPS,
     TRICEPS,
     FOREARMS,
     CALVES,
     HAMSTRINGS,
-    TRAPS,
     CORE,
     OTHER
 }
