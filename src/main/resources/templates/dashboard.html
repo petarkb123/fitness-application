@@ -381,7 +381,9 @@
         // Opposite kind -> replace (delete then create)
         if (exists && ((t==='REST' && exists.kind==='WORKOUT') || (t==='WORKOUT' && exists.kind==='REST'))) {
             const delUrl = exists.kind==='REST' ? `/api/rest-days/${exists.id}` : `/api/schedule/${exists.id}`;
-            const delRes = await fetch(delUrl, { method:'DELETE', headers:{ [header]: token }, credentials:'same-origin' });
+            const delHeaders = {};
+            delHeaders[header] = token;
+            const delRes = await fetch(delUrl, { method:'DELETE', headers: delHeaders, credentials:'same-origin' });
             if (!delRes.ok) {
                 const txt = await delRes.text().catch(()=>null);
                 err.textContent = txt && txt.length < 200 ? txt : 'Failed to replace existing schedule. Please try again.';
@@ -392,12 +394,17 @@
         let res;
         if (t==='REST') {
             const payload = { date, notes: document.getElementById('schNotes').value || null };
-            res = await fetch('/api/rest-days', { method:'POST', headers:{'Content-Type':'application/json',[header]:token}, body: JSON.stringify(payload), credentials:'same-origin' });
+            const headers = { 'Content-Type': 'application/json' };
+            headers[header] = token;
+            res = await fetch('/api/rest-days', { method:'POST', headers, body: JSON.stringify(payload), credentials:'same-origin' });
+
         } else {
             const tpl = document.getElementById('schTemplate').value;
             if (!tpl) { err.textContent='Please select template'; err.style.display='block'; return; }
             const payload = { templateId: tpl, date, notes: document.getElementById('schWNotes').value || null };
-            res = await fetch('/api/schedule', { method:'POST', headers:{'Content-Type':'application/json',[header]:token}, body: JSON.stringify(payload), credentials:'same-origin' });
+            const headers = { 'Content-Type': 'application/json' };
+            headers[header] = token;
+            res = await fetch('/api/schedule', { method:'POST', headers, body: JSON.stringify(payload), credentials:'same-origin' });
         }
         if (res.ok){ closeScheduleModal(); window.location.reload(); } else { const t = await res.text().catch(()=>null); err.textContent = `Save failed (${res.status}). ${t || ''}`.trim(); err.style.display='block'; }
     }
@@ -408,7 +415,9 @@
         if (!existing) return;
         const { header, token } = getCsrf();
         const url = existing.kind==='REST' ? `/api/rest-days/${existing.id}` : `/api/schedule/${existing.id}`;
-        const res = await fetch(url, { method:'DELETE', headers:{[header]:token}, credentials:'same-origin' });
+        const headers = {};
+        headers[header] = token;
+        const res = await fetch(url, { method:'DELETE', headers, credentials:'same-origin' });
         if (res.ok) { closeScheduleModal(); window.location.reload(); } else { const err = document.getElementById('schErr'); const txt = await res.text().catch(()=>null); err.textContent = `Delete failed (${res.status}). ${txt || ''}`.trim(); err.style.display='block'; }
     }
 
@@ -504,7 +513,9 @@
         const last = new Date(year, month + 1, 0);
         const toIso = d => d.toISOString().slice(0,10);
         const { header, token } = getCsrf();
-        const res = await fetch(`/api/schedule?from=${toIso(first)}&to=${toIso(last)}`, { headers: { [header]: token }, credentials:'same-origin' });
+        const headers = {};
+        headers[header] = token;
+        const res = await fetch(`/api/schedule?from=${toIso(first)}&to=${toIso(last)}`, { headers, credentials:'same-origin' });
         const arr = res.ok ? await res.json() : [];
         const map = new Map();
         arr.forEach(x => map.set(x.date, { ...x, kind:'WORKOUT' }));
