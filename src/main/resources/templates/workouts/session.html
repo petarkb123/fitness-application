@@ -1578,7 +1578,7 @@
         
         // Initialize all timers after template load
         setTimeout(() => {
-            for (let i = 1; i <= exerciseCounter; i++) {
+            for (let i = 0; i < exerciseCounter; i++) {
                 initTimer(i);
             }
         }, 200);
@@ -1864,7 +1864,7 @@
         }
         // Initialize all timers after existing sets load
         setTimeout(() => {
-            for (let i = 1; i <= exerciseCounter; i++) {
+            for (let i = 0; i < exerciseCounter; i++) {
                 try { initTimer(i); } catch(_) {}
             }
         }, 200);
@@ -2250,7 +2250,7 @@
         });
         // Initialize timers after draft rebuild (rehydrates any running rests)
         setTimeout(() => {
-            for (let i = 1; i <= exerciseCounter; i++) {
+            for (let i = 0; i < exerciseCounter; i++) {
                 try { initTimer(i); } catch(_) {}
             }
         }, 200);
@@ -2473,7 +2473,7 @@
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState !== 'visible') return;
         // For each timer on screen, recompute remaining from storage
-        for (let i = 1; i <= exerciseCounter; i++) {
+        for (let i = 0; i < exerciseCounter; i++) {
             const timer = timers[i];
             if (!timer) continue;
             const restKey = getRestKey(i);
@@ -2581,7 +2581,7 @@
     // Initialize timers for existing exercises
     setTimeout(() => {
         if (exerciseCounter > 0) {
-            for (let i = 1; i <= exerciseCounter; i++) {
+            for (let i = 0; i < exerciseCounter; i++) {
                 initTimer(i);
             }
         }
