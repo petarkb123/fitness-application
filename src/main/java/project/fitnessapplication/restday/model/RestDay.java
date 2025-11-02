@@ -41,7 +41,7 @@ public class RestDay {
 
     @Column(name = "reason", length = 50)
     @Builder.Default
-    private String reason = "Planned";
+    private String reason = "Planned Rest";
 
     @Column(name = "active", nullable = false)
     @Builder.Default
