@@ -294,6 +294,7 @@
     const elapsedSeconds = /*[[${elapsedSeconds}]]*/ 0;
     const isEditMode = /*[[${isEditMode}]]*/ false;
     const workoutDurationSeconds = /*[[${workoutDurationSeconds}]]*/ 0;
+    const originalStartedAt = /*[[${originalStartedAt}]]*/ "";
     // Use temporary draft key if no sessionId yet (allows saving drafts before session is created)
     const TEMP_DRAFT_KEY = 'workoutDraft:temp';
     const getDraftKey = () => workoutSessionId ? (`workoutDraft:${workoutSessionId}`) : TEMP_DRAFT_KEY;
@@ -813,14 +814,13 @@
         const csrfToken  = document.querySelector('meta[name="_csrf"]').content;
 
         // In edit mode, get the current timer duration and send to update endpoint
-        if (isEditMode && window.getTimerElapsedMs) {
+        if (isEditMode && window.getTimerElapsedMs && originalStartedAt) {
             // Calculate duration from timer state
             const durationMs = window.getTimerElapsedMs();
             
-            // Calculate start time as now minus duration, and finish time as now
-            const now = new Date();
-            const startedAt = new Date(now.getTime() - durationMs);
-            const finishedAt = now;
+            // Keep original startedAt, calculate new finishedAt based on edited duration
+            const startedAt = new Date(originalStartedAt);
+            const finishedAt = new Date(startedAt.getTime() + durationMs);
             
             // Convert to ISO format for backend
             payload.startedAt = startedAt.toISOString();

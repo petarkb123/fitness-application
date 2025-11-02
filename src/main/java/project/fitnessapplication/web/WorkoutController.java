@@ -120,13 +120,15 @@ public class WorkoutController {
             model.addAttribute("elapsedSeconds", 0);
         }
         
-        // For edit mode, provide original workout duration
+        // For edit mode, provide original workout duration and startedAt
         if (edit && s.getStartedAt() != null && s.getFinishedAt() != null) {
             long durationSeconds = java.time.Duration.between(s.getStartedAt(), s.getFinishedAt()).getSeconds();
             if (durationSeconds < 0) durationSeconds = 0;
             model.addAttribute("workoutDurationSeconds", durationSeconds);
+            model.addAttribute("originalStartedAt", s.getStartedAt().toString());
         } else {
             model.addAttribute("workoutDurationSeconds", 0);
+            model.addAttribute("originalStartedAt", "");
         }
 
         var options = workoutService.getAvailableExercises(userId)
