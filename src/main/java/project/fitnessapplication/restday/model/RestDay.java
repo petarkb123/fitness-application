@@ -25,12 +25,12 @@ public class RestDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "id", columnDefinition = "char(36)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "id")
     private UUID id;
 
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "user_id", nullable = false, columnDefinition = "char(36)")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
 
     @Column(name = "date", nullable = false)
