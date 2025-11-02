@@ -30,7 +30,6 @@ public class RestDayService {
                 .userId(userId)
                 .date(request.date())
                 .notes(request.notes())
-                .reason("Planned Rest")
                 .active(true)
                 .build();
         return RestDayDto.fromEntity(restDayRepository.save(restDay));
