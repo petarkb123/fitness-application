@@ -39,7 +39,7 @@ public class RestDay {
     @Column(name = "notes", length = 500)
     private String notes;
 
-    @Column(name = "reason", length = 50)
+    @Column(name = "reason", length = 50, nullable = true)
     @Deprecated // Legacy field for backward compatibility with existing database
     private String reason;
 
