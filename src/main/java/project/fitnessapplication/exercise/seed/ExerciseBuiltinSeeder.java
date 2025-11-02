@@ -1,5 +1,6 @@
 package project.fitnessapplication.exercise.seed;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -18,11 +19,20 @@ import java.time.LocalDateTime;
 public class ExerciseBuiltinSeeder implements ApplicationRunner {
 
     private final ExerciseRepository repo;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
         final var SYS = SystemDefault.SYSTEM_USER_ID;
+        
+        // Migrate any old LEGS values to QUADS before seeding
+        try {
+            entityManager.createNativeQuery("UPDATE exercises SET primary_muscle = 'QUADS' WHERE primary_muscle = 'LEGS'")
+                    .executeUpdate();
+        } catch (Exception e) {
+            // Ignore if query fails (table might not exist yet or query syntax issue)
+        }
 
         
         upsert("Barbell Bench Press", MuscleGroup.CHEST, Equipment.BARBELL, SYS);
