@@ -49,7 +49,7 @@ public class WorkoutService {
     
     @Transactional(readOnly = true)
     public List<WorkoutSet> getSessionSets(UUID sessionId) {
-        return setRepo.findAllBySessionIdOrderByExerciseOrderAscIdAsc(sessionId);
+        return setRepo.findAllBySessionIdOrderByExerciseOrderAscSetNumberAsc(sessionId);
     }
     
     @Transactional(readOnly = true)

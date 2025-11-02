@@ -19,6 +19,8 @@ public interface WorkoutSetRepository extends JpaRepository<WorkoutSet, UUID> {
 
     List<WorkoutSet> findAllBySessionIdOrderByExerciseOrderAscIdAsc(UUID sessionId);
     
+    List<WorkoutSet> findAllBySessionIdOrderByExerciseOrderAscSetNumberAsc(UUID sessionId);
+    
     List<WorkoutSet> findAllBySessionId(UUID sessionId);
     
     @Query("SELECT ws FROM WorkoutSet ws " +
