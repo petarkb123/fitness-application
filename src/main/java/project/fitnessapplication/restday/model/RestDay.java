@@ -44,12 +44,10 @@ public class RestDay {
     private Boolean active = true;
 
     @CreationTimestamp
-    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @JdbcTypeCode(SqlTypes.TIMESTAMP)
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 }
