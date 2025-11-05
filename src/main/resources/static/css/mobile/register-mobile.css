@@ -68,11 +68,12 @@
     }
 
     .main-content {
-        padding: 2rem 0;
+        padding: calc(env(safe-area-inset-top, 0px) + 25px) 0 1.25rem 0;
         min-height: 100vh;
         overflow: visible;
         display: flex;
-        align-items: center;
+        align-items: flex-start; /* move content higher */
+        justify-content: center; /* keep horizontally centered */
     }
 
     .register-container {
@@ -83,9 +84,9 @@
     }
 
     .register-card {
-        padding: 0.75rem 1rem;
-        border-radius: 14px;
-        max-width: 400px;
+        padding: 1.25rem 1.25rem; /* more breathing room */
+        border-radius: 16px;
+        max-width: 420px; /* slightly wider for comfort */
         margin: 0 auto;
     }
 
@@ -116,20 +117,19 @@
     }
 
     .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-        margin-bottom: 0.35rem;
+        display: grid;
+        grid-template-columns: 1fr; /* single column on mobile */
+        gap: 0.75rem; /* more space between first/last name */
+        margin-bottom: 0.75rem;
     }
 
-    .form-row .form-group {
-        margin-bottom: 0.35rem;
-    }
+    .form-row .form-group { margin-bottom: 0; }
 
     .form-input, .form-select {
-        min-height: 44px; /* Increased for better touch target */
+        min-height: 48px; /* bigger touch target */
         font-size: 16px !important; /* Prevents iOS zoom */
-        padding: 0.75rem 0.875rem;
-        border-radius: 9px;
+        padding: 0.9rem 0.95rem;
+        border-radius: 12px;
         -webkit-appearance: none;
         appearance: none;
         transform-origin: left top;
@@ -138,10 +138,10 @@
     /* Error and Success Message Styles for Mobile */
     .error-message, .success-message {
         display: none;
-        padding: 0.875rem 1rem;
-        border-radius: 10px;
-        margin-bottom: 1.25rem;
-        font-size: 0.9rem;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
         font-weight: 500;
         align-items: center;
         gap: 0.5rem;
@@ -182,32 +182,30 @@
         }
     }
 
-    .btn, .btn-primary, .btn-google {
-        min-height: 38px;
-        font-size: 0.85rem;
-        padding: 0.55rem 0.8rem;
-        border-radius: 9px;
-    }
+    .btn, .btn-primary, .btn-google { min-height: 48px; font-size: 0.95rem; padding: 0.75rem 1rem; border-radius: 12px; }
 
-    .register-btn {
-        padding: 0.55rem 0.8rem;
-        margin-bottom: 0.35rem;
-    }
+    .register-btn { padding: 0.75rem 1rem; margin-bottom: 0.35rem; }
 
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
+    .form-group { margin-bottom: 1rem; }
     
-    .form-group:has(input[type="password"]) {
-        margin-bottom: 0.6rem;
-    }
+    .form-group:has(input[type="password"]) { margin-bottom: 0.75rem; }
+
+    /* Step containers spacing */
+    #step1, #step2 { margin-top: 0.25rem; }
+    #step2 { margin-top: 0.75rem; }
+
+    /* Form actions layout */
+    #step1 .form-actions { margin-top: 0.75rem; }
+    #step2 .form-actions { margin-top: 1rem; display: flex; flex-direction: column; }
+    .form-actions .btn { width: 100%; }
+    .form-actions { gap: 0.75rem !important; }
+
+    /* Ensure step 2 buttons match Continue size */
+    #step2 .btn-large { min-height: 48px !important; padding: 0.75rem 1rem !important; font-size: 0.95rem !important; }
 
     
 
-    .form-label {
-        font-size: 0.72rem;
-        margin-bottom: 0.3rem;
-    }
+    .form-label { font-size: 0.85rem; margin-bottom: 0.4rem; }
 
     .checkmark {
         width: 20px;
@@ -243,9 +241,29 @@
         font-size: 0.75rem;
     }
 
-    .password-strength {
-        margin-top: 0.3rem;
+    .password-strength { margin-top: 0.4rem; }
+
+    /* Password input with toggle */
+    .password-input-container { position: relative; }
+    .password-toggle {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #c9ceff;
+        padding: 6px;
     }
+
+    /* Strength bar styling */
+    .strength-bar { height: 6px; background: rgba(255,255,255,0.12); border-radius: 6px; overflow: hidden; }
+    .strength-fill { height: 100%; width: 0; transition: width 0.25s ease; }
+    .strength-fill.very-weak{ background:#ff6b6b; }
+    .strength-fill.weak{ background:#ff8e6e; }
+    .strength-fill.fair{ background:#ffd36e; }
+    .strength-fill.good{ background:#9be27d; }
+    .strength-fill.strong{ background:#56d364; }
 
     .strength-text {
         font-size: 0.68rem;

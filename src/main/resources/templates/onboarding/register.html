@@ -77,92 +77,97 @@
                         <span th:text="${msg}">Registration successful!</span>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName" class="form-label">
-                                <i class="fas fa-user"></i>
-                                First Name
-                            </label>
-                            <input type="text" id="firstName" name="firstName" class="form-input" placeholder="Enter your first name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName" class="form-label">
-                                <i class="fas fa-user"></i>
-                                Last Name
-                            </label>
-                            <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Enter your last name" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="username" class="form-label">
-                            <i class="fas fa-user-circle"></i>
-                            Username
-                        </label>
-                        <input type="text" id="username" name="username" class="form-input" placeholder="Choose a username" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email" class="form-label">
-                            <i class="fas fa-envelope"></i>
-                            Email Address
-                        </label>
-                        <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password" class="form-label">
-                            <i class="fas fa-lock"></i>
-                            Password
-                        </label>
-                        <div class="password-input-container">
-                            <input type="password" id="password" name="password" class="form-input" placeholder="Create a password" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword('password')">
-                                <i class="fas fa-eye" id="password-eye"></i>
-                            </button>
-                        </div>
-                        <div class="password-strength">
-                            <div class="strength-bar">
-                                <div class="strength-fill" id="strength-fill"></div>
+                    <!-- STEP 1 -->
+                    <div id="step1">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName" class="form-label">
+                                    <i class="fas fa-user"></i>
+                                    First Name
+                                </label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" placeholder="Enter your first name" required>
                             </div>
-                            <span class="strength-text" id="strength-text">Password strength</span>
+                            <div class="form-group">
+                                <label for="lastName" class="form-label">
+                                    <i class="fas fa-user"></i>
+                                    Last Name
+                                </label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Enter your last name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope"></i>
+                                Email Address
+                            </label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-actions" style="display:flex;gap:.75rem;justify-content:flex-end;">
+                            <button type="button" id="continueBtn" class="btn btn-primary"><i class="fas fa-arrow-right"></i> Continue</button>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="confirmPassword" class="form-label">
-                            <i class="fas fa-lock"></i>
-                            Confirm Password
-                        </label>
-                        <div class="password-input-container">
-                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Confirm your password" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
-                                <i class="fas fa-eye" id="confirmPassword-eye"></i>
+                    <!-- STEP 2 -->
+                    <div id="step2" style="display:none;">
+                        <div class="form-group">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user-circle"></i>
+                                Username
+                            </label>
+                            <input type="text" id="username" name="username" class="form-input" placeholder="Choose a username">
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i>
+                                Password
+                            </label>
+                            <div class="password-input-container">
+                                <input type="password" id="password" name="password" class="form-input" placeholder="Create a password">
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye" id="password-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill" id="strength-fill"></div>
+                                </div>
+                                <span class="strength-text" id="strength-text">Password strength</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label">
+                                <i class="fas fa-lock"></i>
+                                Confirm Password
+                            </label>
+                            <div class="password-input-container">
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Confirm your password">
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                    <i class="fas fa-eye" id="confirmPassword-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="terms" id="terms">
+                                <span class="checkmark"></span>
+                                I agree to the <a href="/terms" class="terms-link" onclick="saveFormData(event, '/terms')">&nbsp;Terms of Service&nbsp;</a> and <a href="/privacy" class="terms-link" onclick="saveFormData(event, '/privacy')">&nbsp;Privacy Policy&nbsp;</a>
+                            </label>
+                        </div>
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="newsletter" id="newsletter">
+                                <span class="checkmark"></span>
+                                Subscribe to fitness tips and updates
+                            </label>
+                        </div>
+                        <div class="form-actions" style="display:flex;gap:.75rem;justify-content:space-between;">
+                            <button type="button" id="backBtn" class="btn btn-outline btn-large" style="flex:1;"><i class="fas fa-arrow-left"></i> Back</button>
+                            <button type="submit" class="btn btn-primary btn-large register-btn" style="flex:1;">
+                                <i class="fas fa-user-plus"></i>
+                                Create Account
                             </button>
                         </div>
                     </div>
-
-
-                    <div class="form-options">
-                        <label class="checkbox-container">
-                            <input type="checkbox" name="terms" id="terms" required>
-                            <span class="checkmark"></span>
-                            I agree to the <a href="/terms" class="terms-link" onclick="saveFormData(event, '/terms')">&nbsp;Terms of Service&nbsp;</a> and <a href="/privacy" class="terms-link" onclick="saveFormData(event, '/privacy')">&nbsp;Privacy Policy&nbsp;</a>
-                        </label>
-                    </div>
-
-                    <div class="form-options">
-                        <label class="checkbox-container">
-                            <input type="checkbox" name="newsletter" id="newsletter">
-                            <span class="checkmark"></span>
-                            Subscribe to fitness tips and updates
-                        </label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-large register-btn">
-                        <i class="fas fa-user-plus"></i>
-                        Create Account
-                    </button>
 
                 </form>
 
@@ -288,59 +293,80 @@
         strengthText.textContent = strength.strengthText;
     });
 
-    // Form validation - removed alert() calls to only use UI error messages
+    // Two-step logic
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const continueBtn = document.getElementById('continueBtn');
+    const backBtn = document.getElementById('backBtn');
+
+    if (continueBtn) {
+        continueBtn.addEventListener('click', function() {
+            // basic validation for step1
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            const existingError = document.querySelector('.error-message');
+            if (existingError) existingError.remove();
+
+            if (!firstName || !lastName || !email) {
+                showErrorMessage('Please fill in first name, last name and email.');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                showErrorMessage('Please enter a valid email address');
+                return;
+            }
+
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    if (backBtn) {
+        backBtn.addEventListener('click', function() {
+            step2.style.display = 'none';
+            step1.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // Final submit validation (step2)
     document.querySelector('.register-form').addEventListener('submit', function(e) {
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
-        const username = document.getElementById('username').value;
-        const email = document.getElementById('email').value;
+        const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         const terms = document.getElementById('terms').checked;
 
-        // Remove any existing error messages
         const existingError = document.querySelector('.error-message');
-        if (existingError) {
-            existingError.remove();
-        }
+        if (existingError) existingError.remove();
 
-        if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
+        if (!username || !password || !confirmPassword) {
             e.preventDefault();
-            showErrorMessage('Please fill in all required fields');
+            showErrorMessage('Please fill in all required fields.');
             return;
         }
-
         if (username.length < 3) {
             e.preventDefault();
             showErrorMessage('Username must be at least 3 characters long');
             return;
         }
-
-        if (!isValidEmail(email)) {
-            e.preventDefault();
-            showErrorMessage('Please enter a valid email address');
-            return;
-        }
-
         if (password !== confirmPassword) {
             e.preventDefault();
             showErrorMessage('Passwords do not match');
             return;
         }
-
         if (password.length < 8) {
             e.preventDefault();
             showErrorMessage('Password must be at least 8 characters long');
             return;
         }
-
         if (!terms) {
             e.preventDefault();
             showErrorMessage('Please accept the Terms of Service and Privacy Policy');
             return;
         }
-        
-        // Clear saved form data on successful submission
         sessionStorage.removeItem('registerFormData');
     });
 
