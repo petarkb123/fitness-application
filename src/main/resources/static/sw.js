@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fitness-app-v4';
+const CACHE_NAME = 'fitness-app-v5';
 // Only precache truly static assets with correct paths.
 // Avoid precaching HTML routes like '/' so authenticated views aren't served stale from cache.
 const urlsToCache = [
@@ -25,6 +25,7 @@ self.addEventListener('fetch', event => {
   // Network-first strategy for navigations/HTML to ensure fresh authenticated content
   const isNavigation = request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html');
   const isCss = request.destination === 'style' || (request.url && request.url.endsWith('.css'));
+  const isApi = request.url.includes('/api/');
 
   if (isNavigation) {
     event.respondWith(
@@ -37,6 +38,12 @@ self.addEventListener('fetch', event => {
         })
         .catch(() => caches.match(request))
     );
+    return;
+  }
+
+  // Network-only for API requests to avoid stale data
+  if (isApi) {
+    event.respondWith(fetch(request).catch(() => caches.match(request)));
     return;
   }
 

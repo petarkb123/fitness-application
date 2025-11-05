@@ -411,14 +411,27 @@
 
     async function deleteSchedule(){
         const date = document.getElementById('schDate').value;
-        const existing = getExistingForDate(date);
-        if (!existing) return;
+        // Delete both kinds if they exist to avoid leftovers
+        const items = [];
+        const one = getExistingForDate(date);
+        if (one) items.push(one);
+        const rlist = /*[[${restDays}]]*/ [];
+        const swm = (window._scheduledMonthMap || new Map());
+        const r = (rlist||[]).find(x => x.date === date);
+        const sw = swm.get(date);
+        if (r && (!one || one.kind !== 'REST')) items.push({ id: r.id, kind:'REST' });
+        if (sw && (!one || one.kind !== 'WORKOUT')) items.push({ id: sw.id, kind:'WORKOUT' });
+        if (items.length === 0) return;
         const { header, token } = getCsrf();
-        const url = existing.kind==='REST' ? `/api/rest-days/${existing.id}` : `/api/schedule/${existing.id}`;
-        const headers = {};
-        headers[header] = token;
-        const res = await fetch(url, { method:'DELETE', headers, credentials:'same-origin' });
-        if (res.ok) { closeScheduleModal(); window.location.reload(); } else { const err = document.getElementById('schErr'); const txt = await res.text().catch(()=>null); err.textContent = `Delete failed (${res.status}). ${txt || ''}`.trim(); err.style.display='block'; }
+        const headers = {}; headers[header] = token;
+        let ok = true; let lastStatus = 0; let lastTxt = '';
+        for (const it of items) {
+            const url = it.kind==='REST' ? `/api/rest-days/${it.id}` : `/api/schedule/${it.id}`;
+            const res = await fetch(url, { method:'DELETE', headers, credentials:'same-origin' });
+            lastStatus = res.status;
+            if (!res.ok) { ok = false; lastTxt = await res.text().catch(()=>null) || ''; }
+        }
+        if (ok) { closeScheduleModal(); window.location.reload(); } else { const err = document.getElementById('schErr'); err.textContent = `Delete failed (${lastStatus}). ${lastTxt}`.trim(); err.style.display='block'; }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -511,6 +524,7 @@
     async function fetchScheduledForMonth(year, month) {
         const first = new Date(year, month, 1);
         const last = new Date(year, month + 1, 0);
+        // Use UTC ISO date to align with server-side date parsing
         const toIso = d => d.toISOString().slice(0,10);
         const { header, token } = getCsrf();
         const headers = {};
