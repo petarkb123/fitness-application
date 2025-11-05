@@ -332,6 +332,16 @@
 </div>
 
 <script th:inline="javascript">
+    // Stable viewport height on mobile (fixes 100vh in standalone)
+    (function setAppVh(){
+        function apply(){
+            var vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--app-vh', vh + 'px');
+        }
+        apply();
+        window.addEventListener('resize', apply);
+        window.addEventListener('orientationchange', apply);
+    })();
     function getCsrf() {
         const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
         const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');

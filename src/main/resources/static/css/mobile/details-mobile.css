@@ -58,6 +58,11 @@ body {
     }
 }
 
+@media (display-mode: standalone) {
+       
+  .top-header { margin-top: 42px; }
+}
+
 @media (max-width: 480px) {
   /* Ensure full width layout */
   html, body {

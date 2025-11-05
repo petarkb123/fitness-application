@@ -9,8 +9,10 @@ body {
     overscroll-behavior-y: none !important;
 }
 
-/* Mobile styles for Exercises page - 480px and below */
-
+@media (display-mode: standalone) {
+       
+    .top-header { margin-top: 42px; }
+}
 @media (max-width: 480px) {
     .header-btn {
         background: transparent !important;

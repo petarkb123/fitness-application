@@ -1,3 +1,7 @@
+@media (display-mode: standalone) {
+       
+    .header { margin-top: 42px; }
+}
 
 @media (max-width: 480px) {
     .nav-container {

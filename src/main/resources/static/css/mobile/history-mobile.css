@@ -9,9 +9,10 @@ body {
     overscroll-behavior-y: none !important;
 }
 
-/* Mobile styles for history page */
-
-/* Global mobile enhancements */
+@media (display-mode: standalone) {
+       
+    .top-header { margin-top: 42px; }
+}
 
 
 @media (max-width: 480px) {

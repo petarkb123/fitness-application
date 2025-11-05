@@ -852,6 +852,15 @@ body {
         transform: scale(0.96);
     }
     
+    /* --- Mobile PWA (standalone) safe-area and viewport fixes --- */
+   
+
+    @media (display-mode: standalone) {
+       
+        .top-header { margin-top: 42px; }
+        .recent-activity { margin-bottom: 15px; }
+    }
+    
     /* ============================================
        MODAL STYLES
        ============================================ */

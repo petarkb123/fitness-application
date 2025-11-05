@@ -9,6 +9,12 @@ body {
     overscroll-behavior-y: none !important;
 }
 
+@media (display-mode: standalone) {
+       
+   .progress-bar { margin-top: 42px; }
+   .back-arrow { margin-top: 42px; }
+}
+
 @media (max-width: 480px) {
     * {
         touch-action: manipulation;
