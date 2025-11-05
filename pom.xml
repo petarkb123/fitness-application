@@ -24,22 +24,6 @@
 
 
     <dependencies>
-    <!-- Web Push for sending browser notifications -->
-    <dependency>
-      <groupId>nl.martijndwars</groupId>
-      <artifactId>web-push</artifactId>
-      <version>5.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-jdk18on</artifactId>
-      <version>1.78.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bitbucket.b_c</groupId>
-      <artifactId>jose4j</artifactId>
-      <version>0.9.6</version>
-    </dependency>
         <!-- Spring Boot starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

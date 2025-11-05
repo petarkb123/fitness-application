@@ -84,42 +84,4 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// --- Web Push: display notification ---
-self.addEventListener('push', event => {
-  try {
-    const data = event.data ? event.data.json() : {};
-    const title = data.title || 'FitPower';
-    const body = data.body || '';
-    const url = data.url || '/';
-    const options = {
-      body,
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-192x192.png',
-      data: { url },
-      vibrate: [100, 50, 100]
-    };
-    event.waitUntil(self.registration.showNotification(title, options));
-  } catch (e) {
-    event.waitUntil(self.registration.showNotification('FitPower', { body: 'New notification' }));
-  }
-});
-
-// Focus existing tab or open new on click
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  const url = (event.notification && event.notification.data && event.notification.data.url) || '/';
-  event.waitUntil((async () => {
-    const allClients = await clients.matchAll({ type: 'window', includeUncontrolled: true });
-    for (const client of allClients) {
-      try {
-        await client.navigate(url);
-      } catch(_) {}
-      if ('focus' in client) {
-        return client.focus();
-      }
-    }
-    if (clients.openWindow) {
-      return clients.openWindow(url);
-    }
-  })());
-});
+// (push notifications removed)
