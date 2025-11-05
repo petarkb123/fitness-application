@@ -9,6 +9,10 @@ html {
     background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%) fixed;
     background-color: #1a1a30;
     min-height: 100%;
+    max-height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -16,8 +20,12 @@ body {
     line-height: 1.6;
     color: #ffffff;
     min-height: 100vh;
+    max-height: 100vh;
     overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 .background-elements {
@@ -290,11 +298,13 @@ body {
 }
 
 .main-content {
-    padding: 4rem 0;
+    padding: 2rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 150px);
+    min-height: calc(100vh - 120px);
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
 }
 
 .login-container {

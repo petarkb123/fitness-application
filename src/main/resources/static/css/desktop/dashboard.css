@@ -18,6 +18,8 @@ html {
     background-color: #1a1a30;
     min-height: 100%;
     overflow-x: hidden;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -27,6 +29,8 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 .dashboard-container {
@@ -40,14 +44,15 @@ body {
     backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.15);
     padding: 2rem 0;
-    position: fixed;
+    position: fixed !important;
     height: 100vh;
-    left: 0;
-    top: 0;
+    left: 0 !important;
+    top: 0 !important;
     z-index: 1000;
     transition: transform 0.3s ease;
     overflow-y: auto;
     box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    will-change: auto;
 }
 
 .sidebar-header {

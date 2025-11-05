@@ -1,7 +1,18 @@
+/* Prevent overscrolling on mobile */
+html {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
+body {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
 /* Coming Soon Page Styles - Mobile - Matches Website Design */
 
 /* Ensure mobile inherits dark theme */
-@media (max-width: 768px) {
+@media (max-width: 768anpx) {
     html {
         background: #1a1a30;
     }

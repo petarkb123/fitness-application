@@ -40,12 +40,13 @@ public class WebSecurityConfig {
                 "app.security.remember-me.cookie", "FITPOWER_REMEMBER_ME");
 
         int validity = env.getProperty(
-                "app.security.remember-me.validity-seconds", Integer.class, 1800); 
+                "app.security.remember-me.validity-seconds", Integer.class, 1209600); 
 
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/actuator/**"))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index", "/login", "/register",
+                                "/forgot-password", "/reset-password",
                                 "/terms", "/privacy",
                                 "/css/**", "/js/**", "/images/**", "/webjars/**", "/actuator/**",
                                 "/media/**", "/workouts/templates/*/exercises",

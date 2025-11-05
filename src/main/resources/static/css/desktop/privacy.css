@@ -9,6 +9,8 @@ html {
     background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%) fixed;
     background-color: #1a1a30;
     min-height: 100%;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -18,6 +20,8 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 .background-elements {

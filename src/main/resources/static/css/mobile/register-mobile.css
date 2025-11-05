@@ -1,5 +1,16 @@
 
 @media (max-width: 480px) {
+    /* Sticky mobile header/nav */
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: linear-gradient(180deg, rgba(26,26,48,0.97) 0%, rgba(20,20,40,0.0) 100%);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        margin: 0 0 0.3rem 0;
+    }
+    .navbar { padding: calc(env(safe-area-inset-top, 0px) + 0.5rem) 0 0.75rem 0; }
     /* Prevent zoom and double-tap issues */
     * {
         touch-action: manipulation;

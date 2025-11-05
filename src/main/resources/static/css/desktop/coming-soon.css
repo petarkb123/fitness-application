@@ -11,6 +11,8 @@ html {
     scroll-behavior: smooth;
     min-height: 100%;
     background: #1a1a30;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -24,6 +26,8 @@ body {
     background-attachment: fixed;
     background-size: cover;
     background-repeat: no-repeat;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 .background-elements {

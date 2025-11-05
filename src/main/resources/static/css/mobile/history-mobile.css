@@ -1,3 +1,14 @@
+/* Prevent overscrolling on mobile */
+html {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
+body {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
 /* Mobile styles for history page */
 
 /* Global mobile enhancements */

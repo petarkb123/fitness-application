@@ -1,3 +1,14 @@
+/* Prevent overscrolling on mobile */
+html {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
+body {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
 /* Mobile styles for details page */
 
 /* Error and Success Message Styles for Mobile */
@@ -244,7 +255,7 @@
   .table-header {
     display: grid;
     grid-template-columns: 30px 1fr 1fr 1fr;
-    gap: 0.4rem;
+    gap: 2rem;
     padding: 0.5rem 0.6rem;
     background: rgba(255, 255, 255, 0.05);
     font-size: 0.65rem;
@@ -397,7 +408,7 @@
 
   .superset-table .table-header {
     display: grid;
-    grid-template-columns: 20px 1.5fr 70px;
+    grid-template-columns: 20px 1fr;
     gap: 0.25rem;
     padding: 0.3rem 0.35rem;
     font-size: 0.45rem;
@@ -406,14 +417,22 @@
     font-weight: 600;
   }
 
+  .superset-table .table-header span:nth-child(3) {
+    display: none;
+  }
+
   .superset-set-row {
     display: grid;
-    grid-template-columns: 20px 1.5fr 70px;
+    grid-template-columns: 20px 1fr;
     gap: 0.25rem;
     padding: 0.3rem 0.35rem;
     border-bottom: 1px solid rgba(168, 85, 247, 0.1);
     min-height: 45px;
     align-items: center;
+  }
+
+  .superset-set-row .volume {
+    display: none !important;
   }
 
   .superset-set-row:last-child {
@@ -475,23 +494,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .superset-set-row .volume {
-    font-size: 0.5rem;
-    padding: 0.2rem 0.3rem;
-    background: rgba(168, 85, 247, 0.2);
-    color: #a855f7;
-    border-radius: 4px;
-    font-weight: 600;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    max-width: 60px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
   }
 
   .superset-divider {
@@ -757,7 +759,7 @@
     padding: 0.24rem 0.23rem !important;
   }
   .superset-set-row .set-number { font-size: 0.37rem !important; width: 0.71rem !important; height: 0.71rem !important; }
-  .superset-set-row .set-value, .superset-set-row .volume { font-size: 0.65rem !important; padding: 0.09rem 0.18rem !important; }
+  .superset-set-row .set-value { font-size: 0.65rem !important; padding: 0.09rem 0.18rem !important; }
   .superset-divider {
     font-size: 0.55rem !important;
     font-weight: 700;

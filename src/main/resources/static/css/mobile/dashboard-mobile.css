@@ -1,3 +1,14 @@
+/* Prevent overscrolling on mobile */
+html {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
+body {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
 /* Mobile-First Professional Dashboard Styling */
 
 @media (max-width: 480px) {
@@ -994,11 +1005,11 @@
        ============================================ */
     
     .sidebar {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: auto;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        top: auto !important;
         height: 70px;
         width: 100%;
         padding: 0.5rem 0;
@@ -1007,8 +1018,8 @@
         background: rgba(20, 20, 40, 0.98);
         backdrop-filter: blur(20px);
         box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
-        transform: none;
-        z-index: 2000;
+        transform: none !important;
+        z-index: 2000 !important;
         display: flex;
         align-items: center;
         overflow-x: auto;
@@ -1016,6 +1027,7 @@
         -webkit-overflow-scrolling: touch;
         min-height: 70px;
         max-height: 70px;
+        will-change: auto;
     }
     
     .sidebar-header,
@@ -1120,11 +1132,19 @@
     /* Unified bottom nav */
     .sidebar-header, .nav-section-title { display: none !important; }
     .sidebar {
+      position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      top: auto !important;
       min-height: 54px !important; max-height: 54px !important; height: 54px !important;
       background: rgba(28, 28, 58, 0.92) !important;
       backdrop-filter: blur(18px) !important;
       box-shadow: 0 -2px 16px rgba(0,0,0,0.45), 0 1px 10px rgba(102,126,234,0.18) !important;
       border-top: 1px solid rgba(255,255,255,0.12) !important;
+      transform: none !important;
+      z-index: 2000 !important;
+      will-change: auto !important;
     }
     .nav-list { padding: 0 0.25rem !important; justify-content: space-evenly !important; }
     .nav-link { gap: 0 !important; min-height: 54px !important; padding: 0.33rem 0.30rem !important; color: #c9ceff !important; }

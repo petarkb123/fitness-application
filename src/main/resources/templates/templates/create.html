@@ -11,6 +11,7 @@
     <link rel="stylesheet" th:href="@{/css/mobile/create-mobile.css}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 <body>
 <div class="dashboard-container">
@@ -323,6 +324,9 @@
 
         exerciseCard.innerHTML = `
             <div class="exercise-header">
+                <div class="drag-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
                 <input type="checkbox" class="exercise-select" title="Select for grouping">
                 <div class="exercise-info">
                     <h3 class="exercise-name">${exercise.name}</h3>
@@ -489,12 +493,15 @@
         
         supersetCard.innerHTML = `
             <div class="exercise-header">
+                <div class="drag-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
                 <div class="exercise-info">
-                    <h3 class="exercise-name">
+                    <div class="superset-header">
                         <span class="superset-badge">SUPERSET</span>
-                        ${ex1Name} + ${ex2Name}
-                    </h3>
-                    <span class="exercise-muscle">${ex1Muscle} / ${ex2Muscle}</span>
+                        <span class="exercise-muscle">${ex1Muscle} / ${ex2Muscle}</span>
+                    </div>
+                    <h3 class="exercise-name">${ex1Name} + ${ex2Name}</h3>
                 </div>
                 <div class="exercise-actions">
                     <button type="button" class="btn-icon btn-revert" onclick="revertSuperset(${exerciseCounter})" title="Revert to separate exercises">
@@ -555,6 +562,9 @@
 
         exerciseCard.innerHTML = `
             <div class="exercise-header">
+                <div class="drag-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
                 <input type="checkbox" class="exercise-select" title="Select for grouping">
                 <div class="exercise-info">
                     <h3 class="exercise-name">${exercise.name}</h3>
@@ -706,9 +716,60 @@
         csrfInput.parentNode.insertBefore(errorDiv, csrfInput.nextSibling);
     }
 
+    // Drag and Drop Functionality with SortableJS
+    let sortableInstance = null;
+    
+    function initializeSortable() {
+        const exercisesList = document.getElementById('exercisesList');
+        if (!exercisesList || sortableInstance) return;
+        
+        sortableInstance = new Sortable(exercisesList, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: '',
+            dragClass: 'dragging',
+            forceFallback: false
+        });
+    }
+
+    // Prevent overscrolling by clamping scroll position
+    function clampScrollPosition() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = Math.max(0, scrollHeight - clientHeight);
+        
+        if (scrollTop < 0) {
+            window.scrollTo(0, 0);
+        } else if (scrollTop > maxScroll) {
+            window.scrollTo(0, maxScroll);
+        }
+    }
+    
+    let scrollTimeout;
+    function handleScroll() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(clampScrollPosition, 10);
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
+        clampScrollPosition();
+        window.addEventListener('resize', function() {
+            setTimeout(clampScrollPosition, 100);
+        });
         populateExerciseSelect();
+        initializeSortable();
     });
 </script>
 </body>

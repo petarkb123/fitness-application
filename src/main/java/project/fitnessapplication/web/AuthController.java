@@ -1,10 +1,13 @@
 package project.fitnessapplication.web;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import project.fitnessapplication.user.service.PasswordResetService;
 import project.fitnessapplication.user.service.UserService;
 import project.fitnessapplication.user.form.RegisterForm;
 
@@ -13,10 +16,11 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 @Validated
+@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService users;
-    public AuthController(UserService users){ this.users = users; }
+    private final PasswordResetService passwordResetService;
 
     @GetMapping("/login")    public String loginPage(){ return "login"; }
     @GetMapping("/register") public String registerForm(){ return "register"; }
@@ -71,6 +75,74 @@ public class AuthController {
             // Return onboarding/register if onboarding data exists, otherwise regular register
             String gender = (String) session.getAttribute("onboarding_gender");
             return (gender != null) ? "onboarding/register" : "register";
+        }
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPasswordPage() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String requestPasswordReset(@RequestParam String email, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            passwordResetService.requestPasswordReset(email);
+            // Always show success message (don't reveal if email exists)
+            redirectAttributes.addFlashAttribute("success", 
+                "If an account with that email exists, a password reset link has been sent.");
+            return "redirect:/forgot-password";
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred. Please try again later.");
+            return "forgot-password";
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(@RequestParam(required = false) String token, Model model) {
+        if (token == null) {
+            model.addAttribute("error", "No reset token provided. Please request a new password reset.");
+            return "reset-password";
+        }
+        
+        boolean isValid = passwordResetService.isTokenValid(token);
+        if (!isValid) {
+            model.addAttribute("error", "Invalid or expired reset token. Please request a new password reset link.");
+            return "reset-password";
+        }
+        
+        model.addAttribute("token", token);
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(
+            @RequestParam String token,
+            @RequestParam String password,
+            @RequestParam String confirmPassword,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Passwords do not match.");
+            model.addAttribute("token", token);
+            return "reset-password";
+        }
+
+        if (password.length() < 6) {
+            model.addAttribute("error", "Password must be at least 6 characters long.");
+            model.addAttribute("token", token);
+            return "reset-password";
+        }
+
+        boolean success = passwordResetService.resetPassword(token, password);
+        
+        if (success) {
+            redirectAttributes.addFlashAttribute("success", 
+                "Password reset successfully! You can now log in with your new password.");
+            return "redirect:/login";
+        } else {
+            model.addAttribute("error", "Invalid or expired reset token.");
+            return "reset-password";
         }
     }
 }

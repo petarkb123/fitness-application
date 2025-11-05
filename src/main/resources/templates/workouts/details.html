@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/mobile/details-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 <body>
 <div class="dashboard-container">
@@ -401,7 +402,7 @@
                             <span class="set-value">${set2.weight} kg × ${set2.reps} reps</span>
                         </div>
                     </div>
-                    <span class="volume">${(set1.weight * set1.reps + set2.weight * set2.reps).toFixed(1)} kg</span>
+                    <span class="volume">${formatWeight(set1.weight * set1.reps + set2.weight * set2.reps)}</span>
                 </div>
             `;
         });
@@ -439,7 +440,7 @@
                 <div class="exercise-summary">
                     <div class="summary-stat">
                         <span class="stat-label">Total Volume:</span>
-                        <span class="stat-value">${totalVolume.toFixed(1)} kg</span>
+                        <span class="stat-value">${formatWeight(totalVolume)}</span>
                     </div>
                     <div class="summary-stat">
                         <span class="stat-label">Sets Completed:</span>
@@ -456,6 +457,15 @@
         return card;
     }
     
+    // Helper function to format weight/volume with tons
+    function formatWeight(weight) {
+        if (weight >= 1000) {
+            const tons = weight / 1000;
+            return tons.toFixed(2) + ' Ton' + (tons !== 1 ? 's' : '');
+        }
+        return weight.toFixed(1) + ' kg';
+    }
+
     function createRegularCard(data) {
         const card = document.createElement('div');
         card.className = 'exercise-detail-card';
@@ -501,7 +511,7 @@
                         <span class="set-number">${setNum}</span>
                         <span class="weight">${mainSet.weight} kg</span>
                         <span class="reps">${mainSet.reps} reps</span>
-                        <span class="volume">${(mainSet.weight * mainSet.reps).toFixed(1)} kg</span>
+                        <span class="volume">${formatWeight(mainSet.weight * mainSet.reps)}</span>
                     </div>
                 `;
                 
@@ -516,7 +526,7 @@
                             </span>
                             <span class="weight">${dropSet.weight} kg</span>
                             <span class="reps">${dropSet.reps} reps</span>
-                            <span class="volume">${(dropSet.weight * dropSet.reps).toFixed(1)} kg</span>
+                            <span class="volume">${formatWeight(dropSet.weight * dropSet.reps)}</span>
                         </div>
                     `;
                     
@@ -529,7 +539,7 @@
                             <span class="set-number">${setNum}</span>
                             <span class="weight">${set.weight} kg</span>
                             <span class="reps">${set.reps} reps</span>
-                            <span class="volume">${(set.weight * set.reps).toFixed(1)} kg</span>
+                            <span class="volume">${formatWeight(set.weight * set.reps)}</span>
                         </div>
                     `;
                 });
@@ -564,7 +574,7 @@
                 <div class="exercise-summary">
                     <div class="summary-stat">
                         <span class="stat-label">Total Volume:</span>
-                        <span class="stat-value">${totalVolume.toFixed(1)} kg</span>
+                        <span class="stat-value">${formatWeight(totalVolume)}</span>
                     </div>
                     <div class="summary-stat">
                         <span class="stat-label">Average Weight:</span>
@@ -580,6 +590,43 @@
         
         return card;
     }
+    
+    // Prevent overscrolling by clamping scroll position
+    function clampScrollPosition() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = Math.max(0, scrollHeight - clientHeight);
+        
+        if (scrollTop < 0) {
+            window.scrollTo(0, 0);
+        } else if (scrollTop > maxScroll) {
+            window.scrollTo(0, maxScroll);
+        }
+    }
+    
+    let scrollTimeout;
+    function handleScroll() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(clampScrollPosition, 10);
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        clampScrollPosition();
+        window.addEventListener('resize', function() {
+            setTimeout(clampScrollPosition, 100);
+        });
+    });
 </script>
 </body>
 </html>

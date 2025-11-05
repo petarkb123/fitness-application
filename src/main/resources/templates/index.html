@@ -197,8 +197,48 @@
 </div>
 
 <script>
+    // Prevent overscrolling by clamping scroll position
+    function clampScrollPosition() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = Math.max(0, scrollHeight - clientHeight);
+        
+        // Clamp scroll position to valid bounds
+        if (scrollTop < 0) {
+            window.scrollTo(0, 0);
+        } else if (scrollTop > maxScroll) {
+            window.scrollTo(0, maxScroll);
+        }
+    }
+    
+    // Apply scroll clamping on various events
+    let scrollTimeout;
+    function handleScroll() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(clampScrollPosition, 10);
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    
     // Smooth scrolling and interactions
     document.addEventListener('DOMContentLoaded', function() {
+        // Clamp scroll position on load
+        clampScrollPosition();
+        
+        // Re-clamp on window resize
+        window.addEventListener('resize', function() {
+            setTimeout(clampScrollPosition, 100);
+        });
+        
         // Add subtle animations on scroll
         const observerOptions = {
             threshold: 0.1,

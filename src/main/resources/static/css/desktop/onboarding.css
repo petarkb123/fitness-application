@@ -8,6 +8,8 @@ html {
     scroll-behavior: smooth;
     min-height: 100%;
     background: #1a1a30;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -19,6 +21,8 @@ body {
     position: relative;
     background: radial-gradient(ellipse at top, #2a2a42 0%, #1a1a30 50%, #1a1a30 100%);
     background-attachment: fixed;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 .background-elements {

@@ -11,6 +11,8 @@ html {
     background-attachment: fixed;
     background-size: 100% 100%;
     min-height: 100%;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 body {
@@ -21,6 +23,8 @@ body {
     background-size: 100% 100%;
     color: #ffffff;
     line-height: 1.6;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 /* ===== LAYOUT CONTAINERS ===== */

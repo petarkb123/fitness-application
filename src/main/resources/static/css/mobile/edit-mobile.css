@@ -1,3 +1,13 @@
+/* Prevent overscrolling on mobile */
+html {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
+
+body {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+}
 
 /* Error and Success Message Styles for Mobile */
 .error-message, .success-message {
@@ -367,7 +377,7 @@
   @keyframes fadeInEditCard { to { opacity: 1; transform: translateY(0); } }
 
   .exercise-card .exercise-header { border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.55rem; display:flex; align-items:flex-start; justify-content:space-between; }
-  .exercise-card .exercise-name { color: #ffffff; font-weight: 700; text-shadow: 0 1px 1px rgba(0,0,0,0.25); font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .exercise-card .exercise-name { color: #ffffff; font-weight: 700; text-shadow: 0 1px 1px rgba(0,0,0,0.25); font-size: 0.85rem; margin-bottom: 0.2rem; }
   .exercise-card .exercise-muscle { font-size: 0.65rem; color: rgba(255,255,255,0.75); background: rgba(102,126,234,0.18); padding: 0.18rem 0.45rem; border-radius: 8px; }
 
   .sets-container { padding-top: 0.5rem; }
@@ -425,7 +435,77 @@
     border: 2px solid #732deb !important;
     color: #b9a7ff !important;
     border-radius: 10px !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .btn-icon.btn-revert i { color: inherit !important; }
   .btn-icon.btn-revert:hover { background: rgba(124,58,237,0.10) !important; }
+
+  /* Drag and Drop for Mobile */
+  .drag-handle {
+    padding: 1rem !important;
+    margin: -1rem !important;
+    min-width: 40px !important;
+  }
+  
+  .drag-handle i {
+    font-size: 1.5rem !important;
+  }
+  
+  .exercise-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+    border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .sortable-ghost,
+  .sortable-fallback {
+    display: none !important;
+  }
+  
+  .exercise-card.drag-over {
+    border-top: 3px solid #667eea !important;
+    padding-top: calc(1.5rem - 1px) !important;
+  }
+  
+  .exercise-card.drag-over-bottom {
+    border-bottom: 3px solid #667eea !important;
+    padding-bottom: calc(1.5rem - 1px) !important;
+  }
+
+  /* Superset Card Layout */
+  .superset-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .superset-card .exercise-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .superset-card .exercise-name {
+    font-size: 0.6rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+  }
+
+  .superset-badge {
+    font-size: 0.54rem !important;
+    padding: 0.13rem 0.36rem !important;
+    margin-bottom: 0;
+    border-radius: 9px !important;
+  }
 }

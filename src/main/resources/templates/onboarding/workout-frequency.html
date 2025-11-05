@@ -91,7 +91,41 @@
 </div>
 
 <script>
+    // Prevent overscrolling by clamping scroll position
+    function clampScrollPosition() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = Math.max(0, scrollHeight - clientHeight);
+        
+        if (scrollTop < 0) {
+            window.scrollTo(0, 0);
+        } else if (scrollTop > maxScroll) {
+            window.scrollTo(0, maxScroll);
+        }
+    }
+    
+    let scrollTimeout;
+    function handleScroll() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(clampScrollPosition, 10);
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    
     document.addEventListener('DOMContentLoaded', function() {
+        clampScrollPosition();
+        window.addEventListener('resize', function() {
+            setTimeout(clampScrollPosition, 100);
+        });
         // Animate option cards
         const cards = document.querySelectorAll('.option-card');
         cards.forEach((card, index) => {

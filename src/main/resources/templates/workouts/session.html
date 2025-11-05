@@ -16,6 +16,7 @@
     <link rel="stylesheet" th:href="@{/css/mobile/session-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
 <body>
 <div class="dashboard-container">
@@ -382,6 +383,9 @@
 
         exerciseCard.innerHTML = `
       <div class="exercise-header">
+        <div class="drag-handle">
+          <i class="fas fa-grip-vertical"></i>
+        </div>
         <input type="checkbox" class="exercise-select" title="Select for grouping">
         <div class="exercise-info">
           <h3 class="exercise-name">${exercise.name}</h3>
@@ -954,15 +958,15 @@
         
         supersetCard.innerHTML = `
       <div class="exercise-header">
+        <div class="drag-handle">
+          <i class="fas fa-grip-vertical"></i>
+        </div>
         <div class="exercise-info">
-          <h3 class="exercise-name">
+          <div class="superset-header">
             <span class="superset-badge">SUPERSET</span>
-            <span class="superset-exercise-titles-desktop">${ex1Name} + ${ex2Name}</span>
-          </h3>
-          <div class="superset-exercise-titles-mobile">
-            ${ex1Name} + ${ex2Name}
+            <span class="exercise-muscle">${ex1Muscle} / ${ex2Muscle}</span>
           </div>
-          <span class="exercise-muscle">${ex1Muscle} / ${ex2Muscle}</span>
+          <h3 class="exercise-name">${ex1Name} + ${ex2Name}</h3>
         </div>
         <div class="exercise-actions">
           <button class="btn-icon btn-revert" onclick="revertSuperset(${exerciseCounter}, '${ex1Id}', '${ex1Name}', '${ex1Muscle}', '${ex2Id}', '${ex2Name}', '${ex2Muscle}')" title="Revert to separate exercises">
@@ -1194,6 +1198,9 @@
         
         card.innerHTML = `
       <div class="exercise-header">
+        <div class="drag-handle">
+          <i class="fas fa-grip-vertical"></i>
+        </div>
         <input type="checkbox" class="exercise-select" title="Select for superset">
         <div class="exercise-info">
           <h3 class="exercise-name">${exerciseName}</h3>
@@ -1315,15 +1322,15 @@
                     
                     supersetCard.innerHTML = `
               <div class="exercise-header">
+                <div class="drag-handle">
+                  <i class="fas fa-grip-vertical"></i>
+                </div>
                 <div class="exercise-info">
-                  <h3 class="exercise-name">
+                  <div class="superset-header">
                     <span class="superset-badge">SUPERSET</span>
-                    <span class="superset-exercise-titles-desktop">${ex1.name} + ${ex2.name}</span>
-                  </h3>
-                  <div class="superset-exercise-titles-mobile">
-                    ${ex1.name} + ${ex2.name}
+                    <span class="exercise-muscle">${ex1.muscleGroup} / ${ex2.muscleGroup}</span>
                   </div>
-                  <span class="exercise-muscle">${ex1.muscleGroup} / ${ex2.muscleGroup}</span>
+                  <h3 class="exercise-name">${ex1.name} + ${ex2.name}</h3>
                 </div>
                 <div class="exercise-actions">
                   <button class="btn-icon btn-revert" onclick="revertSuperset(${exerciseCounter}, '${ex1.id}', '${ex1.name}', '${ex1.muscleGroup}', '${ex2.id}', '${ex2.name}', '${ex2.muscleGroup}')" title="Revert to separate exercises">
@@ -1394,6 +1401,9 @@
                         card.setAttribute('data-exercise-id', ex.id);
                         card.innerHTML = `
                   <div class="exercise-header">
+                    <div class="drag-handle">
+                      <i class="fas fa-grip-vertical"></i>
+                    </div>
                     <input type="checkbox" class="exercise-select" title="Select for superset">
                     <div class="exercise-info">
                       <h3 class="exercise-name">${ex.name}</h3>
@@ -1639,15 +1649,15 @@
                     
                     supersetCard.innerHTML = `
                         <div class="exercise-header">
+                            <div class="drag-handle">
+                                <i class="fas fa-grip-vertical"></i>
+                            </div>
                             <div class="exercise-info">
-                                <h3 class="exercise-name">
+                                <div class="superset-header">
                                     <span class="superset-badge">SUPERSET</span>
-                                    <span class="superset-exercise-titles-desktop">${ex1.name} + ${ex2.name}</span>
-                                </h3>
-                                <div class="superset-exercise-titles-mobile">
-                                    ${ex1.name} + ${ex2.name}
+                                    <span class="exercise-muscle">${ex1.muscleGroup} / ${ex2.muscleGroup}</span>
                                 </div>
-                                <span class="exercise-muscle">${ex1.muscleGroup} / ${ex2.muscleGroup}</span>
+                                <h3 class="exercise-name">${ex1.name} + ${ex2.name}</h3>
                             </div>
                             <div class="exercise-actions">
                                 <button class="btn-icon btn-revert" onclick="revertSuperset(${exerciseCounter}, '${ex1.id}', '${ex1.name}', '${ex1.muscleGroup}', '${ex2.id}', '${ex2.name}', '${ex2.muscleGroup}')" title="Revert to separate exercises">
@@ -1742,6 +1752,9 @@
             
             exerciseCard.innerHTML = `
                 <div class="exercise-header">
+                    <div class="drag-handle">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
                     <div class="exercise-select-container">
                         <input type="checkbox" class="exercise-select" onchange="updateSupersetButton()">
                     </div>
@@ -1873,6 +1886,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         populateExerciseSelect();
         attachAutosaveHandlers();
+        initializeSortable();
 
         // Migrate temp draft and rest timers to session-specific keys if we now have a sessionId
         if (workoutSessionId) {
@@ -2178,15 +2192,15 @@
                 supersetCard.setAttribute('data-exercise-id-2', ex2.id);
                 supersetCard.innerHTML = `
                   <div class="exercise-header">
+                    <div class="drag-handle">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
                     <div class="exercise-info">
-                      <h3 class="exercise-name">
+                      <div class="superset-header">
                         <span class="superset-badge">SUPERSET</span>
-                        <span class="superset-exercise-titles-desktop">${ex1.name} + ${ex2.name}</span>
-                      </h3>
-                      <div class="superset-exercise-titles-mobile">
-                        ${ex1.name} + ${ex2.name}
+                        <span class="exercise-muscle">${ex1.muscleGroup} / ${ex2.muscleGroup}</span>
                       </div>
-                      <span class="exercise-muscle">${ex1.muscleGroup} / ${ex2.muscleGroup}</span>
+                      <h3 class="exercise-name">${ex1.name} + ${ex2.name}</h3>
                     </div>
                     <div class="exercise-actions">
                       <button class="btn-icon btn-revert" onclick="revertSuperset(${exerciseCounter}, '${ex1.id}', '${ex1.name}', '${ex1.muscleGroup}', '${ex2.id}', '${ex2.name}', '${ex2.muscleGroup}')" title="Revert to separate exercises"><i class="fas fa-undo"></i></button>
@@ -2614,6 +2628,61 @@
         </div>
     </div>
 </div>
+
+<script>
+    let sortableInstance = null;
+    
+    function initializeSortable() {
+        const exercisesList = document.getElementById('exercisesList');
+        if (!exercisesList || sortableInstance) return;
+        
+        sortableInstance = new Sortable(exercisesList, {
+            handle: '.drag-handle',
+            animation: 200,
+            ghostClass: '',
+            dragClass: 'dragging',
+            forceFallback: false
+        });
+    }
+    
+    // Prevent overscrolling by clamping scroll position
+    function clampScrollPosition() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = Math.max(0, scrollHeight - clientHeight);
+        
+        if (scrollTop < 0) {
+            window.scrollTo(0, 0);
+        } else if (scrollTop > maxScroll) {
+            window.scrollTo(0, maxScroll);
+        }
+    }
+    
+    let scrollTimeout;
+    function handleScroll() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(clampScrollPosition, 10);
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        clampScrollPosition();
+        window.addEventListener('resize', function() {
+            setTimeout(clampScrollPosition, 100);
+        });
+        initializeSortable();
+    });
+</script>
 
 </body>
 </html>
