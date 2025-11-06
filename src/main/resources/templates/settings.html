@@ -520,18 +520,20 @@
                                 <i class="fas fa-link"></i>
                                 Avatar Image URL
                             </label>
-                            <div class="avatar-field-container">
+                            <div class="avatar-url-display" id="avatarUrlDisplay">
+                                <span class="avatar-url-mask">••••••••••••••••</span>
+                                <button type="button" id="editAvatarBtn" class="btn btn-secondary edit-btn">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                            </div>
+                            <div class="avatar-field-container" id="avatarUrlEditContainer" style="display: none;">
                                 <input type="url"
                                        name="avatarUrl"
                                        id="avatarUrlInput"
                                        class="form-input avatar-input"
                                        th:value="${avatarPath}"
-                                       placeholder="https://example.com/your-image.jpg"
-                                       readonly>
-                                <button type="button" id="editAvatarBtn" class="btn btn-secondary edit-btn">
-                                    <i class="fas fa-edit"></i>
-                                    Edit
-                                </button>
+                                       placeholder="https://example.com/your-image.jpg">
                             </div>
                             <small class="form-help">Use a direct image URL (http/https).</small>
                         </div>
@@ -791,55 +793,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveAvatarBtn = document.getElementById('saveAvatarBtn');
     const cancelAvatarBtn = document.getElementById('cancelAvatarBtn');
     const avatarUrlInput = document.getElementById('avatarUrlInput');
-    const originalAvatarValue = avatarUrlInput.value;
+    const avatarUrlDisplay = document.getElementById('avatarUrlDisplay');
+    const avatarUrlEditContainer = document.getElementById('avatarUrlEditContainer');
+    const originalAvatarValue = avatarUrlInput ? avatarUrlInput.value : '';
 
-    editAvatarBtn.addEventListener('click', function() {
-        avatarUrlInput.removeAttribute('readonly');
-        avatarUrlInput.focus();
-        
-        editAvatarBtn.style.display = 'none';
-        saveAvatarBtn.style.display = 'inline-flex';
-        cancelAvatarBtn.style.display = 'inline-flex';
-        
-        // Show remove avatar button in edit mode
-        const removeAvatarSection = document.getElementById('removeAvatarSection');
-        if (removeAvatarSection) {
-            removeAvatarSection.style.display = 'block';
-        }
-        
-        avatarUrlInput.classList.add('editing');
-    });
+    if (editAvatarBtn && avatarUrlInput) {
+        editAvatarBtn.addEventListener('click', function() {
+            // Hide display, show edit container
+            avatarUrlDisplay.style.display = 'none';
+            avatarUrlEditContainer.style.display = 'block';
+            
+            avatarUrlInput.focus();
+            saveAvatarBtn.style.display = 'inline-flex';
+            cancelAvatarBtn.style.display = 'inline-flex';
+            
+            // Show remove avatar button in edit mode
+            const removeAvatarSection = document.getElementById('removeAvatarSection');
+            if (removeAvatarSection) {
+                removeAvatarSection.style.display = 'block';
+            }
+            
+            avatarUrlInput.classList.add('editing');
+        });
 
-    cancelAvatarBtn.addEventListener('click', function() {
-        avatarUrlInput.value = originalAvatarValue;
-        avatarUrlInput.setAttribute('readonly', true);
-        avatarUrlInput.classList.remove('editing');
-        
-        // Hide remove avatar button when canceling
-        const removeAvatarSection = document.getElementById('removeAvatarSection');
-        if (removeAvatarSection) {
-            removeAvatarSection.style.display = 'none';
-        }
-        
-        editAvatarBtn.style.display = 'inline-flex';
-        saveAvatarBtn.style.display = 'none';
-        cancelAvatarBtn.style.display = 'none';
-    });
+        cancelAvatarBtn.addEventListener('click', function() {
+            // Restore original value
+            avatarUrlInput.value = originalAvatarValue;
+            avatarUrlInput.classList.remove('editing');
+            
+            // Hide edit container, show display
+            avatarUrlEditContainer.style.display = 'none';
+            avatarUrlDisplay.style.display = 'flex';
+            
+            // Hide remove avatar button when canceling
+            const removeAvatarSection = document.getElementById('removeAvatarSection');
+            if (removeAvatarSection) {
+                removeAvatarSection.style.display = 'none';
+            }
+            
+            saveAvatarBtn.style.display = 'none';
+            cancelAvatarBtn.style.display = 'none';
+        });
 
-    saveAvatarBtn.addEventListener('click', function(e) {
-        const newValue = avatarUrlInput.value.trim();
-        if (newValue === '') {
-            e.preventDefault();
-            showErrorMessage('Avatar URL cannot be empty');
-            return;
-        }
-        if (newValue === originalAvatarValue) {
-            e.preventDefault();
-            showErrorMessage('No changes made');
-            cancelAvatarBtn.click();
-            return;
-        }
-    });
+        saveAvatarBtn.addEventListener('click', function(e) {
+            const newValue = avatarUrlInput.value.trim();
+            if (newValue === '') {
+                e.preventDefault();
+                showErrorMessage('Avatar URL cannot be empty');
+                return;
+            }
+            if (newValue === originalAvatarValue) {
+                e.preventDefault();
+                showErrorMessage('No changes made');
+                cancelAvatarBtn.click();
+                return;
+            }
+        });
+    }
 
     // Password functionality
     const editPasswordBtn = document.getElementById('editPasswordBtn');
