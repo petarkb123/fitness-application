@@ -74,6 +74,16 @@ public class User {
     @Column
     private Integer weightKg;
 
+    // Optional original imperial measurements when unitSystem = 'imperial'
+    @Column(name = "height_feet")
+    private Integer heightFeet;
+
+    @Column(name = "height_inches")
+    private Integer heightInches;
+
+    @Column(name = "weight_lbs")
+    private Integer weightLbs;
+
     @Column(name = "birthdate")
     private LocalDate birthdate;
 
@@ -88,6 +98,9 @@ public class User {
 
     @Column(length = 50)
     private String region; // Europe, North America, Asia, Africa, Oceania
+
+    @Column(name = "unit_system", length = 20)
+    private String unitSystem; // metric, imperial
 
     @PreUpdate void touch() { updatedAt = LocalDateTime.now(); }
 }

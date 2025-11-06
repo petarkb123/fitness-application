@@ -72,6 +72,23 @@ public class UserSettingsService {
         users.save(u);
     }
 
+    public void updateEmail(UUID userId, String email) {
+        User u = users.findById(userId).orElseThrow();
+        String emailTrimmed = (email == null) ? "" : email.trim().toLowerCase();
+        if (emailTrimmed.isEmpty()) {
+            throw new IllegalArgumentException("Email is required.");
+        }
+        if (!emailTrimmed.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
+        // Check if email is already in use by another user
+        if (users.existsByEmail(emailTrimmed) && !u.getEmail().equalsIgnoreCase(emailTrimmed)) {
+            throw new IllegalArgumentException("Email is already in use.");
+        }
+        u.setEmail(emailTrimmed);
+        users.save(u);
+    }
+
     public void updateHeight(UUID userId, Integer heightCm) {
         User u = users.findById(userId).orElseThrow();
         u.setHeightCm(heightCm);
@@ -81,6 +98,66 @@ public class UserSettingsService {
     public void updateWeight(UUID userId, Integer weightKg) {
         User u = users.findById(userId).orElseThrow();
         u.setWeightKg(weightKg);
+        users.save(u);
+    }
+
+    public void updateUnitSystem(UUID userId, String unitSystem) {
+        User u = users.findById(userId).orElseThrow();
+        String newUnits = (unitSystem == null) ? "metric" : unitSystem.trim().toLowerCase();
+
+        // Populate counterpart fields so values persist across unit toggles
+        if ("imperial".equals(newUnits)) {
+            // Fill feet/inches from cm if missing
+            if ((u.getHeightFeet() == null || u.getHeightInches() == null) && u.getHeightCm() != null) {
+                double totalInches = u.getHeightCm() / 2.54d;
+                int feet = (int) Math.floor(totalInches / 12.0);
+                int inches = (int) Math.round(totalInches - feet * 12);
+                if (inches == 12) { feet += 1; inches = 0; }
+                u.setHeightFeet(feet);
+                u.setHeightInches(inches);
+            }
+            // Fill lbs from kg if missing
+            if (u.getWeightLbs() == null && u.getWeightKg() != null) {
+                int lbs = (int) Math.round(u.getWeightKg() * 2.20462d);
+                u.setWeightLbs(lbs);
+            }
+        } else { // metric
+            // Fill cm from feet/inches if missing
+            if (u.getHeightCm() == null && u.getHeightFeet() != null && u.getHeightInches() != null) {
+                int cm = (int) Math.round(u.getHeightFeet() * 30.48d + u.getHeightInches() * 2.54d);
+                u.setHeightCm(cm);
+            }
+            // Fill kg from lbs if missing
+            if (u.getWeightKg() == null && u.getWeightLbs() != null) {
+                int kg = (int) Math.round(u.getWeightLbs() / 2.20462d);
+                u.setWeightKg(kg);
+            }
+        }
+
+        u.setUnitSystem(newUnits);
+        users.save(u);
+    }
+
+    public void updateHeightImperial(UUID userId, Integer feet, Integer inches) {
+        User u = users.findById(userId).orElseThrow();
+        u.setHeightFeet(feet);
+        u.setHeightInches(inches);
+        // Optionally keep cm in sync for compatibility
+        if (feet != null && inches != null) {
+            int cm = (int) Math.round(feet * 30.48 + inches * 2.54);
+            u.setHeightCm(cm);
+        }
+        users.save(u);
+    }
+
+    public void updateWeightLbs(UUID userId, Integer lbs) {
+        User u = users.findById(userId).orElseThrow();
+        u.setWeightLbs(lbs);
+        // Optionally keep kg in sync for compatibility
+        if (lbs != null) {
+            int kg = (int) Math.round(lbs / 2.20462);
+            u.setWeightKg(kg);
+        }
         users.save(u);
     }
 

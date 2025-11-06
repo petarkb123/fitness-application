@@ -54,7 +54,7 @@
                             <div class="picker-container">
                                 <select name="cm" id="heightCm" class="picker-select" required>
                                     <option value="">cm</option>
-                                    <option th:each="h : ${#numbers.sequence(120, 230)}" th:value="${h}" th:text="${h + ' cm'}" th:selected="${heightCm != null && h == heightCm}"></option>
+                                    <option th:each="h : ${#numbers.sequence(120, 220)}" th:value="${h}" th:text="${h + ' cm'}" th:selected="${heightCm != null && h == heightCm}"></option>
                                 </select>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                             <div class="picker-container">
                                 <select name="kg" id="weightKg" class="picker-select" required>
                                     <option value="">kg</option>
-                                    <option th:each="w : ${#numbers.sequence(30, 200)}" th:value="${w}" th:text="${w + ' kg'}" th:selected="${weightKg != null && w == weightKg}"></option>
+                                    <option th:each="w : ${#numbers.sequence(30, 150)}" th:value="${w}" th:text="${w + ' kg'}" th:selected="${weightKg != null && w == weightKg}"></option>
                                 </select>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                                 <div class="picker-container">
                                     <select name="feet" id="heightFeet" class="picker-select">
                                         <option value="">ft</option>
-                                        <option th:each="f : ${#numbers.sequence(3, 8)}" th:value="${f}" th:text="${f + ' ft'}" th:selected="${heightFeet != null && f == heightFeet}"></option>
+                                        <option th:each="f : ${#numbers.sequence(4, 7)}" th:value="${f}" th:text="${f + ' ft'}" th:selected="${heightFeet != null && f == heightFeet}"></option>
                                     </select>
                                 </div>
                                 <div class="picker-container">
@@ -93,9 +93,9 @@
                         <div class="input-column">
                             <label class="input-label">Weight</label>
                             <div class="picker-container">
-                                <select name="lbs" id="weightLbs" class="picker-select">
+                                    <select name="lbs" id="weightLbs" class="picker-select">
                                     <option value="">lb</option>
-                                    <option th:each="w : ${#numbers.sequence(66, 440)}" th:value="${w}" th:text="${w + ' lb'}" th:selected="${weightLbs != null && w == weightLbs}"></option>
+                                        <option th:each="w : ${#numbers.sequence(66, 330)}" th:value="${w}" th:text="${w + ' lb'}" th:selected="${weightLbs != null && w == weightLbs}"></option>
                                 </select>
                             </div>
                         </div>
@@ -151,6 +151,26 @@
         const unitSystemInput = document.getElementById('unitSystem');
         const metricInputs = document.getElementById('metricInputs');
         const imperialInputs = document.getElementById('imperialInputs');
+        const cmSelect = document.getElementById('heightCm');
+        const kgSelect = document.getElementById('weightKg');
+        const feetSelect = document.getElementById('heightFeet');
+        const inchesSelect = document.getElementById('heightInches');
+        const lbsSelect = document.getElementById('weightLbs');
+
+        function applyRequiredState(isImperial) {
+            // Toggle required attributes
+            cmSelect.required = !isImperial;
+            kgSelect.required = !isImperial;
+            feetSelect.required = isImperial;
+            inchesSelect.required = isImperial;
+            lbsSelect.required = isImperial;
+            // Disable hidden fields to avoid HTML5 validation of hidden required controls
+            cmSelect.disabled = isImperial;
+            kgSelect.disabled = isImperial;
+            feetSelect.disabled = !isImperial;
+            inchesSelect.disabled = !isImperial;
+            lbsSelect.disabled = !isImperial;
+        }
 
         // Initialize based on saved unit system
         const savedUnitSystem = unitSystemInput.value;
@@ -160,12 +180,14 @@
             imperialInputs.style.display = 'block';
             document.getElementById('imperialLabel').classList.add('active');
             document.getElementById('metricLabel').classList.remove('active');
+            applyRequiredState(true);
         } else {
             unitToggle.checked = false;
             imperialInputs.style.display = 'none';
             metricInputs.style.display = 'block';
             document.getElementById('metricLabel').classList.add('active');
             document.getElementById('imperialLabel').classList.remove('active');
+            applyRequiredState(false);
         }
 
         unitToggle.addEventListener('change', function() {
@@ -175,12 +197,14 @@
                 imperialInputs.style.display = 'block';
                 document.getElementById('imperialLabel').classList.add('active');
                 document.getElementById('metricLabel').classList.remove('active');
+                applyRequiredState(true);
             } else {
                 unitSystemInput.value = 'metric';
                 imperialInputs.style.display = 'none';
                 metricInputs.style.display = 'block';
                 document.getElementById('metricLabel').classList.add('active');
                 document.getElementById('imperialLabel').classList.remove('active');
+                applyRequiredState(false);
             }
         });
 
@@ -196,12 +220,38 @@
                     alert('Please select all values');
                     return;
                 }
+                // Validate ranges: height 120–220 cm, weight 66–330 lb (~30–150 kg)
+                const totalCm = (parseInt(feet, 10) * 30.48) + (parseInt(inches, 10) * 2.54);
+                const weightLb = parseInt(lbs, 10);
+                if (totalCm < 120 || totalCm > 220) {
+                    e.preventDefault();
+                    alert('Please choose a height between 4 ft (121 cm) and ~7 ft 3 in (220 cm).');
+                    return;
+                }
+                if (weightLb < 66 || weightLb > 330) {
+                    e.preventDefault();
+                    alert('Please choose a weight between 66 lb (30 kg) and 330 lb (150 kg).');
+                    return;
+                }
             } else {
                 const cm = document.getElementById('heightCm').value;
                 const kg = document.getElementById('weightKg').value;
                 if (!cm || !kg) {
                     e.preventDefault();
                     alert('Please select all values');
+                    return;
+                }
+                // Validate ranges: height 120–220 cm, weight 30–150 kg
+                const heightCm = parseInt(cm, 10);
+                const weightKg = parseInt(kg, 10);
+                if (heightCm < 120 || heightCm > 220) {
+                    e.preventDefault();
+                    alert('Please choose a height between 120 cm and 220 cm.');
+                    return;
+                }
+                if (weightKg < 30 || weightKg > 150) {
+                    e.preventDefault();
+                    alert('Please choose a weight between 30 kg and 150 kg.');
                     return;
                 }
             }

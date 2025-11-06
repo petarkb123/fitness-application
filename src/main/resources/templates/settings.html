@@ -13,6 +13,67 @@
     <link rel="stylesheet" th:href="@{/css/mobile/settings-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Polished, centered danger modal */
+        #dangerModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none; /* toggled via JS */
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1.25rem;
+        }
+        #dangerModal .modal-content {
+            margin-top: 200px;
+            width: 100%;
+            max-width: 520px;
+            background: linear-gradient(180deg, rgba(26,26,48,0.98) 0%, rgba(20,20,40,0.98) 100%);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+        #dangerModal .modal-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        #dangerModal .modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: .2px;
+        }
+        #dangerModal .modal-body {
+            padding: 1rem 1.25rem;
+            color: #cfd3ff;
+            line-height: 1.5;
+            margin-top: 0.35rem; /* nudge content a bit lower */
+        }
+        #dangerModal .modal-footer {
+            padding: 0.9rem 1.25rem 1.15rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: .75rem; /* more space between buttons */
+        }
+        #dangerModal .confirm-phrase {
+            color: #ff4d4f; /* only the phrase is red */
+            font-weight: 700;
+        }
+        /* Wider buttons in the modal */
+        #dangerForm .btn {
+            min-width: 230px;
+            margin-bottom: 10px;  
+        }
+        /* Shift the confirmation input a bit lower for breathing room */
+        #dangerConfirmInput { margin-top: 0.5rem; }
+    </style>
 </head>
 <body>
 <div class="dashboard-container">
@@ -230,6 +291,27 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <div class="username-field-container">
+                                <input type="email"
+                                       name="email"
+                                       id="emailInput"
+                                       class="form-input username-input"
+                                       th:value="${email}"
+                                       placeholder="Enter your email"
+                                       maxlength="100"
+                                       readonly>
+                                <button type="button" id="editEmailBtn" class="btn btn-secondary edit-btn">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="submit" id="saveUsernameBtn" class="btn btn-primary save-btn" style="display: none;">
                                 <i class="fas fa-save"></i>
@@ -255,11 +337,20 @@
                                 <i class="fas fa-times"></i>
                                 Cancel
                             </button>
+                            <button type="submit" id="saveEmailBtn" class="btn btn-primary save-btn" formaction="/settings/update-email" style="display: none;">
+                                <i class="fas fa-save"></i>
+                                Save
+                            </button>
+                            <button type="button" id="cancelEmailBtn" class="btn btn-outline cancel-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Notifications removed -->
+               
+
 
                 
                 <div class="settings-section">
@@ -270,8 +361,30 @@
                         </h2>
                     </div>
 
-                    <!-- Height -->
+                    <!-- Unit System Toggle -->
                     <div class="field-container">
+                        <label class="field-label">
+                            <i class="fas fa-balance-scale"></i>
+                            Units
+                        </label>
+                        <div class="field-display" th:text="${unitSystem == 'imperial' ? 'Imperial (ft/in, lb)' : 'Metric (cm, kg)'}">Metric (cm, kg)</div>
+                        <form th:action="@{/settings/update-unit-system}" method="post" style="display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" name="unitSystem" value="metric"
+                                    class="btn"
+                                    th:classappend="${unitSystem != 'imperial'} ? ' btn-primary' : ' btn-outline'">
+                                Metric (cm, kg)
+                            </button>
+                            <button type="submit" name="unitSystem" value="imperial"
+                                    class="btn"
+                                    th:classappend="${unitSystem == 'imperial'} ? ' btn-primary' : ' btn-outline'">
+                                Imperial (ft/in, lb)
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Height (conditional render) -->
+                    <div class="field-container" th:if="${unitSystem != 'imperial'}">
                         <label class="field-label">
                             <i class="fas fa-ruler-vertical"></i>
                             Height (cm)
@@ -279,15 +392,31 @@
                         <div class="field-display" th:text="${heightCm != null ? heightCm : 'Not set'}">Not set</div>
                         <button type="button" class="btn btn-secondary edit-field-btn" data-field="height">Edit</button>
                     </div>
+                    <div class="field-container" th:if="${unitSystem == 'imperial'}">
+                        <label class="field-label">
+                            <i class="fas fa-ruler-vertical"></i>
+                            Height (ft/in)
+                        </label>
+                        <div class="field-display" th:text="${(heightFeet != null and heightInches != null) ? heightFeet + 'ft ' + heightInches + 'in' : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="heightImperial">Edit</button>
+                    </div>
 
-                    <!-- Weight -->
-                    <div class="field-container">
+                    <!-- Weight (conditional render) -->
+                    <div class="field-container" th:if="${unitSystem != 'imperial'}">
                         <label class="field-label">
                             <i class="fas fa-weight"></i>
                             Weight (kg)
                         </label>
                         <div class="field-display" th:text="${weightKg != null ? weightKg : 'Not set'}">Not set</div>
                         <button type="button" class="btn btn-secondary edit-field-btn" data-field="weight">Edit</button>
+                    </div>
+                    <div class="field-container" th:if="${unitSystem == 'imperial'}">
+                        <label class="field-label">
+                            <i class="fas fa-weight"></i>
+                            Weight (lb)
+                        </label>
+                        <div class="field-display" th:text="${weightLbs != null ? weightLbs : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="weightLbs">Edit</button>
                     </div>
 
                     <!-- Goal -->
@@ -501,6 +630,67 @@
                         </div>
                     </div>
                 </div>
+
+
+                 <!-- Danger Zone -->
+                 <div class="settings-section">
+                    <div class="section-header">
+                        <h2 class="section-title" style="color:#ff6b6b;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Danger Zone
+                        </h2>
+                    </div>
+
+                    <div class="field-container">
+                        <label class="field-label" style="color:#ff6b6b;">
+                            <i class="fas fa-redo-alt"></i>
+                            Reset Account
+                        </label>
+                        <div class="field-display" style="color:#ff9b9b;">
+                            This will permanently remove your workouts, templates, schedules, rest days and custom exercises. Your profile information stays.
+                        </div>
+                        <button type="button" class="btn btn-outline" style="border-color:#ff6b6b;color:#ff6b6b;" id="openResetModalBtn">Reset Account</button>
+                    </div>
+
+                    <div class="field-container">
+                        <label class="field-label" style="color:#ff4444;">
+                            <i class="fas fa-user-slash"></i>
+                            Delete Account
+                        </label>
+                        <div class="field-display" style="color:#ff9b9b;">
+                            This will permanently delete your account and all related data. This action cannot be undone.
+                        </div>
+                        <button type="button" class="btn btn-outline" style="border-color:#ff4444;color:#ff4444;" id="openDeleteModalBtn">Delete Account</button>
+                    </div>
+                </div>
+
+                <!-- Confirmation Modal for Danger Actions -->
+                <div id="dangerModal" class="modal" style="display:none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 id="dangerModalTitle">Confirm Action</h3>
+                            <button type="button" class="close-modal-btn" id="closeDangerModalBtn">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="dangerModalText">
+                                This action is permanent. To proceed, type <span class="confirm-phrase" id="dangerPhrase">delete account</span> below.
+                            </p>
+                            <input type="text" id="dangerConfirmInput" class="form-input" placeholder="Type the confirmation phrase">
+                        </div>
+                        <div class="modal-footer">
+                            <form id="dangerForm" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <input type="hidden" name="confirmText" id="dangerConfirmHidden" />
+                                <button type="button" class="btn btn-outline" id="dangerCancelBtn">Cancel</button>
+                                <button type="submit" class="btn btn-primary" id="dangerConfirmBtn" disabled>Confirm</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                
             </div>
         </div>
     </main>
@@ -795,6 +985,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Email functionality
+    const editEmailBtn = document.getElementById('editEmailBtn');
+    const saveEmailBtn = document.getElementById('saveEmailBtn');
+    const cancelEmailBtn = document.getElementById('cancelEmailBtn');
+    const emailInput = document.getElementById('emailInput');
+    const originalEmail = emailInput.value;
+
+    editEmailBtn.addEventListener('click', function() {
+        emailInput.removeAttribute('readonly');
+        emailInput.focus();
+        editEmailBtn.style.display = 'none';
+        saveEmailBtn.style.display = 'inline-flex';
+        cancelEmailBtn.style.display = 'inline-flex';
+        emailInput.classList.add('editing');
+    });
+
+    cancelEmailBtn.addEventListener('click', function() {
+        emailInput.value = originalEmail;
+        emailInput.setAttribute('readonly', true);
+        emailInput.classList.remove('editing');
+        editEmailBtn.style.display = 'inline-flex';
+        saveEmailBtn.style.display = 'none';
+        cancelEmailBtn.style.display = 'none';
+    });
+
+    saveEmailBtn.addEventListener('click', function(e) {
+        const newValue = emailInput.value.trim();
+        if (newValue === '') {
+            e.preventDefault();
+            showErrorMessage('Email cannot be empty');
+            return;
+        }
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(newValue)) {
+            e.preventDefault();
+            showErrorMessage('Please enter a valid email address');
+            return;
+        }
+        if (newValue === originalEmail) {
+            e.preventDefault();
+            showErrorMessage('No changes made');
+            cancelEmailBtn.click();
+            return;
+        }
+    });
+
+    // Handle Enter key in email field
+    emailInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !emailInput.hasAttribute('readonly')) {
+            e.preventDefault();
+            saveEmailBtn.click();
+        }
+        if (e.key === 'Escape' && !emailInput.hasAttribute('readonly')) {
+            e.preventDefault();
+            cancelEmailBtn.click();
+        }
+    });
+
     // Personal Information fields functionality
     const editModal = document.getElementById('editModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -926,6 +1175,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         {label: 'Custom...', value: 'custom'}
                     ]);
                     break;
+                case 'heightImperial':
+                    // Build a simple custom form for feet/inches
+                    currentFieldType = fieldType;
+                    modalTitle.textContent = 'Enter your height (ft/in)';
+                    modalBody.innerHTML = `
+                        <div class="custom-input-container">
+                            <div style="display:flex; gap:.5rem;">
+                                <div>
+                                    <label class="custom-input-label">Feet</label>
+                                    <input type="number" id="feetInput" class="form-input" min="4" max="7" step="1" placeholder="ft">
+                                </div>
+                                <div>
+                                    <label class="custom-input-label">Inches</label>
+                                    <input type="number" id="inchesInput" class="form-input" min="0" max="11" step="1" placeholder="in">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.querySelector('.modal-footer').style.display = 'flex';
+                    editModal.style.display = 'block';
+                    break;
                 case 'weight':
                     openModal(fieldType, 'Enter your weight in kg', [
                         {label: '40 kg', value: '40'},
@@ -939,6 +1209,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         {label: '120 kg', value: '120'},
                         {label: 'Custom...', value: 'custom'}
                     ]);
+                    break;
+                case 'weightLbs':
+                    currentFieldType = fieldType;
+                    modalTitle.textContent = 'Enter your weight in lb';
+                    modalBody.innerHTML = `
+                        <div class="custom-input-container">
+                            <label class="custom-input-label">Weight (lb)</label>
+                            <input type="number" id="lbsInput" class="form-input" min="66" max="330" step="1" placeholder="lb">
+                        </div>
+                    `;
+                    document.querySelector('.modal-footer').style.display = 'flex';
+                    editModal.style.display = 'block';
                     break;
                 case 'goal':
                     openModal(fieldType, 'Select your goal', [
@@ -1003,10 +1285,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 paramName = 'heightCm';
                 paramValue = parseInt(selectedValue);
                 break;
+            case 'heightImperial':
+                url = '/settings/update-height-imperial';
+                paramName = null; // we'll post feet and inches
+                break;
             case 'weight':
                 url = '/settings/update-weight';
                 paramName = 'weightKg';
                 paramValue = parseInt(selectedValue);
+                break;
+            case 'weightLbs':
+                url = '/settings/update-weight-lbs';
+                paramName = 'weightLbs';
+                paramValue = parseInt(document.getElementById('lbsInput').value);
                 break;
             case 'goal':
                 url = '/settings/update-goal';
@@ -1048,11 +1339,26 @@ document.addEventListener('DOMContentLoaded', function() {
         csrfInput.value = csrfToken;
         form.appendChild(csrfInput);
         
-        const valueInput = document.createElement('input');
-        valueInput.type = 'hidden';
-        valueInput.name = paramName;
-        valueInput.value = paramValue;
-        form.appendChild(valueInput);
+        if (currentFieldType === 'heightImperial') {
+            const feet = parseInt(document.getElementById('feetInput').value);
+            const inches = parseInt(document.getElementById('inchesInput').value);
+            const feetInput = document.createElement('input');
+            feetInput.type = 'hidden';
+            feetInput.name = 'heightFeet';
+            feetInput.value = feet;
+            form.appendChild(feetInput);
+            const inchesInput = document.createElement('input');
+            inchesInput.type = 'hidden';
+            inchesInput.name = 'heightInches';
+            inchesInput.value = inches;
+            form.appendChild(inchesInput);
+        } else {
+            const valueInput = document.createElement('input');
+            valueInput.type = 'hidden';
+            valueInput.name = paramName;
+            valueInput.value = paramValue;
+            form.appendChild(valueInput);
+        }
         
         document.body.appendChild(form);
         form.submit();
@@ -1094,6 +1400,45 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(clampScrollPosition, 100);
         });
     });
+
+    // Danger modal logic
+    const openResetModalBtn = document.getElementById('openResetModalBtn');
+    const openDeleteModalBtn = document.getElementById('openDeleteModalBtn');
+    const dangerModal = document.getElementById('dangerModal');
+    const closeDangerModalBtn = document.getElementById('closeDangerModalBtn');
+    const dangerModalTitle = document.getElementById('dangerModalTitle');
+    const dangerModalText = document.getElementById('dangerModalText');
+    const dangerConfirmInput = document.getElementById('dangerConfirmInput');
+    const dangerConfirmBtn = document.getElementById('dangerConfirmBtn');
+    const dangerCancelBtn = document.getElementById('dangerCancelBtn');
+    const dangerForm = document.getElementById('dangerForm');
+    const dangerConfirmHidden = document.getElementById('dangerConfirmHidden');
+
+    function openDanger(action) {
+        const isDelete = action === 'delete';
+        dangerModalTitle.textContent = isDelete ? 'Delete Account' : 'Reset Account';
+        const phrase = isDelete ? 'delete account' : 'reset account';
+        dangerModalText.innerHTML = `This action is permanent. To proceed, type <span class="confirm-phrase" id="dangerPhrase">${phrase}</span> below.`;
+        dangerForm.action = isDelete ? '/settings/delete-account' : '/settings/reset-account';
+        dangerConfirmInput.value = '';
+        dangerConfirmHidden.value = '';
+        dangerConfirmBtn.disabled = true;
+        dangerModal.style.display = 'block';
+        dangerConfirmInput.focus();
+        // live validation
+        const onInput = () => {
+            const val = dangerConfirmInput.value.trim().toLowerCase();
+            dangerConfirmBtn.disabled = (val !== phrase);
+            dangerConfirmHidden.value = dangerConfirmInput.value;
+        };
+        dangerConfirmInput.removeEventListener('input', onInput);
+        dangerConfirmInput.addEventListener('input', onInput);
+    }
+
+    if (openResetModalBtn) openResetModalBtn.addEventListener('click', () => openDanger('reset'));
+    if (openDeleteModalBtn) openDeleteModalBtn.addEventListener('click', () => openDanger('delete'));
+    if (closeDangerModalBtn) closeDangerModalBtn.addEventListener('click', () => { dangerModal.style.display='none'; });
+    if (dangerCancelBtn) dangerCancelBtn.addEventListener('click', () => { dangerModal.style.display='none'; });
 });
 </script>
 

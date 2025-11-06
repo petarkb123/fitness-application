@@ -18,17 +18,23 @@ public class SettingsController {
 
     private final UserSettingsService settings;
     private final UserService users;
+    private final project.fitnessapplication.user.service.AccountMaintenanceService accountMaintenance;
 
     @GetMapping({"", "/"})
     public String settings(@AuthenticationPrincipal UserDetails me, Model model) {
         var u = settings.requireByUsername(me.getUsername());
         model.addAttribute("username", u.getUsername());
+        model.addAttribute("email", u.getEmail());
         model.addAttribute("firstName", u.getFirstName());
         model.addAttribute("lastName", u.getLastName());
         model.addAttribute("avatarPath", u.getProfilePicture());
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("heightCm", u.getHeightCm());
         model.addAttribute("weightKg", u.getWeightKg());
+        model.addAttribute("unitSystem", u.getUnitSystem());
+        model.addAttribute("heightFeet", u.getHeightFeet());
+        model.addAttribute("heightInches", u.getHeightInches());
+        model.addAttribute("weightLbs", u.getWeightLbs());
         model.addAttribute("goal", u.getGoal());
         model.addAttribute("desiredWeightKg", u.getDesiredWeightKg());
         model.addAttribute("weightChangeSpeedKg", u.getWeightChangeSpeedKg());
@@ -134,6 +140,20 @@ public class SettingsController {
         return "redirect:/settings";
     }
 
+    @PostMapping("/update-email")
+    public String updateEmail(@AuthenticationPrincipal UserDetails me,
+                              @RequestParam("email") String email,
+                              RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateEmail(id, email);
+            ra.addFlashAttribute("successMessage", "Email updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
     @PostMapping("/update-height")
     public String updateHeight(@AuthenticationPrincipal UserDetails me,
                                @RequestParam("heightCm") Integer heightCm,
@@ -141,6 +161,21 @@ public class SettingsController {
         try {
             UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
             settings.updateHeight(id, heightCm);
+            ra.addFlashAttribute("successMessage", "Height updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-height-imperial")
+    public String updateHeightImperial(@AuthenticationPrincipal UserDetails me,
+                                       @RequestParam("heightFeet") Integer feet,
+                                       @RequestParam("heightInches") Integer inches,
+                                       RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateHeightImperial(id, feet, inches);
             ra.addFlashAttribute("successMessage", "Height updated.");
         } catch (IllegalArgumentException ex) {
             ra.addFlashAttribute("errorMessage", ex.getMessage());
@@ -156,6 +191,34 @@ public class SettingsController {
             UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
             settings.updateWeight(id, weightKg);
             ra.addFlashAttribute("successMessage", "Weight updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-weight-lbs")
+    public String updateWeightLbs(@AuthenticationPrincipal UserDetails me,
+                                  @RequestParam("weightLbs") Integer weightLbs,
+                                  RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateWeightLbs(id, weightLbs);
+            ra.addFlashAttribute("successMessage", "Weight updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-unit-system")
+    public String updateUnitSystem(@AuthenticationPrincipal UserDetails me,
+                                   @RequestParam("unitSystem") String unitSystem,
+                                   RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateUnitSystem(id, unitSystem);
+            ra.addFlashAttribute("successMessage", "Units updated.");
         } catch (IllegalArgumentException ex) {
             ra.addFlashAttribute("errorMessage", ex.getMessage());
         }
@@ -230,5 +293,33 @@ public class SettingsController {
             ra.addFlashAttribute("errorMessage", ex.getMessage());
         }
         return "redirect:/settings";
+    }
+
+    @PostMapping("/reset-account")
+    public String resetAccount(@AuthenticationPrincipal UserDetails me,
+                               @RequestParam("confirmText") String confirmText,
+                               RedirectAttributes ra) {
+        if (!"reset account".equalsIgnoreCase(confirmText == null ? "" : confirmText.trim())) {
+            ra.addFlashAttribute("errorMessage", "You must type 'reset account' to confirm.");
+            return "redirect:/settings";
+        }
+        UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+        accountMaintenance.resetAccount(id);
+        ra.addFlashAttribute("successMessage", "Your account data has been reset.");
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/delete-account")
+    public String deleteAccount(@AuthenticationPrincipal UserDetails me,
+                                @RequestParam("confirmText") String confirmText,
+                                RedirectAttributes ra) {
+        if (!"delete account".equalsIgnoreCase(confirmText == null ? "" : confirmText.trim())) {
+            ra.addFlashAttribute("errorMessage", "You must type 'delete account' to confirm.");
+            return "redirect:/settings";
+        }
+        UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+        accountMaintenance.deleteAccount(id);
+        ra.addFlashAttribute("successMessage", "Your account has been deleted.");
+        return "redirect:/login";
     }
 }

@@ -74,7 +74,25 @@
                                 </div>
                             </div>
                             <div class="option-text">
-                                <div class="option-label">6+</div>
+                                <div class="option-label">6</div>
+                                <div class="option-subtitle">Near-daily training</div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- New: Dedicated Athlete 7+ option -->
+                    <label class="option-card" th:classappend="${selectedFrequency == 'ATHLETE'} ? 'selected' : ''">
+                        <input type="radio" name="frequency" value="ATHLETE" th:checked="${selectedFrequency == 'ATHLETE'}" required>
+                        <div class="option-content">
+                            <div class="option-icon option-icon-high">
+                                <div class="dot-grid">
+                                    <span></span><span></span>
+                                    <span></span><span></span>
+                                    <span></span><span></span>
+                                </div>
+                            </div>
+                            <div class="option-text">
+                                <div class="option-label">7+</div>
                                 <div class="option-subtitle">Dedicated athlete</div>
                             </div>
                         </div>
