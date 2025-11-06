@@ -103,11 +103,17 @@ public class OnboardingController {
     public String desiredWeightForm(HttpSession session, Model model) {
         // Load saved data if exists
         String goal = (String) session.getAttribute("onboarding_goal");
+        String unitSystem = (String) session.getAttribute("onboarding_unit_system");
         Integer desiredWeightKg = (Integer) session.getAttribute("onboarding_desired_weight_kg");
         
         model.addAttribute("goal", goal);
+        model.addAttribute("unitSystem", unitSystem != null ? unitSystem : "metric");
         if (desiredWeightKg != null) {
             model.addAttribute("desiredWeightKg", desiredWeightKg);
+            // Compute imperial value if unit system is imperial
+            if ("imperial".equals(unitSystem)) {
+                model.addAttribute("desiredWeightLbs", (int) Math.round(desiredWeightKg * 2.20462));
+            }
         }
         return "onboarding/desired-weight";
     }
@@ -116,11 +122,17 @@ public class OnboardingController {
     public String weightSpeedForm(HttpSession session, Model model) {
         // Load saved data if exists
         String goal = (String) session.getAttribute("onboarding_goal");
+        String unitSystem = (String) session.getAttribute("onboarding_unit_system");
         Double weightChangeSpeedKg = (Double) session.getAttribute("onboarding_weight_change_speed_kg");
         
         model.addAttribute("goal", goal);
+        model.addAttribute("unitSystem", unitSystem != null ? unitSystem : "metric");
         if (weightChangeSpeedKg != null) {
             model.addAttribute("weightChangeSpeedKg", weightChangeSpeedKg);
+            // Compute imperial value if unit system is imperial
+            if ("imperial".equals(unitSystem)) {
+                model.addAttribute("weightChangeSpeedLbs", Math.round(weightChangeSpeedKg * 2.20462 * 10.0) / 10.0);
+            }
         }
         return "onboarding/weight-speed";
     }
@@ -153,13 +165,27 @@ public class OnboardingController {
         // Save unit system
         session.setAttribute("onboarding_unit_system", unitSystem);
         
-        // Convert to metric if imperial
-        int heightCm = cm != null ? cm : (int)((feet * 30.48) + (inches * 2.54));
-        int weightKg = kg != null ? kg : (int)(lbs * 0.453592);
+        // Convert to metric if imperial, preserving original values
+        Integer heightCm = null;
+        Integer weightKg = null;
         
-        // Save all values
-        session.setAttribute("onboarding_height_cm", heightCm);
-        session.setAttribute("onboarding_weight_kg", weightKg);
+        if ("imperial".equals(unitSystem)) {
+            // Imperial: convert feet/inches to cm, lbs to kg
+            if (feet != null && inches != null) {
+                heightCm = (int) Math.round((feet * 30.48) + (inches * 2.54));
+            }
+            if (lbs != null) {
+                weightKg = (int) Math.round(lbs * 0.453592);
+            }
+        } else {
+            // Metric: use cm and kg directly
+            heightCm = cm;
+            weightKg = kg;
+        }
+        
+        // Save all values (both converted and original)
+        if (heightCm != null) session.setAttribute("onboarding_height_cm", heightCm);
+        if (weightKg != null) session.setAttribute("onboarding_weight_kg", weightKg);
         if (feet != null) session.setAttribute("onboarding_height_feet", feet);
         if (inches != null) session.setAttribute("onboarding_height_inches", inches);
         if (lbs != null) session.setAttribute("onboarding_weight_lbs", lbs);
@@ -175,7 +201,7 @@ public class OnboardingController {
             @RequestParam String month,
             @RequestParam String day, 
             @RequestParam String year,
-            @RequestParam String region,
+            @RequestParam String timezone,
             HttpSession session, 
             Model model) {
         
@@ -183,9 +209,20 @@ public class OnboardingController {
         String birthdate = year + "-" + month + "-" + day;
         
         session.setAttribute("onboarding_birthdate", birthdate);
-        session.setAttribute("onboarding_region", region);
+        // Validate and save timezone
+        String validTimezone = "UTC";
+        if (timezone != null && !timezone.trim().isEmpty()) {
+            try {
+                java.time.ZoneId.of(timezone); // Validate
+                validTimezone = timezone.trim();
+            } catch (Exception e) {
+                // Invalid timezone, default to UTC
+                validTimezone = "UTC";
+            }
+        }
+        session.setAttribute("onboarding_timezone", validTimezone);
         model.addAttribute("birthdate", birthdate);
-        model.addAttribute("region", region);
+        model.addAttribute("timezone", validTimezone);
         return "onboarding/goal"; // Step 7
     }
 
@@ -206,23 +243,59 @@ public class OnboardingController {
     }
 
     @PostMapping("/desired-weight")
-    public String saveDesiredWeight(@RequestParam Integer desiredWeightKg, HttpSession session, Model model) {
-        session.setAttribute("onboarding_desired_weight_kg", desiredWeightKg);
-        model.addAttribute("desiredWeightKg", desiredWeightKg);
+    public String saveDesiredWeight(
+            @RequestParam(required = false) Integer desiredWeightKg,
+            @RequestParam(required = false) Integer desiredWeightLbs,
+            HttpSession session, Model model) {
+        String unitSystem = (String) session.getAttribute("onboarding_unit_system");
+        
+        // Convert to kg for storage
+        Integer weightKg;
+        if ("imperial".equals(unitSystem) && desiredWeightLbs != null) {
+            // Imperial: convert lbs to kg
+            weightKg = (int) Math.round(desiredWeightLbs / 2.20462);
+        } else if (desiredWeightKg != null) {
+            // Metric: use kg directly
+            weightKg = desiredWeightKg;
+        } else {
+            weightKg = null;
+        }
+        
+        session.setAttribute("onboarding_desired_weight_kg", weightKg);
+        model.addAttribute("desiredWeightKg", weightKg);
         
         String goal = (String) session.getAttribute("onboarding_goal");
         model.addAttribute("goal", goal);
+        model.addAttribute("unitSystem", unitSystem != null ? unitSystem : "metric");
         
         return "onboarding/weight-speed"; // Step 10
     }
 
     @PostMapping("/weight-speed")
-    public String saveWeightSpeed(@RequestParam Double weightChangeSpeedKg, HttpSession session, Model model) {
-        session.setAttribute("onboarding_weight_change_speed_kg", weightChangeSpeedKg);
-        model.addAttribute("weightChangeSpeedKg", weightChangeSpeedKg);
+    public String saveWeightSpeed(
+            @RequestParam(required = false) Double weightChangeSpeedKg,
+            @RequestParam(required = false) Double weightChangeSpeedLbs,
+            HttpSession session, Model model) {
+        String unitSystem = (String) session.getAttribute("onboarding_unit_system");
+        
+        // Convert to kg/week for storage
+        Double speedKg;
+        if ("imperial".equals(unitSystem) && weightChangeSpeedLbs != null) {
+            // Imperial: convert lb/week to kg/week
+            speedKg = Math.round(weightChangeSpeedLbs / 2.20462 * 10.0) / 10.0;
+        } else if (weightChangeSpeedKg != null) {
+            // Metric: use kg/week directly
+            speedKg = weightChangeSpeedKg;
+        } else {
+            speedKg = null;
+        }
+        
+        session.setAttribute("onboarding_weight_change_speed_kg", speedKg);
+        model.addAttribute("weightChangeSpeedKg", speedKg);
         
         String goal = (String) session.getAttribute("onboarding_goal");
         model.addAttribute("goal", goal);
+        model.addAttribute("unitSystem", unitSystem != null ? unitSystem : "metric");
         
         return "onboarding/thank-you"; // Step 11
     }
@@ -327,11 +400,16 @@ public class OnboardingController {
         }
         
         // Load saved data if exists
+        String unitSystem = (String) session.getAttribute("onboarding_unit_system");
         Integer desiredWeightKg = (Integer) session.getAttribute("onboarding_desired_weight_kg");
         
         model.addAttribute("goal", goal);
+        model.addAttribute("unitSystem", unitSystem != null ? unitSystem : "metric");
         if (desiredWeightKg != null) {
             model.addAttribute("desiredWeightKg", desiredWeightKg);
+            if ("imperial".equals(unitSystem)) {
+                model.addAttribute("desiredWeightLbs", (int) Math.round(desiredWeightKg * 2.20462));
+            }
         }
         return "onboarding/desired-weight";
     }
@@ -345,11 +423,16 @@ public class OnboardingController {
         }
         
         // Load saved data if exists
+        String unitSystem = (String) session.getAttribute("onboarding_unit_system");
         Double weightChangeSpeedKg = (Double) session.getAttribute("onboarding_weight_change_speed_kg");
         
         model.addAttribute("goal", goal);
+        model.addAttribute("unitSystem", unitSystem != null ? unitSystem : "metric");
         if (weightChangeSpeedKg != null) {
             model.addAttribute("weightChangeSpeedKg", weightChangeSpeedKg);
+            if ("imperial".equals(unitSystem)) {
+                model.addAttribute("weightChangeSpeedLbs", Math.round(weightChangeSpeedKg * 2.20462 * 10.0) / 10.0);
+            }
         }
         return "onboarding/weight-speed";
     }

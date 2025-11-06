@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import project.fitnessapplication.config.SystemDefault;
 import project.fitnessapplication.template.service.TemplateService;
+import project.fitnessapplication.user.service.TimezoneService;
 import project.fitnessapplication.user.service.UserService;
 import project.fitnessapplication.workout.dto.FinishWorkoutRequest;
 import project.fitnessapplication.workout.dto.ExerciseSetData;
@@ -36,6 +37,7 @@ public class WorkoutController {
     private final WorkoutService workoutService;
     private final TemplateService templateService;
     private final UserService users;
+    private final TimezoneService timezoneService;
 
 
     @GetMapping
@@ -46,18 +48,16 @@ public class WorkoutController {
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
         
-        // Get sessions and convert times to user's regional timezone
+        // Get sessions and convert times from UTC to user's timezone
         var sessions = workoutService.getRecentSessions(userId, 50);
         var regionalSessions = new ArrayList<>();
         for (var session : sessions) {
             var builder = session.toBuilder();
-            if (session.getStartedAt() != null && u.getRegion() != null) {
-                builder.startedAt(project.fitnessapplication.config.TimezoneConfig.convertToRegionalTime(
-                    session.getStartedAt(), u.getRegion()));
+            if (session.getStartedAt() != null) {
+                builder.startedAt(timezoneService.toUserLocalTime(session.getStartedAt(), userId));
             }
-            if (session.getFinishedAt() != null && u.getRegion() != null) {
-                builder.finishedAt(project.fitnessapplication.config.TimezoneConfig.convertToRegionalTime(
-                    session.getFinishedAt(), u.getRegion()));
+            if (session.getFinishedAt() != null) {
+                builder.finishedAt(timezoneService.toUserLocalTime(session.getFinishedAt(), userId));
             }
             regionalSessions.add(builder.build());
         }
@@ -111,10 +111,11 @@ public class WorkoutController {
         model.addAttribute("sessionId", s.getId());
         model.addAttribute("isEditMode", edit);
         
-        // Calculate elapsed seconds to avoid timezone issues (only for in-progress workouts)
+        // Calculate elapsed seconds using UTC to avoid timezone issues (only for in-progress workouts)
         if (!edit && s.getStartedAt() != null) {
-            long elapsedSeconds = java.time.Duration.between(s.getStartedAt(), java.time.LocalDateTime.now()).getSeconds();
-            if (elapsedSeconds < 0) elapsedSeconds = 0; // Handle timezone edge cases
+            // Both times are in UTC, so calculation is accurate
+            long elapsedSeconds = java.time.Duration.between(s.getStartedAt(), timezoneService.nowUtc()).getSeconds();
+            if (elapsedSeconds < 0) elapsedSeconds = 0; // Handle edge cases
             model.addAttribute("elapsedSeconds", elapsedSeconds);
         } else {
             model.addAttribute("elapsedSeconds", 0);
@@ -126,11 +127,9 @@ public class WorkoutController {
             if (durationSeconds < 0) durationSeconds = 0;
             model.addAttribute("workoutDurationSeconds", durationSeconds);
             
-            // Convert startedAt from UTC to regional time for proper JavaScript Date parsing
-            var regionalStartedAt = (u.getRegion() != null) 
-                ? project.fitnessapplication.config.TimezoneConfig.convertFromUtcToRegionalTime(s.getStartedAt(), u.getRegion())
-                : s.getStartedAt();
-            model.addAttribute("originalStartedAt", regionalStartedAt.toString());
+            // Convert startedAt from UTC to user's local time for proper JavaScript Date parsing
+            var localStartedAt = timezoneService.toUserLocalTime(s.getStartedAt(), userId);
+            model.addAttribute("originalStartedAt", localStartedAt.toString());
         } else {
             model.addAttribute("workoutDurationSeconds", 0);
             model.addAttribute("originalStartedAt", "");
@@ -168,6 +167,7 @@ public class WorkoutController {
         var u = users.findByUsernameOrThrow(me.getUsername());
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
+        model.addAttribute("unitSystem", u.getUnitSystem());
 
         var opt = workoutService.findById(id);
         if (opt.isEmpty()) {
@@ -216,7 +216,12 @@ public class WorkoutController {
             }
         }
 
-        var workoutView = new WorkoutView(session.getStartedAt(), session.getFinishedAt(), blocks, u.getRegion());
+        // Convert times from UTC to user's local timezone before creating WorkoutView
+        var localStartedAt = timezoneService.toUserLocalTime(session.getStartedAt(), u.getId());
+        var localFinishedAt = session.getFinishedAt() != null 
+            ? timezoneService.toUserLocalTime(session.getFinishedAt(), u.getId()) 
+            : null;
+        var workoutView = new WorkoutView(localStartedAt, localFinishedAt, blocks);
         model.addAttribute("workout", workoutView);
         model.addAttribute("totalSets", sets.size());
         model.addAttribute("sessionId", id); // Add sessionId for edit button

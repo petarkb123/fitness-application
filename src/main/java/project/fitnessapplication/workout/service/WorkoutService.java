@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import project.fitnessapplication.config.SystemDefault;
 import project.fitnessapplication.exercise.model.Exercise;
 import project.fitnessapplication.exercise.repository.ExerciseRepository;
+import project.fitnessapplication.user.service.TimezoneService;
 import project.fitnessapplication.workout.dto.ExerciseSetData;
 import project.fitnessapplication.workout.model.SessionStatus;
 import project.fitnessapplication.workout.model.WorkoutSession;
@@ -26,6 +27,7 @@ public class WorkoutService {
     private final WorkoutSessionRepository sessionRepo;
     private final WorkoutSetRepository setRepo;
     private final ExerciseRepository exerciseRepo;
+    private final TimezoneService timezoneService;
 
     @Transactional(readOnly = true)
     public List<WorkoutSession> history(UUID user) {
@@ -73,7 +75,8 @@ public class WorkoutService {
     public WorkoutSession start(UUID user) {
         var session = new WorkoutSession();
         session.setUserId(user);
-        session.setStartedAt(LocalDateTime.now());
+        // Store in UTC for consistency
+        session.setStartedAt(timezoneService.nowUtc());
         return sessionRepo.save(session);
     }
     
@@ -81,7 +84,8 @@ public class WorkoutService {
     public void finishSession(UUID sessionId, UUID userId) {
         sessionRepo.findById(sessionId).ifPresent(s -> {
             if (Objects.equals(s.getUserId(), userId) && s.getFinishedAt() == null) {
-                s.setFinishedAt(LocalDateTime.now());
+                // Store in UTC for consistency
+                s.setFinishedAt(timezoneService.nowUtc());
                 s.setStatus(SessionStatus.FINISHED);
                 sessionRepo.save(s);
             }
@@ -139,7 +143,8 @@ public class WorkoutService {
         }
         
         if (session.getFinishedAt() == null) {
-            session.setFinishedAt(LocalDateTime.now());
+            // Store in UTC for consistency
+            session.setFinishedAt(timezoneService.nowUtc());
             session.setStatus(SessionStatus.FINISHED);
             sessionRepo.save(session);
         }
@@ -197,12 +202,12 @@ public class WorkoutService {
             }
         }
         
-        // Update timestamps if provided
+        // Update timestamps if provided - convert from user local time to UTC for storage
         if (startedAt != null) {
-            session.setStartedAt(startedAt);
+            session.setStartedAt(timezoneService.toUtc(startedAt, userId));
         }
         if (finishedAt != null) {
-            session.setFinishedAt(finishedAt);
+            session.setFinishedAt(timezoneService.toUtc(finishedAt, userId));
         }
         
         // Ensure session is marked as finished

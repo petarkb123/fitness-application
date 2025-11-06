@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.fitnessapplication.user.model.User;
 import project.fitnessapplication.user.repository.UserRepository;
 
+import java.time.ZoneId;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
@@ -185,9 +186,32 @@ public class UserSettingsService {
         users.save(u);
     }
 
-    public void updateTimezone(UUID userId, String region) {
+    public void updateTimezone(UUID userId, String timezone) {
         User u = users.findById(userId).orElseThrow();
-        u.setRegion(region);
+        if (timezone != null && !timezone.trim().isEmpty()) {
+            try {
+                java.time.ZoneId.of(timezone); // Validate
+                u.setTimezone(timezone.trim());
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid timezone: " + timezone);
+            }
+        } else {
+            u.setTimezone("UTC");
+        }
+        users.save(u);
+    }
+
+    public void updateUserTimezone(UUID userId, String timezone) {
+        User u = users.findById(userId).orElseThrow();
+        if (timezone == null || timezone.trim().isEmpty()) {
+            throw new IllegalArgumentException("Timezone is required.");
+        }
+        try {
+            ZoneId.of(timezone); // Validate IANA timezone
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid timezone: " + timezone);
+        }
+        u.setTimezone(timezone.trim());
         users.save(u);
     }
 }

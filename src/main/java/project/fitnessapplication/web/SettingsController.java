@@ -38,8 +38,20 @@ public class SettingsController {
         model.addAttribute("goal", u.getGoal());
         model.addAttribute("desiredWeightKg", u.getDesiredWeightKg());
         model.addAttribute("weightChangeSpeedKg", u.getWeightChangeSpeedKg());
+        // Compute imperial values for display if unit system is imperial
+        if ("imperial".equals(u.getUnitSystem())) {
+            Integer desiredWeightLbs = u.getDesiredWeightKg() != null 
+                ? (int) Math.round(u.getDesiredWeightKg() * 2.20462) : null;
+            Double weightChangeSpeedLbs = u.getWeightChangeSpeedKg() != null 
+                ? Math.round(u.getWeightChangeSpeedKg() * 2.20462 * 10.0) / 10.0 : null;
+            model.addAttribute("desiredWeightLbs", desiredWeightLbs);
+            model.addAttribute("weightChangeSpeedLbs", weightChangeSpeedLbs);
+        } else {
+            model.addAttribute("desiredWeightLbs", null);
+            model.addAttribute("weightChangeSpeedLbs", null);
+        }
         model.addAttribute("workoutFrequency", u.getWorkoutFrequency());
-        model.addAttribute("region", u.getRegion());
+        model.addAttribute("timezone", u.getTimezone() != null ? u.getTimezone() : "UTC");
         return "settings";
     }
 
@@ -267,6 +279,38 @@ public class SettingsController {
         return "redirect:/settings";
     }
 
+    @PostMapping("/update-desired-weight-lbs")
+    public String updateDesiredWeightLbs(@AuthenticationPrincipal UserDetails me,
+                                        @RequestParam("desiredWeightLbs") Integer desiredWeightLbs,
+                                        RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            // Convert lbs to kg for storage
+            Integer desiredWeightKg = (int) Math.round(desiredWeightLbs / 2.20462);
+            settings.updateDesiredWeight(id, desiredWeightKg);
+            ra.addFlashAttribute("successMessage", "Desired weight updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-weight-speed-lbs")
+    public String updateWeightSpeedLbs(@AuthenticationPrincipal UserDetails me,
+                                       @RequestParam("weightChangeSpeedLbs") Double weightChangeSpeedLbs,
+                                       RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            // Convert lbs/week to kg/week for storage
+            Double weightChangeSpeedKg = Math.round(weightChangeSpeedLbs / 2.20462 * 10.0) / 10.0;
+            settings.updateWeightChangeSpeed(id, weightChangeSpeedKg);
+            ra.addFlashAttribute("successMessage", "Weight change speed updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
     @PostMapping("/update-workout-frequency")
     public String updateWorkoutFrequency(@AuthenticationPrincipal UserDetails me,
                                          @RequestParam("workoutFrequency") String workoutFrequency,
@@ -283,11 +327,25 @@ public class SettingsController {
 
     @PostMapping("/update-timezone")
     public String updateTimezone(@AuthenticationPrincipal UserDetails me,
-                                  @RequestParam("region") String region,
+                                  @RequestParam("timezone") String timezone,
                                   RedirectAttributes ra) {
         try {
             UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
-            settings.updateTimezone(id, region);
+            settings.updateTimezone(id, timezone);
+            ra.addFlashAttribute("successMessage", "Timezone updated.");
+        } catch (IllegalArgumentException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/settings";
+    }
+
+    @PostMapping("/update-user-timezone")
+    public String updateUserTimezone(@AuthenticationPrincipal UserDetails me,
+                                     @RequestParam("timezone") String timezone,
+                                     RedirectAttributes ra) {
+        try {
+            UUID id = users.findByUsernameOrThrow(me.getUsername()).getId();
+            settings.updateUserTimezone(id, timezone);
             ra.addFlashAttribute("successMessage", "Timezone updated.");
         } catch (IllegalArgumentException ex) {
             ra.addFlashAttribute("errorMessage", ex.getMessage());

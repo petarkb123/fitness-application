@@ -34,6 +34,7 @@
 
             <form th:action="@{/onboarding/birthdate}" method="post" class="onboarding-form" id="birthdateForm">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="hidden" name="timezone" id="timezoneInput" />
                 
                 <div class="date-picker-container">
                     <div class="date-picker-column">
@@ -78,18 +79,14 @@
                     </div>
                 </div>
 
-                <!-- Region Selector -->
-                <div class="region-selector">
-                    <label class="region-label">Region</label>
-                    <select name="region" id="regionSelect" class="region-select" required>
-                        <option value="">Select Your Region</option>
-                        <option value="Europe" th:selected="${region != null && region.equals('Europe')}">Europe</option>
-                        <option value="North America" th:selected="${region != null && region.equals('North America')}">North America</option>
-                        <option value="Asia" th:selected="${region != null && region.equals('Asia')}">Asia</option>
-                        <option value="Africa" th:selected="${region != null && region.equals('Africa')}">Africa</option>
-                        <option value="Oceania" th:selected="${region != null && region.equals('Oceania')}">Oceania</option>
-                        <option value="South America" th:selected="${region != null && region.equals('South America')}">South America</option>
-                    </select>
+                <!-- Timezone Selector -->
+                <div class="timezone-selector">
+                    <label class="timezone-label">Timezone</label>
+                    <button type="button" id="timezoneBtn" class="timezone-btn" required>
+                        <span id="timezoneDisplay">Select your timezone</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <input type="hidden" name="timezone" id="timezoneInput" th:value="${timezone}" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-large">
@@ -97,6 +94,20 @@
                     <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Timezone Modal -->
+<div id="timezoneModal" class="timezone-modal" style="display: none;">
+    <div class="timezone-modal-content">
+        <div class="timezone-modal-header">
+            <h3>Select your timezone</h3>
+            <button type="button" class="timezone-modal-close" id="closeTimezoneModal">&times;</button>
+        </div>
+        <div class="timezone-modal-body">
+            <input type="text" id="timezoneSearch" class="timezone-search" placeholder="Search timezone (e.g., Madrid, New York, Tokyo)">
+            <div id="timezoneList" class="timezone-list"></div>
         </div>
     </div>
 </div>
@@ -245,6 +256,187 @@
         clampScrollPosition();
         window.addEventListener('resize', function() {
             setTimeout(clampScrollPosition, 100);
+        });
+        
+        // Timezone selector
+        const timezoneBtn = document.getElementById('timezoneBtn');
+        const timezoneInput = document.getElementById('timezoneInput');
+        const timezoneDisplay = document.getElementById('timezoneDisplay');
+        const timezoneModal = document.getElementById('timezoneModal');
+        const closeTimezoneModal = document.getElementById('closeTimezoneModal');
+        const timezoneSearch = document.getElementById('timezoneSearch');
+        const timezoneList = document.getElementById('timezoneList');
+        
+        // Comprehensive IANA timezones
+        const timezones = [
+            // Europe
+            {label: 'Europe/London (GMT/BST)', value: 'Europe/London'},
+            {label: 'Europe/Dublin (GMT/IST)', value: 'Europe/Dublin'},
+            {label: 'Europe/Lisbon (WET/WEST)', value: 'Europe/Lisbon'},
+            {label: 'Europe/Paris (CET/CEST)', value: 'Europe/Paris'},
+            {label: 'Europe/Madrid (CET/CEST)', value: 'Europe/Madrid'},
+            {label: 'Europe/Berlin (CET/CEST)', value: 'Europe/Berlin'},
+            {label: 'Europe/Rome (CET/CEST)', value: 'Europe/Rome'},
+            {label: 'Europe/Amsterdam (CET/CEST)', value: 'Europe/Amsterdam'},
+            {label: 'Europe/Brussels (CET/CEST)', value: 'Europe/Brussels'},
+            {label: 'Europe/Vienna (CET/CEST)', value: 'Europe/Vienna'},
+            {label: 'Europe/Prague (CET/CEST)', value: 'Europe/Prague'},
+            {label: 'Europe/Warsaw (CET/CEST)', value: 'Europe/Warsaw'},
+            {label: 'Europe/Stockholm (CET/CEST)', value: 'Europe/Stockholm'},
+            {label: 'Europe/Copenhagen (CET/CEST)', value: 'Europe/Copenhagen'},
+            {label: 'Europe/Oslo (CET/CEST)', value: 'Europe/Oslo'},
+            {label: 'Europe/Helsinki (EET/EEST)', value: 'Europe/Helsinki'},
+            {label: 'Europe/Athens (EET/EEST)', value: 'Europe/Athens'},
+            {label: 'Europe/Sofia (EET/EEST)', value: 'Europe/Sofia'},
+            {label: 'Europe/Bucharest (EET/EEST)', value: 'Europe/Bucharest'},
+            {label: 'Europe/Budapest (CET/CEST)', value: 'Europe/Budapest'},
+            {label: 'Europe/Istanbul (TRT)', value: 'Europe/Istanbul'},
+            {label: 'Europe/Moscow (MSK)', value: 'Europe/Moscow'},
+            {label: 'Europe/Kiev (EET/EEST)', value: 'Europe/Kiev'},
+            // North America
+            {label: 'America/New_York (EST/EDT)', value: 'America/New_York'},
+            {label: 'America/Chicago (CST/CDT)', value: 'America/Chicago'},
+            {label: 'America/Denver (MST/MDT)', value: 'America/Denver'},
+            {label: 'America/Los_Angeles (PST/PDT)', value: 'America/Los_Angeles'},
+            {label: 'America/Toronto (EST/EDT)', value: 'America/Toronto'},
+            {label: 'America/Vancouver (PST/PDT)', value: 'America/Vancouver'},
+            {label: 'America/Montreal (EST/EDT)', value: 'America/Montreal'},
+            {label: 'America/Mexico_City (CST)', value: 'America/Mexico_City'},
+            {label: 'America/Phoenix (MST)', value: 'America/Phoenix'},
+            {label: 'America/Seattle (PST/PDT)', value: 'America/Seattle'},
+            {label: 'America/Dallas (CST/CDT)', value: 'America/Dallas'},
+            {label: 'America/Houston (CST/CDT)', value: 'America/Houston'},
+            {label: 'America/Miami (EST/EDT)', value: 'America/Miami'},
+            {label: 'America/Boston (EST/EDT)', value: 'America/Boston'},
+            {label: 'America/Anchorage (AKST/AKDT)', value: 'America/Anchorage'},
+            {label: 'Pacific/Honolulu (HST)', value: 'Pacific/Honolulu'},
+            // Asia
+            {label: 'Asia/Tokyo (JST)', value: 'Asia/Tokyo'},
+            {label: 'Asia/Seoul (KST)', value: 'Asia/Seoul'},
+            {label: 'Asia/Shanghai (CST)', value: 'Asia/Shanghai'},
+            {label: 'Asia/Beijing (CST)', value: 'Asia/Beijing'},
+            {label: 'Asia/Hong_Kong (HKT)', value: 'Asia/Hong_Kong'},
+            {label: 'Asia/Taipei (CST)', value: 'Asia/Taipei'},
+            {label: 'Asia/Singapore (SGT)', value: 'Asia/Singapore'},
+            {label: 'Asia/Bangkok (ICT)', value: 'Asia/Bangkok'},
+            {label: 'Asia/Jakarta (WIB)', value: 'Asia/Jakarta'},
+            {label: 'Asia/Manila (PHT)', value: 'Asia/Manila'},
+            {label: 'Asia/Kuala_Lumpur (MYT)', value: 'Asia/Kuala_Lumpur'},
+            {label: 'Asia/Dubai (GST)', value: 'Asia/Dubai'},
+            {label: 'Asia/Riyadh (AST)', value: 'Asia/Riyadh'},
+            {label: 'Asia/Tehran (IRST)', value: 'Asia/Tehran'},
+            {label: 'Asia/Kolkata (IST)', value: 'Asia/Kolkata'},
+            {label: 'Asia/Mumbai (IST)', value: 'Asia/Mumbai'},
+            {label: 'Asia/Delhi (IST)', value: 'Asia/Delhi'},
+            {label: 'Asia/Karachi (PKT)', value: 'Asia/Karachi'},
+            {label: 'Asia/Dhaka (BST)', value: 'Asia/Dhaka'},
+            {label: 'Asia/Colombo (IST)', value: 'Asia/Colombo'},
+            {label: 'Asia/Kathmandu (NPT)', value: 'Asia/Kathmandu'},
+            {label: 'Asia/Jerusalem (IST/IDT)', value: 'Asia/Jerusalem'},
+            // Oceania
+            {label: 'Australia/Sydney (AEST/AEDT)', value: 'Australia/Sydney'},
+            {label: 'Australia/Melbourne (AEST/AEDT)', value: 'Australia/Melbourne'},
+            {label: 'Australia/Brisbane (AEST)', value: 'Australia/Brisbane'},
+            {label: 'Australia/Perth (AWST)', value: 'Australia/Perth'},
+            {label: 'Australia/Adelaide (ACST/ACDT)', value: 'Australia/Adelaide'},
+            {label: 'Pacific/Auckland (NZST/NZDT)', value: 'Pacific/Auckland'},
+            {label: 'Pacific/Fiji (FJT)', value: 'Pacific/Fiji'},
+            // South America
+            {label: 'America/Sao_Paulo (BRT)', value: 'America/Sao_Paulo'},
+            {label: 'America/Buenos_Aires (ART)', value: 'America/Buenos_Aires'},
+            {label: 'America/Lima (PET)', value: 'America/Lima'},
+            {label: 'America/Bogota (COT)', value: 'America/Bogota'},
+            {label: 'America/Santiago (CLT)', value: 'America/Santiago'},
+            {label: 'America/Caracas (VET)', value: 'America/Caracas'},
+            {label: 'America/Rio_de_Janeiro (BRT)', value: 'America/Rio_de_Janeiro'},
+            // Africa
+            {label: 'Africa/Johannesburg (SAST)', value: 'Africa/Johannesburg'},
+            {label: 'Africa/Cairo (EET)', value: 'Africa/Cairo'},
+            {label: 'Africa/Lagos (WAT)', value: 'Africa/Lagos'},
+            {label: 'Africa/Nairobi (EAT)', value: 'Africa/Nairobi'},
+            {label: 'Africa/Casablanca (WET)', value: 'Africa/Casablanca'},
+            {label: 'Africa/Addis_Ababa (EAT)', value: 'Africa/Addis_Ababa'},
+            {label: 'Africa/Dar_es_Salaam (EAT)', value: 'Africa/Dar_es_Salaam'},
+            // UTC
+            {label: 'UTC', value: 'UTC'}
+        ];
+        
+        function renderTimezones(tzList) {
+            timezoneList.innerHTML = '';
+            tzList.forEach(tz => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'timezone-option-btn';
+                btn.textContent = tz.label;
+                btn.value = tz.value;
+                btn.addEventListener('click', function() {
+                    timezoneInput.value = tz.value;
+                    timezoneDisplay.textContent = tz.label;
+                    timezoneModal.style.display = 'none';
+                });
+                timezoneList.appendChild(btn);
+            });
+        }
+        
+        // Auto-detect and set timezone
+        try {
+            const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (detectedTimezone) {
+                const tz = timezones.find(t => t.value === detectedTimezone);
+                if (tz) {
+                    timezoneInput.value = tz.value;
+                    timezoneDisplay.textContent = tz.label;
+                } else {
+                    timezoneInput.value = detectedTimezone;
+                    timezoneDisplay.textContent = detectedTimezone;
+                }
+            }
+        } catch (e) {
+            console.warn('Could not detect timezone:', e);
+            timezoneInput.value = 'UTC';
+            timezoneDisplay.textContent = 'UTC';
+        }
+        
+        // Initialize timezone list
+        renderTimezones(timezones);
+        
+        // Open modal
+        timezoneBtn.addEventListener('click', function() {
+            timezoneModal.style.display = 'flex';
+            timezoneSearch.value = '';
+            renderTimezones(timezones);
+        });
+        
+        // Close modal
+        closeTimezoneModal.addEventListener('click', function() {
+            timezoneModal.style.display = 'none';
+        });
+        
+        // Close on outside click
+        timezoneModal.addEventListener('click', function(e) {
+            if (e.target === timezoneModal) {
+                timezoneModal.style.display = 'none';
+            }
+        });
+        
+        // Search filter
+        timezoneSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const filtered = timezones.filter(tz => 
+                tz.label.toLowerCase().includes(query) || 
+                tz.value.toLowerCase().includes(query)
+            );
+            renderTimezones(filtered);
+        });
+        
+        // Form validation
+        form.addEventListener('submit', function(e) {
+            if (!timezoneInput.value) {
+                e.preventDefault();
+                alert('Please select your timezone');
+                timezoneBtn.focus();
+                return;
+            }
         });
     });
 </script>

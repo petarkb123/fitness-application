@@ -96,11 +96,11 @@ public class User {
     @Column(name = "weight_change_speed_kg")
     private Double weightChangeSpeedKg; // kg per week
 
-    @Column(length = 50)
-    private String region; // Europe, North America, Asia, Africa, Oceania
-
     @Column(name = "unit_system", length = 20)
     private String unitSystem; // metric, imperial
+
+    @Column(name = "timezone", length = 50)
+    private String timezone; // IANA timezone ID (e.g., "Europe/Madrid", "America/New_York")
 
     @PreUpdate void touch() { updatedAt = LocalDateTime.now(); }
 }

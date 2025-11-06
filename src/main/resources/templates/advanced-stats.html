@@ -241,14 +241,14 @@
                             <div class="progress-info">
                                 <div class="progress-item">
                                     <span class="progress-label">Starting Weight</span>
-                                    <span class="progress-value" th:text="${overload.startingWeight()} + ' kg'">0 kg</span>
+                                    <span class="progress-value" data-weight-kg th:attr="data-weight-kg=${overload.startingWeight()}" th:text="${overload.startingWeight()}">0</span>
                                 </div>
                                 <div class="progress-arrow">
                                     <i class="fas fa-arrow-right"></i>
                                 </div>
                                 <div class="progress-item">
                                     <span class="progress-label">Current Weight</span>
-                                    <span class="progress-value" th:text="${overload.currentWeight()} + ' kg'">0 kg</span>
+                                    <span class="progress-value" data-weight-kg th:attr="data-weight-kg=${overload.currentWeight()}" th:text="${overload.currentWeight()}">0</span>
                                 </div>
                             </div>
                             <div class="progress-percent" th:classappend="${overload.progressPercent() > 0 ? 'positive' : 'neutral'}">
@@ -351,7 +351,7 @@
                                     <td>
                                         <span class="record-type-badge" th:text="${pr.recordType()}">Type</span>
                                     </td>
-                                    <td th:text="${pr.weight()} + ' kg'">0 kg</td>
+                                    <td data-weight-kg th:attr="data-weight-kg=${pr.weight()}" th:text="${pr.weight()}">0</td>
                                     <td th:text="${pr.reps()}">0</td>
                                     <td th:text="${#temporals.format(pr.achievedDate(), 'MMM dd, yyyy')}">Date</td>
                                 </tr>
@@ -368,23 +368,39 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     // Helper function to format weight/volume with tons
-    function formatWeight(weight) {
-        if (weight >= 1000) {
-            const tons = weight / 1000;
+    const isImperial = /*[[${unitSystem == 'imperial'}]]*/ false;
+    const unitLabel = isImperial ? 'lb' : 'kg';
+
+    function formatWeight(weightKg) {
+        if (isImperial) {
+            const lb = weightKg * 2.20462;
+            return lb.toFixed(1) + ' lb';
+        }
+        if (weightKg >= 1000) {
+            const tons = weightKg / 1000;
             return tons.toFixed(2) + ' Ton' + (tons !== 1 ? 's' : '');
         }
-        return weight.toFixed(1) + ' kg';
+        return weightKg.toFixed(1) + ' kg';
     }
 
     // Format volume display on page load
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('[data-volume]').forEach(function(el) {
-            const value = parseFloat(el.textContent.replace(/,/g, ''));
-            if (!isNaN(value) && value >= 1000) {
-                const tons = value / 1000;
-                el.textContent = tons.toFixed(2) + ' Ton' + (tons !== 1 ? 's' : '');
-            } else if (!isNaN(value)) {
-                el.textContent = value.toFixed(1) + ' kg';
+            const valueKg = parseFloat(el.textContent.replace(/,/g, ''));
+            if (!isNaN(valueKg)) {
+                el.textContent = formatWeight(valueKg);
+            }
+        });
+
+        // Convert explicit weight fields (starting/current/PRs)
+        document.querySelectorAll('[data-weight-kg]').forEach(function(el) {
+            const kg = parseFloat(el.getAttribute('data-weight-kg'));
+            if (!isNaN(kg)) {
+                if (isImperial) {
+                    el.textContent = (kg * 2.20462).toFixed(1) + ' lb';
+                } else {
+                    el.textContent = kg.toFixed(1) + ' kg';
+                }
             }
         });
     });
@@ -518,7 +534,7 @@
                         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }),
                     datasets: [{
-                        label: 'Volume (kg)',
+                        label: 'Volume (' + unitLabel + ')',
                         data: trend.weeklyData.map(w => w.volume),
                         borderColor: trend.trend === 'increasing' ? 'rgba(46, 213, 115, 1)' : 
                                     trend.trend === 'decreasing' ? 'rgba(255, 71, 87, 1)' : 
@@ -587,7 +603,7 @@
                         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }),
                     datasets: [{
-                        label: 'Max Weight (kg)',
+                        label: 'Max Weight (' + unitLabel + ')',
                         data: overload.progressPoints.map(p => p.weight),
                         borderColor: 'rgba(255, 159, 64, 1)',
                         backgroundColor: 'rgba(255, 159, 64, 0.1)',

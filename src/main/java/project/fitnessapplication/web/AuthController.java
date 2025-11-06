@@ -36,7 +36,6 @@ public class AuthController {
                 Integer heightCm = (Integer) session.getAttribute("onboarding_height_cm");
                 Integer weightKg = (Integer) session.getAttribute("onboarding_weight_kg");
                 String birthdateStr = (String) session.getAttribute("onboarding_birthdate");
-                String region = (String) session.getAttribute("onboarding_region");
                 String goal = (String) session.getAttribute("onboarding_goal");
                 Integer desiredWeightKg = (Integer) session.getAttribute("onboarding_desired_weight_kg");
                 Double weightChangeSpeedKg = (Double) session.getAttribute("onboarding_weight_change_speed_kg");
@@ -44,6 +43,7 @@ public class AuthController {
                 Integer heightFeet = (Integer) session.getAttribute("onboarding_height_feet");
                 Integer heightInches = (Integer) session.getAttribute("onboarding_height_inches");
                 Integer weightLbs = (Integer) session.getAttribute("onboarding_weight_lbs");
+                String timezone = (String) session.getAttribute("onboarding_timezone");
                 
                 LocalDate birthdate = null;
                 if (birthdateStr != null) {
@@ -54,9 +54,10 @@ public class AuthController {
                     f.getUsername(), f.getPassword(), f.getEmail(),
                     f.getFirstName(), f.getLastName(),
                     gender, workoutFrequency, heightCm, weightKg,
-                    birthdate, region, goal, desiredWeightKg, weightChangeSpeedKg,
+                    birthdate, goal, desiredWeightKg, weightChangeSpeedKg,
                     unitSystem != null ? unitSystem : "metric", // Default to metric if not set
-                    heightFeet, heightInches, weightLbs
+                    heightFeet, heightInches, weightLbs,
+                    timezone != null ? timezone : "UTC"
                 );
                 
                 // Clear onboarding session data
@@ -65,7 +66,6 @@ public class AuthController {
                 session.removeAttribute("onboarding_height_cm");
                 session.removeAttribute("onboarding_weight_kg");
                 session.removeAttribute("onboarding_birthdate");
-                session.removeAttribute("onboarding_region");
                 session.removeAttribute("onboarding_goal");
                 session.removeAttribute("onboarding_desired_weight_kg");
                 session.removeAttribute("onboarding_weight_change_speed_kg");
@@ -73,6 +73,7 @@ public class AuthController {
                 session.removeAttribute("onboarding_height_feet");
                 session.removeAttribute("onboarding_height_inches");
                 session.removeAttribute("onboarding_weight_lbs");
+                session.removeAttribute("onboarding_timezone");
             } else {
                 // Regular registration without onboarding
                 users.register(f.getUsername(), f.getPassword(), f.getEmail(), f.getFirstName(), f.getLastName());

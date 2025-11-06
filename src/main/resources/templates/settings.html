@@ -433,20 +433,22 @@
                     <div class="field-container" th:if="${goal != 'MAINTAIN_WEIGHT'}">
                         <label class="field-label">
                             <i class="fas fa-balance-scale"></i>
-                            Desired Weight (kg)
+                            Desired Weight <span th:text="${unitSystem == 'imperial' ? '(lb)' : '(kg)'}">(kg)</span>
                         </label>
-                        <div class="field-display" th:text="${desiredWeightKg != null ? desiredWeightKg : 'Not set'}">Not set</div>
-                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="desiredWeight">Edit</button>
+                        <div class="field-display" th:if="${unitSystem != 'imperial'}" th:text="${desiredWeightKg != null ? desiredWeightKg + ' kg' : 'Not set'}">Not set</div>
+                        <div class="field-display" th:if="${unitSystem == 'imperial'}" th:text="${desiredWeightLbs != null ? desiredWeightLbs + ' lb' : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" th:data-field="${unitSystem == 'imperial' ? 'desiredWeightLbs' : 'desiredWeight'}">Edit</button>
                     </div>
 
                     <!-- Weight Change Speed (shown if goal is not MAINTAIN_WEIGHT) -->
                     <div class="field-container" th:if="${goal != 'MAINTAIN_WEIGHT'}">
                         <label class="field-label">
                             <i class="fas fa-tachometer-alt"></i>
-                            Weight Change Speed (kg/week)
+                            Weight Change Speed <span th:text="${unitSystem == 'imperial' ? '(lb/week)' : '(kg/week)'}">(kg/week)</span>
                         </label>
-                        <div class="field-display" th:text="${weightChangeSpeedKg != null ? weightChangeSpeedKg + ' kg/week' : 'Not set'}">Not set</div>
-                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="weightSpeed">Edit</button>
+                        <div class="field-display" th:if="${unitSystem != 'imperial'}" th:text="${weightChangeSpeedKg != null ? weightChangeSpeedKg + ' kg/week' : 'Not set'}">Not set</div>
+                        <div class="field-display" th:if="${unitSystem == 'imperial'}" th:text="${weightChangeSpeedLbs != null ? weightChangeSpeedLbs + ' lb/week' : 'Not set'}">Not set</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" th:data-field="${unitSystem == 'imperial' ? 'weightSpeedLbs' : 'weightSpeed'}">Edit</button>
                     </div>
 
                     <!-- Workout Frequency -->
@@ -459,14 +461,14 @@
                         <button type="button" class="btn btn-secondary edit-field-btn" data-field="workoutFrequency">Edit</button>
                     </div>
 
-                    <!-- Timezone -->
+                    <!-- Timezone (IANA) -->
                     <div class="field-container">
                         <label class="field-label">
                             <i class="fas fa-globe"></i>
                             Timezone
                         </label>
-                        <div class="field-display" th:text="${region != null ? region : 'Not set'}">Not set</div>
-                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="timezone">Edit</button>
+                        <div class="field-display" th:text="${timezone != null ? timezone : 'UTC'}">UTC</div>
+                        <button type="button" class="btn btn-secondary edit-field-btn" data-field="userTimezone">Edit</button>
                     </div>
                 </div>
 
@@ -1096,7 +1098,10 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'height': label = 'Enter your height (cm):'; break;
             case 'weight': label = 'Enter your weight (kg):'; break;
             case 'desiredWeight': label = 'Enter your desired weight (kg):'; break;
+            case 'desiredWeightLbs': label = 'Enter your desired weight (lb):'; break;
             case 'weightSpeed': label = 'Enter weight change speed (kg/week):'; break;
+            case 'weightSpeedLbs': label = 'Enter weight change speed (lb/week):'; break;
+            case 'weightLbs': label = 'Enter your weight (lb):'; break;
         }
         
         modalBody.innerHTML = `
@@ -1176,18 +1181,48 @@ document.addEventListener('DOMContentLoaded', function() {
                     ]);
                     break;
                 case 'heightImperial':
-                    // Build a simple custom form for feet/inches
+                    // Dropdowns for feet/inches with optional custom inputs
                     currentFieldType = fieldType;
                     modalTitle.textContent = 'Enter your height (ft/in)';
                     modalBody.innerHTML = `
                         <div class="custom-input-container">
-                            <div style="display:flex; gap:.5rem;">
+                            <div style="display:flex; gap:.5rem; align-items:flex-end; flex-wrap:wrap;">
                                 <div>
                                     <label class="custom-input-label">Feet</label>
-                                    <input type="number" id="feetInput" class="form-input" min="4" max="7" step="1" placeholder="ft">
+                                    <select id="feetSelect" class="form-input" style="min-width:110px;">
+                                        <option value="" selected disabled>Select ft</option>
+                                        <option value="4">4 ft</option>
+                                        <option value="5">5 ft</option>
+                                        <option value="6">6 ft</option>
+                                        <option value="7">7 ft</option>
+                                        <option value="custom">Custom…</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label class="custom-input-label">Inches</label>
+                                    <select id="inchesSelect" class="form-input" style="min-width:110px;">
+                                        <option value="" selected disabled>Select in</option>
+                                        <option value="0">0 in</option>
+                                        <option value="1">1 in</option>
+                                        <option value="2">2 in</option>
+                                        <option value="3">3 in</option>
+                                        <option value="4">4 in</option>
+                                        <option value="5">5 in</option>
+                                        <option value="6">6 in</option>
+                                        <option value="7">7 in</option>
+                                        <option value="8">8 in</option>
+                                        <option value="9">9 in</option>
+                                        <option value="10">10 in</option>
+                                        <option value="11">11 in</option>
+                                        <option value="custom">Custom…</option>
+                                    </select>
+                                </div>
+                                <div id="customFeetWrap" style="display:none;">
+                                    <label class="custom-input-label">Custom feet</label>
+                                    <input type="number" id="feetInput" class="form-input" min="1" max="9" step="1" placeholder="ft">
+                                </div>
+                                <div id="customInchesWrap" style="display:none;">
+                                    <label class="custom-input-label">Custom inches</label>
                                     <input type="number" id="inchesInput" class="form-input" min="0" max="11" step="1" placeholder="in">
                                 </div>
                             </div>
@@ -1195,6 +1230,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     document.querySelector('.modal-footer').style.display = 'flex';
                     editModal.style.display = 'block';
+                    
+                    // Wire up save button for heightImperial
+                    modalSaveBtn.onclick = function() {
+                        submitFieldUpdate();
+                        closeModal();
+                    };
+                    
+                    // Toggle custom inputs
+                    (function(){
+                        const feetSel = document.getElementById('feetSelect');
+                        const inchSel = document.getElementById('inchesSelect');
+                        const feetWrap = document.getElementById('customFeetWrap');
+                        const inchWrap = document.getElementById('customInchesWrap');
+                        if (feetSel) {
+                            feetSel.addEventListener('change', ()=>{
+                                feetWrap.style.display = (feetSel.value === 'custom') ? 'block' : 'none';
+                            });
+                        }
+                        if (inchSel) {
+                            inchSel.addEventListener('change', ()=>{
+                                inchWrap.style.display = (inchSel.value === 'custom') ? 'block' : 'none';
+                            });
+                        }
+                    })();
                     break;
                 case 'weight':
                     openModal(fieldType, 'Enter your weight in kg', [
@@ -1211,16 +1270,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     ]);
                     break;
                 case 'weightLbs':
-                    currentFieldType = fieldType;
-                    modalTitle.textContent = 'Enter your weight in lb';
-                    modalBody.innerHTML = `
-                        <div class="custom-input-container">
-                            <label class="custom-input-label">Weight (lb)</label>
-                            <input type="number" id="lbsInput" class="form-input" min="66" max="330" step="1" placeholder="lb">
-                        </div>
-                    `;
-                    document.querySelector('.modal-footer').style.display = 'flex';
-                    editModal.style.display = 'block';
+                    openModal(fieldType, 'Enter your weight in lb', [
+                        {label: '80 lb', value: '80'},
+                        {label: '100 lb', value: '100'},
+                        {label: '120 lb', value: '120'},
+                        {label: '140 lb', value: '140'},
+                        {label: '160 lb', value: '160'},
+                        {label: '180 lb', value: '180'},
+                        {label: '200 lb', value: '200'},
+                        {label: '220 lb', value: '220'},
+                        {label: '240 lb', value: '240'},
+                        {label: '260 lb', value: '260'},
+                        {label: '280 lb', value: '280'},
+                        {label: '300 lb', value: '300'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
                     break;
                 case 'goal':
                     openModal(fieldType, 'Select your goal', [
@@ -1240,6 +1304,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         {label: 'Custom...', value: 'custom'}
                     ]);
                     break;
+                case 'desiredWeightLbs':
+                    openModal(fieldType, 'Enter your desired weight in lb', [
+                        {label: '110 lb', value: '110'},
+                        {label: '130 lb', value: '130'},
+                        {label: '150 lb', value: '150'},
+                        {label: '170 lb', value: '170'},
+                        {label: '190 lb', value: '190'},
+                        {label: '210 lb', value: '210'},
+                        {label: '230 lb', value: '230'},
+                        {label: '250 lb', value: '250'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
+                    break;
                 case 'weightSpeed':
                     openModal(fieldType, 'Enter your weight change speed in kg/week', [
                         {label: '0.1 kg/week', value: '0.1'},
@@ -1255,22 +1332,195 @@ document.addEventListener('DOMContentLoaded', function() {
                         {label: 'Custom...', value: 'custom'}
                     ]);
                     break;
+                case 'weightSpeedLbs':
+                    openModal(fieldType, 'Enter your weight change speed in lb/week', [
+                        {label: '0.2 lb/week', value: '0.2'},
+                        {label: '0.4 lb/week', value: '0.4'},
+                        {label: '0.6 lb/week', value: '0.6'},
+                        {label: '0.8 lb/week', value: '0.8'},
+                        {label: '1.0 lb/week', value: '1.0'},
+                        {label: '1.2 lb/week', value: '1.2'},
+                        {label: '1.4 lb/week', value: '1.4'},
+                        {label: '1.6 lb/week', value: '1.6'},
+                        {label: '1.8 lb/week', value: '1.8'},
+                        {label: '2.0 lb/week', value: '2.0'},
+                        {label: 'Custom...', value: 'custom'}
+                    ]);
+                    break;
                 case 'workoutFrequency':
                     openModal(fieldType, 'Select workout frequency', [
                         {label: 'Low (0-2 days/week)', value: 'LOW'},
                         {label: 'Medium (3-5 days/week)', value: 'MEDIUM'},
-                        {label: 'High (6+ days/week)', value: 'HIGH'}
+                        {label: 'High (6 days/week)', value: 'HIGH'},
+                        {label: 'Dedicated Athlete (7+ days/week)', value: 'ATHLETE'}
                     ]);
                     break;
-                case 'timezone':
-                    openModal(fieldType, 'Select your timezone', [
-                        {label: 'Europe', value: 'Europe'},
-                        {label: 'North America', value: 'North America'},
-                        {label: 'Asia', value: 'Asia'},
-                        {label: 'Africa', value: 'Africa'},
-                        {label: 'Oceania', value: 'Oceania'},
-                        {label: 'South America', value: 'South America'}
-                    ]);
+                case 'userTimezone':
+                    // IANA timezone selector with search
+                    currentFieldType = fieldType;
+                    modalTitle.textContent = 'Select your timezone';
+                    modalBody.innerHTML = `
+                        <style>
+                            /* Eliminate duplicate vertical line near the scrollbar in the timezone list */
+                            #timezoneList {
+                                border: none !important;
+                                box-shadow: none !important;
+                                outline: none !important;
+                                border-right: none !important;
+                                scrollbar-width: thin; /* Firefox */
+                                scrollbar-color: rgba(255,255,255,0.25) transparent; /* Firefox */
+                            }
+                            #timezoneList .option-btn { border: none; background: transparent; }
+                            #timezoneList .option-btn + .option-btn { border-top: 1px solid rgba(255,255,255,0.08); }
+                            /* WebKit scrollbars */
+                            #timezoneList::-webkit-scrollbar { width: 8px; background: transparent; }
+                            #timezoneList::-webkit-scrollbar-track { background: transparent; border-left: none !important; box-shadow: none !important; }
+                            #timezoneList::-webkit-scrollbar-thumb {
+                                background-color: rgba(255,255,255,0.25);
+                                border-radius: 6px;
+                                border: 2px solid transparent; /* avoid left-side line illusion */
+                                background-clip: padding-box;
+                            }
+                        </style>
+                        <div class="custom-input-container">
+                            <input type="text" id="timezoneSearch" class="form-input" placeholder="Search timezone (e.g., Madrid, New York, Tokyo)" style="margin-bottom: 0.75rem;">
+                            <div id="timezoneList" style="max-height: 300px; overflow-y: auto; border: none; border-radius: 8px; padding: 0.5rem;">
+                                <!-- Timezones will be populated here -->
+                            </div>
+                        </div>
+                    `;
+                    document.querySelector('.modal-footer').style.display = 'flex';
+                    editModal.style.display = 'block';
+                    
+                    // Comprehensive IANA timezones organized by region
+                    const timezones = [
+                        // Europe
+                        {label: 'Europe/London (GMT/BST)', value: 'Europe/London'},
+                        {label: 'Europe/Dublin (GMT/IST)', value: 'Europe/Dublin'},
+                        {label: 'Europe/Lisbon (WET/WEST)', value: 'Europe/Lisbon'},
+                        {label: 'Europe/Paris (CET/CEST)', value: 'Europe/Paris'},
+                        {label: 'Europe/Madrid (CET/CEST)', value: 'Europe/Madrid'},
+                        {label: 'Europe/Berlin (CET/CEST)', value: 'Europe/Berlin'},
+                        {label: 'Europe/Rome (CET/CEST)', value: 'Europe/Rome'},
+                        {label: 'Europe/Amsterdam (CET/CEST)', value: 'Europe/Amsterdam'},
+                        {label: 'Europe/Brussels (CET/CEST)', value: 'Europe/Brussels'},
+                        {label: 'Europe/Vienna (CET/CEST)', value: 'Europe/Vienna'},
+                        {label: 'Europe/Prague (CET/CEST)', value: 'Europe/Prague'},
+                        {label: 'Europe/Warsaw (CET/CEST)', value: 'Europe/Warsaw'},
+                        {label: 'Europe/Stockholm (CET/CEST)', value: 'Europe/Stockholm'},
+                        {label: 'Europe/Copenhagen (CET/CEST)', value: 'Europe/Copenhagen'},
+                        {label: 'Europe/Oslo (CET/CEST)', value: 'Europe/Oslo'},
+                        {label: 'Europe/Helsinki (EET/EEST)', value: 'Europe/Helsinki'},
+                        {label: 'Europe/Athens (EET/EEST)', value: 'Europe/Athens'},
+                        {label: 'Europe/Sofia (EET/EEST)', value: 'Europe/Sofia'},
+                        {label: 'Europe/Bucharest (EET/EEST)', value: 'Europe/Bucharest'},
+                        {label: 'Europe/Budapest (CET/CEST)', value: 'Europe/Budapest'},
+                        {label: 'Europe/Istanbul (TRT)', value: 'Europe/Istanbul'},
+                        {label: 'Europe/Moscow (MSK)', value: 'Europe/Moscow'},
+                        {label: 'Europe/Kiev (EET/EEST)', value: 'Europe/Kiev'},
+                        // North America
+                        {label: 'America/New_York (EST/EDT)', value: 'America/New_York'},
+                        {label: 'America/Chicago (CST/CDT)', value: 'America/Chicago'},
+                        {label: 'America/Denver (MST/MDT)', value: 'America/Denver'},
+                        {label: 'America/Los_Angeles (PST/PDT)', value: 'America/Los_Angeles'},
+                        {label: 'America/Toronto (EST/EDT)', value: 'America/Toronto'},
+                        {label: 'America/Vancouver (PST/PDT)', value: 'America/Vancouver'},
+                        {label: 'America/Montreal (EST/EDT)', value: 'America/Montreal'},
+                        {label: 'America/Mexico_City (CST)', value: 'America/Mexico_City'},
+                        {label: 'America/Phoenix (MST)', value: 'America/Phoenix'},
+                        {label: 'America/Seattle (PST/PDT)', value: 'America/Seattle'},
+                        {label: 'America/Dallas (CST/CDT)', value: 'America/Dallas'},
+                        {label: 'America/Houston (CST/CDT)', value: 'America/Houston'},
+                        {label: 'America/Miami (EST/EDT)', value: 'America/Miami'},
+                        {label: 'America/Boston (EST/EDT)', value: 'America/Boston'},
+                        {label: 'America/Anchorage (AKST/AKDT)', value: 'America/Anchorage'},
+                        {label: 'Pacific/Honolulu (HST)', value: 'Pacific/Honolulu'},
+                        // Asia
+                        {label: 'Asia/Tokyo (JST)', value: 'Asia/Tokyo'},
+                        {label: 'Asia/Seoul (KST)', value: 'Asia/Seoul'},
+                        {label: 'Asia/Shanghai (CST)', value: 'Asia/Shanghai'},
+                        {label: 'Asia/Beijing (CST)', value: 'Asia/Beijing'},
+                        {label: 'Asia/Hong_Kong (HKT)', value: 'Asia/Hong_Kong'},
+                        {label: 'Asia/Taipei (CST)', value: 'Asia/Taipei'},
+                        {label: 'Asia/Singapore (SGT)', value: 'Asia/Singapore'},
+                        {label: 'Asia/Bangkok (ICT)', value: 'Asia/Bangkok'},
+                        {label: 'Asia/Jakarta (WIB)', value: 'Asia/Jakarta'},
+                        {label: 'Asia/Manila (PHT)', value: 'Asia/Manila'},
+                        {label: 'Asia/Kuala_Lumpur (MYT)', value: 'Asia/Kuala_Lumpur'},
+                        {label: 'Asia/Dubai (GST)', value: 'Asia/Dubai'},
+                        {label: 'Asia/Riyadh (AST)', value: 'Asia/Riyadh'},
+                        {label: 'Asia/Tehran (IRST)', value: 'Asia/Tehran'},
+                        {label: 'Asia/Kolkata (IST)', value: 'Asia/Kolkata'},
+                        {label: 'Asia/Mumbai (IST)', value: 'Asia/Mumbai'},
+                        {label: 'Asia/Delhi (IST)', value: 'Asia/Delhi'},
+                        {label: 'Asia/Karachi (PKT)', value: 'Asia/Karachi'},
+                        {label: 'Asia/Dhaka (BST)', value: 'Asia/Dhaka'},
+                        {label: 'Asia/Colombo (IST)', value: 'Asia/Colombo'},
+                        {label: 'Asia/Kathmandu (NPT)', value: 'Asia/Kathmandu'},
+                        {label: 'Asia/Jerusalem (IST/IDT)', value: 'Asia/Jerusalem'},
+                        // Oceania
+                        {label: 'Australia/Sydney (AEST/AEDT)', value: 'Australia/Sydney'},
+                        {label: 'Australia/Melbourne (AEST/AEDT)', value: 'Australia/Melbourne'},
+                        {label: 'Australia/Brisbane (AEST)', value: 'Australia/Brisbane'},
+                        {label: 'Australia/Perth (AWST)', value: 'Australia/Perth'},
+                        {label: 'Australia/Adelaide (ACST/ACDT)', value: 'Australia/Adelaide'},
+                        {label: 'Pacific/Auckland (NZST/NZDT)', value: 'Pacific/Auckland'},
+                        {label: 'Pacific/Fiji (FJT)', value: 'Pacific/Fiji'},
+                        // South America
+                        {label: 'America/Sao_Paulo (BRT)', value: 'America/Sao_Paulo'},
+                        {label: 'America/Buenos_Aires (ART)', value: 'America/Buenos_Aires'},
+                        {label: 'America/Lima (PET)', value: 'America/Lima'},
+                        {label: 'America/Bogota (COT)', value: 'America/Bogota'},
+                        {label: 'America/Santiago (CLT)', value: 'America/Santiago'},
+                        {label: 'America/Caracas (VET)', value: 'America/Caracas'},
+                        {label: 'America/Rio_de_Janeiro (BRT)', value: 'America/Rio_de_Janeiro'},
+                        // Africa
+                        {label: 'Africa/Johannesburg (SAST)', value: 'Africa/Johannesburg'},
+                        {label: 'Africa/Cairo (EET)', value: 'Africa/Cairo'},
+                        {label: 'Africa/Lagos (WAT)', value: 'Africa/Lagos'},
+                        {label: 'Africa/Nairobi (EAT)', value: 'Africa/Nairobi'},
+                        {label: 'Africa/Casablanca (WET)', value: 'Africa/Casablanca'},
+                        {label: 'Africa/Addis_Ababa (EAT)', value: 'Africa/Addis_Ababa'},
+                        {label: 'Africa/Dar_es_Salaam (EAT)', value: 'Africa/Dar_es_Salaam'},
+                        // UTC
+                        {label: 'UTC', value: 'UTC'}
+                    ];
+                    
+                    const timezoneList = document.getElementById('timezoneList');
+                    const searchInput = document.getElementById('timezoneSearch');
+                    let filteredTimezones = timezones;
+                    
+                    function renderTimezones(tzList) {
+                        timezoneList.innerHTML = '';
+                        tzList.forEach(tz => {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'option-btn';
+                            btn.textContent = tz.label;
+                            btn.value = tz.value;
+                            btn.style.width = '100%';
+                            btn.style.textAlign = 'left';
+                            btn.style.marginBottom = '0.25rem';
+                            btn.addEventListener('click', function() {
+                                selectedValue = tz.value;
+                                submitFieldUpdate();
+                                closeModal();
+                            });
+                            timezoneList.appendChild(btn);
+                        });
+                    }
+                    
+                    renderTimezones(timezones);
+                    
+                    searchInput.addEventListener('input', function() {
+                        const query = this.value.toLowerCase();
+                        filteredTimezones = timezones.filter(tz => 
+                            tz.label.toLowerCase().includes(query) || 
+                            tz.value.toLowerCase().includes(query)
+                        );
+                        renderTimezones(filteredTimezones);
+                    });
+                    
                     break;
             }
         });
@@ -1297,7 +1547,13 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'weightLbs':
                 url = '/settings/update-weight-lbs';
                 paramName = 'weightLbs';
-                paramValue = parseInt(document.getElementById('lbsInput').value);
+                // If custom was selected, get from custom input, otherwise use selectedValue
+                if (selectedValue === 'custom') {
+                    const customInput = document.getElementById('customInput');
+                    paramValue = customInput ? parseInt(customInput.value) : null;
+                } else {
+                    paramValue = parseInt(selectedValue);
+                }
                 break;
             case 'goal':
                 url = '/settings/update-goal';
@@ -1307,21 +1563,51 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'desiredWeight':
                 url = '/settings/update-desired-weight';
                 paramName = 'desiredWeightKg';
+                if (selectedValue === 'custom') {
+                    const customInput = document.getElementById('customInput');
+                    paramValue = customInput ? parseInt(customInput.value) : null;
+                } else {
                 paramValue = parseInt(selectedValue);
+                }
+                break;
+            case 'desiredWeightLbs':
+                url = '/settings/update-desired-weight-lbs';
+                paramName = 'desiredWeightLbs';
+                if (selectedValue === 'custom') {
+                    const customInput = document.getElementById('customInput');
+                    paramValue = customInput ? parseInt(customInput.value) : null;
+                } else {
+                    paramValue = parseInt(selectedValue);
+                }
                 break;
             case 'weightSpeed':
                 url = '/settings/update-weight-speed';
                 paramName = 'weightChangeSpeedKg';
+                if (selectedValue === 'custom') {
+                    const customInput = document.getElementById('customInput');
+                    paramValue = customInput ? parseFloat(customInput.value) : null;
+                } else {
                 paramValue = parseFloat(selectedValue);
+                }
+                break;
+            case 'weightSpeedLbs':
+                url = '/settings/update-weight-speed-lbs';
+                paramName = 'weightChangeSpeedLbs';
+                if (selectedValue === 'custom') {
+                    const customInput = document.getElementById('customInput');
+                    paramValue = customInput ? parseFloat(customInput.value) : null;
+                } else {
+                    paramValue = parseFloat(selectedValue);
+                }
                 break;
             case 'workoutFrequency':
                 url = '/settings/update-workout-frequency';
                 paramName = 'workoutFrequency';
                 paramValue = selectedValue;
                 break;
-            case 'timezone':
-                url = '/settings/update-timezone';
-                paramName = 'region';
+            case 'userTimezone':
+                url = '/settings/update-user-timezone';
+                paramName = 'timezone';
                 paramValue = selectedValue;
                 break;
             default:
@@ -1340,8 +1626,19 @@ document.addEventListener('DOMContentLoaded', function() {
         form.appendChild(csrfInput);
         
         if (currentFieldType === 'heightImperial') {
-            const feet = parseInt(document.getElementById('feetInput').value);
-            const inches = parseInt(document.getElementById('inchesInput').value);
+            // Prefer selected values; if custom chosen, read from custom inputs
+            let feetSel = document.getElementById('feetSelect');
+            let inchSel = document.getElementById('inchesSelect');
+            let feetVal = feetSel ? feetSel.value : '';
+            let inchVal = inchSel ? inchSel.value : '';
+            if (feetVal === 'custom' || feetVal === '' || feetVal == null) {
+                feetVal = document.getElementById('feetInput') ? document.getElementById('feetInput').value : '';
+            }
+            if (inchVal === 'custom' || inchVal === '' || inchVal == null) {
+                inchVal = document.getElementById('inchesInput') ? document.getElementById('inchesInput').value : '';
+            }
+            const feet = parseInt(feetVal);
+            const inches = parseInt(inchVal);
             const feetInput = document.createElement('input');
             feetInput.type = 'hidden';
             feetInput.name = 'heightFeet';
@@ -1353,11 +1650,11 @@ document.addEventListener('DOMContentLoaded', function() {
             inchesInput.value = inches;
             form.appendChild(inchesInput);
         } else {
-            const valueInput = document.createElement('input');
-            valueInput.type = 'hidden';
-            valueInput.name = paramName;
-            valueInput.value = paramValue;
-            form.appendChild(valueInput);
+        const valueInput = document.createElement('input');
+        valueInput.type = 'hidden';
+        valueInput.name = paramName;
+        valueInput.value = paramValue;
+        form.appendChild(valueInput);
         }
         
         document.body.appendChild(form);

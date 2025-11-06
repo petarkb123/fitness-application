@@ -201,7 +201,7 @@
                     Exercises Performed
                 </h2>
 
-                <div class="exercises-details" id="exercisesDetails" th:if="${not #lists.isEmpty(workout.exercises)}">
+                <div class="exercises-details" id="exercisesDetails" th:if="${not #lists.isEmpty(workout.exercises)}" th:attr="data-unit-system=${unitSystem}">
                     
                     <div class="exercise-detail-card" th:each="exercise : ${workout.exercises}" 
                          th:attr="data-exercise-id=${exercise.exercise.id},
@@ -235,6 +235,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Unit system flag from DOM
+        const unitContainer = document.getElementById('exercisesDetails');
+        const isImperial = unitContainer && unitContainer.dataset.unitSystem === 'imperial';
         processExerciseGrouping();
         
         // Animate cards on load
@@ -387,19 +390,23 @@
         
         let setsHTML = '';
         supersetSets.forEach((set1, index) => {
+            const unitContainer = document.getElementById('exercisesDetails');
+            const isImperial = unitContainer && unitContainer.dataset.unitSystem === 'imperial';
+            const set1Display = isImperial ? (set1.weight * 2.20462).toFixed(1) + ' lb' : set1.weight + ' kg';
             const set2 = ex2.sets.filter(s => s.groupType === 'SUPERSET')[index];
+            const set2Display = isImperial ? (set2.weight * 2.20462).toFixed(1) + ' lb' : set2.weight + ' kg';
             setsHTML += `
                 <div class="superset-set-row">
                     <span class="set-number">${index + 1}</span>
                     <div class="superset-set-details">
                         <div class="exercise-set-detail">
                             <span class="exercise-label">${ex1.exerciseName}</span>
-                            <span class="set-value">${set1.weight} kg × ${set1.reps} reps</span>
+                            <span class="set-value">${set1Display} × ${set1.reps} reps</span>
                         </div>
                         <div class="superset-divider">+</div>
                         <div class="exercise-set-detail">
                             <span class="exercise-label">${ex2.exerciseName}</span>
-                            <span class="set-value">${set2.weight} kg × ${set2.reps} reps</span>
+                            <span class="set-value">${set2Display} × ${set2.reps} reps</span>
                         </div>
                     </div>
                     <span class="volume">${formatWeight(set1.weight * set1.reps + set2.weight * set2.reps)}</span>
@@ -458,12 +465,18 @@
     }
     
     // Helper function to format weight/volume with tons
-    function formatWeight(weight) {
-        if (weight >= 1000) {
-            const tons = weight / 1000;
+    function formatWeight(weightKg) {
+        const unitContainer = document.getElementById('exercisesDetails');
+        const isImperial = unitContainer && unitContainer.dataset.unitSystem === 'imperial';
+        if (isImperial) {
+            const weightLb = weightKg * 2.20462;
+            return weightLb.toFixed(1) + ' lb';
+        }
+        if (weightKg >= 1000) {
+            const tons = weightKg / 1000;
             return tons.toFixed(2) + ' Ton' + (tons !== 1 ? 's' : '');
         }
-        return weight.toFixed(1) + ' kg';
+        return weightKg.toFixed(1) + ' kg';
     }
 
     function createRegularCard(data) {
@@ -473,7 +486,9 @@
         
         const totalVolume = data.sets.reduce((sum, s) => sum + (s.weight * s.reps), 0);
         const totalReps = data.sets.reduce((sum, s) => sum + s.reps, 0);
-        const avgWeight = totalVolume / totalReps;
+        const avgWeightKg = totalReps > 0 ? (totalVolume / totalReps) : 0;
+        const unitContainer = document.getElementById('exercisesDetails');
+        const isImperial = unitContainer && unitContainer.dataset.unitSystem === 'imperial';
         
         // Count actual sets (not including drop sets as separate sets)
         const regularSetCount = data.sets.filter(s => !s.groupType || s.groupType !== 'DROP_SET' || (s.groupOrder === 0 || s.groupOrder === '0')).length;
@@ -506,10 +521,11 @@
             
             if (mainSet) {
                 // Render main set
+                const displayMainWeight = isImperial ? (mainSet.weight * 2.20462).toFixed(1) + ' lb' : mainSet.weight + ' kg';
                 setsHTML += `
                     <div class="set-row">
                         <span class="set-number">${setNum}</span>
-                        <span class="weight">${mainSet.weight} kg</span>
+                        <span class="weight">${displayMainWeight}</span>
                         <span class="reps">${mainSet.reps} reps</span>
                         <span class="volume">${formatWeight(mainSet.weight * mainSet.reps)}</span>
                     </div>
@@ -518,13 +534,14 @@
                 
                 // Render drop sets for this main set
                 dropSets.forEach(dropSet => {
+                    const displayDropWeight = isImperial ? (dropSet.weight * 2.20462).toFixed(1) + ' lb' : dropSet.weight + ' kg';
                     
                     setsHTML += `
                         <div class="set-row drop-set-row">
                             <span class="set-number">
                                 <span class="drop-badge">Drop ${dropSet.groupOrder}</span>
                             </span>
-                            <span class="weight">${dropSet.weight} kg</span>
+                            <span class="weight">${displayDropWeight}</span>
                             <span class="reps">${dropSet.reps} reps</span>
                             <span class="volume">${formatWeight(dropSet.weight * dropSet.reps)}</span>
                         </div>
@@ -534,10 +551,11 @@
             } else {
                 // No main set found, treat all as regular sets
                 setsForThisNumber.forEach(set => {
+                    const displaySetWeight = isImperial ? (set.weight * 2.20462).toFixed(1) + ' lb' : set.weight + ' kg';
                     setsHTML += `
                         <div class="set-row">
                             <span class="set-number">${setNum}</span>
-                            <span class="weight">${set.weight} kg</span>
+                            <span class="weight">${displaySetWeight}</span>
                             <span class="reps">${set.reps} reps</span>
                             <span class="volume">${formatWeight(set.weight * set.reps)}</span>
                         </div>
@@ -578,7 +596,7 @@
                     </div>
                     <div class="summary-stat">
                         <span class="stat-label">Average Weight:</span>
-                        <span class="stat-value">${avgWeight.toFixed(1)} kg</span>
+                        <span class="stat-value">${isImperial ? (avgWeightKg * 2.20462).toFixed(1) + ' lb' : avgWeightKg.toFixed(1) + ' kg'}</span>
                     </div>
                     <div class="summary-stat">
                         <span class="stat-label">Total Reps:</span>

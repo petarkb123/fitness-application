@@ -41,6 +41,7 @@ public class StatsController {
         model.addAttribute("summary", stats.weekly(userId, start, end));
         model.addAttribute("navAvatar", u.getProfilePicture());
         model.addAttribute("username", u.getUsername());
+        model.addAttribute("unitSystem", u.getUnitSystem());
         return "stats-weekly";
     }
 
@@ -68,6 +69,7 @@ public class StatsController {
         model.addAttribute("volumeTrends", volumeTrends);
         model.addAttribute("progressiveOverload", progressiveOverload);
         model.addAttribute("personalRecords", personalRecords);
+        model.addAttribute("unitSystem", u.getUnitSystem());
 
         return "advanced-stats";
     }
