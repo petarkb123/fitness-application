@@ -10,7 +10,8 @@ public record TrainingFrequencyDto(
         Map<String, Integer> workoutsByDayOfWeek,
         List<WeeklyBreakdown> weeklyBreakdown,
         int longestStreak,
-        double currentStreak
+        double currentStreak,
+        double consistencyScore
 ) {
     public record WeeklyBreakdown(
             LocalDate weekStart,

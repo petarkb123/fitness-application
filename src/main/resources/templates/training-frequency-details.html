@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1a1a30">
-    <title>FitPower - Advanced Analytics</title>
+    <title>FitPower - Training Frequency Details</title>
     <link rel="stylesheet" th:href="@{/css/desktop/advanced-stats.css}">
     <link rel="stylesheet" th:href="@{/css/mobile/advanced-stats-mobile.css}" media="(max-width: 480px)">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -90,7 +90,6 @@
         
         <header class="top-header">
             <div class="header-left">
-                <!-- Mobile only: User profile above title -->
                 <div class="user-profile mobile-profile">
                     <div class="profile-avatar avatar-preview">
                         <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
@@ -102,10 +101,9 @@
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
                 </div>
-                <h1 class="page-title">Advanced Analytics</h1>
+                <h1 class="page-title">Training Frequency</h1>
             </div>
             <div class="header-right">
-                <!-- Desktop only: User profile in top right (original) -->
                 <div class="user-profile desktop-profile">
                     <div class="profile-avatar avatar-preview">
                         <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
@@ -117,7 +115,6 @@
                         <span class="profile-name" th:text="${username}">User</span>
                     </div>
                 </div>
-                <!-- Mobile only: Settings and Logout buttons -->
                 <div class="header-actions">
                     <a href="/settings" class="header-btn">
                         <i class="fas fa-cog"></i>
@@ -139,14 +136,14 @@
             
             <div class="page-header">
                 <div class="page-title-section">
-                    <a href="/stats/weekly" class="back-link">
+                    <a href="/stats/advanced" class="back-link">
                         <i class="fas fa-arrow-left"></i>
-                        Back to Statistics
+                        Back to Advanced Stats
                     </a>
                     <h1 class="page-title">
-                        Advanced Analysis
+                        Training Frequency Analysis
                     </h1>
-                    <p class="page-subtitle">Deep insights into your training performance and progress</p>
+                    <p class="page-subtitle">Comprehensive analysis of your training patterns and consistency</p>
                     <div class="date-range-display">
                         <i class="fas fa-calendar-alt"></i>
                         <span th:text="${#temporals.format(from, 'MMM dd, yyyy')} + ' - ' + ${#temporals.format(to, 'MMM dd, yyyy')}">Date Range</span>
@@ -154,56 +151,13 @@
                 </div>
             </div>
 
-
+            <!-- Overview Stats -->
             <section class="analytics-section">
                 <div class="section-header">
-                    <h2><i class="fas fa-chart-bar"></i> Detailed Exercise Analytics</h2>
-                    <p class="section-subtitle">Dive deeper into your exercise performance and progress</p>
+                    <h2><i class="fas fa-chart-pie"></i> Overview</h2>
                 </div>
 
-                <div class="quick-nav-grid">
-                    <a href="/stats/progressive-overload" class="nav-card">
-                        <div class="nav-card-icon">
-                            <i class="fas fa-chart-area"></i>
-                        </div>
-                        <div class="nav-card-content">
-                            <h3>Progressive Overload</h3>
-                            <p>Monitor strength gains and identify plateaus across all your exercises</p>
-                        </div>
-                        <div class="nav-card-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
-
-                    <a href="/stats/volume-trends" class="nav-card">
-                        <div class="nav-card-icon">
-                            <i class="fas fa-weight-hanging"></i>
-                        </div>
-                        <div class="nav-card-content">
-                            <h3>Volume Trends</h3>
-                            <p>Track volume progression for each exercise over time</p>
-                        </div>
-                        <div class="nav-card-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </a>
-                </div>
-            </section>
-
-            
-            <section class="analytics-section">
-                <div class="section-header">
-                    <div>
-                        <h2><i class="fas fa-calendar-check"></i> Training Frequency Analysis</h2>
-                        <p class="section-subtitle">How often you train and your consistency patterns</p>
-                    </div>
-                    <a href="/stats/training-frequency-details" class="btn btn-primary">
-                        <i class="fas fa-chart-line"></i>
-                        View Detailed Analysis
-                    </a>
-                </div>
-
-                <div class="stats-grid">
+                <div class="stats-grid-extended">
                     <div class="stat-card highlight">
                         <div class="stat-icon">
                             <i class="fas fa-dumbbell"></i>
@@ -243,79 +197,100 @@
                             <div class="stat-value" th:text="${trainingFrequency.currentStreak()} + ' days'">0 days</div>
                         </div>
                     </div>
+
+                    <!-- Additional Stats -->
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-label">Consistency Score</div>
+                            <div class="stat-value"><span th:text="${#numbers.formatDecimal(trainingFrequency.consistencyScore(), 1, 1)}">0</span>%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-label">Active Weeks</div>
+                            <div class="stat-value" th:text="${trainingFrequency.weeklyBreakdown().size()}">0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts -->
+            <section class="analytics-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Training Patterns</h2>
                 </div>
 
                 <div class="charts-grid">
                     <div class="chart-card">
                         <h3>Workouts by Day of Week</h3>
+                        <p class="chart-subtitle">Your most active training days</p>
                         <canvas id="dayOfWeekChart"></canvas>
                     </div>
 
                     <div class="chart-card">
-                        <h3>Weekly Breakdown</h3>
+                        <h3>Weekly Trend</h3>
+                        <p class="chart-subtitle">Training frequency over time</p>
                         <canvas id="weeklyBreakdownChart"></canvas>
                     </div>
                 </div>
             </section>
 
-            
-         
-            
+            <!-- Day of Week Analysis -->
             <section class="analytics-section">
                 <div class="section-header">
-                    <div>
-                        <h2><i class="fas fa-trophy"></i> Personal Records & Milestones</h2>
-                        <p class="section-subtitle">Your achievements and personal bests</p>
-                    </div>
-                    <a href="/stats/personal-records-details" class="btn btn-primary">
-                        <i class="fas fa-trophy"></i>
-                        View All Records
-                    </a>
+                    <h2><i class="fas fa-star"></i> Best Training Days</h2>
                 </div>
 
-                
-                <div class="milestones-section" th:if="${!personalRecords.milestones().isEmpty()}">
-                    <h3>🏆 Milestones Achieved</h3>
-                    <div class="milestones-grid">
-                        <div class="milestone-card" th:each="milestone : ${personalRecords.milestones()}">
-                            <div class="milestone-icon" th:text="${milestone.icon()}">🏆</div>
-                            <div class="milestone-content">
-                                <h4 th:text="${milestone.title()}">Milestone Title</h4>
-                                <p th:text="${milestone.description()}">Description</p>
+                <div class="day-analysis-grid">
+                    <div class="day-card" th:each="day : ${ {'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'} }">
+                        <div class="day-name" th:text="${day}">Day</div>
+                        <div class="day-count" th:text="${trainingFrequency.workoutsByDayOfWeek().get(day) ?: 0} + ' workouts'">0 workouts</div>
+                        <div class="day-bar">
+                            <div class="day-bar-fill" 
+                                 th:style="'width: ' + ${(trainingFrequency.workoutsByDayOfWeek().get(day) ?: 0) * 100.0 / (trainingFrequency.totalWorkouts() > 0 ? trainingFrequency.totalWorkouts() : 1)} + '%'">
                             </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                
-                <div class="prs-section" th:if="${!personalRecords.exercisePRs().isEmpty()}">
-                    <h3>💪 Exercise Personal Records</h3>
-                    <div class="prs-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Exercise</th>
-                                    <th>Record Type</th>
-                                    <th>Weight</th>
-                                    <th>Reps</th>
-                                    <th>Date Achieved</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="pr : ${personalRecords.exercisePRs()}">
-                                    <td>
-                                        <strong th:text="${pr.exerciseName()}">Exercise</strong>
-                                    </td>
-                                    <td>
-                                        <span class="record-type-badge" th:text="${pr.recordType()}">Type</span>
-                                    </td>
-                                    <td data-weight-kg th:attr="data-weight-kg=${pr.weight()}" th:text="${pr.weight()}">0</td>
-                                    <td th:text="${pr.reps()}">0</td>
-                                    <td th:text="${#temporals.format(pr.achievedDate(), 'MMM dd, yyyy')}">Date</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+            <!-- Weekly Breakdown Table -->
+            <section class="analytics-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-table"></i> Weekly Breakdown</h2>
+                </div>
+
+                <div class="weekly-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Week Start</th>
+                                <th>Week End</th>
+                                <th>Workouts</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="week : ${trainingFrequency.weeklyBreakdown()}">
+                                <td th:text="${#temporals.format(week.weekStart(), 'MMM dd')}">Date</td>
+                                <td th:text="${#temporals.format(week.weekEnd(), 'MMM dd')}">Date</td>
+                                <td th:text="${week.workoutCount()}">0</td>
+                                <td>
+                                    <span class="week-badge" 
+                                          th:classappend="${week.workoutCount() >= 4 ? 'excellent' : (week.workoutCount() >= 3 ? 'good' : (week.workoutCount() >= 1 ? 'active' : 'rest'))}">
+                                        <span th:text="${week.workoutCount() >= 4 ? 'Excellent' : (week.workoutCount() >= 3 ? 'Good' : (week.workoutCount() >= 1 ? 'Active' : 'Rest'))}">Status</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -325,45 +300,6 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // Helper function to format weight/volume with tons
-    const isImperial = /*[[${unitSystem == 'imperial'}]]*/ false;
-    const unitLabel = isImperial ? 'lb' : 'kg';
-
-    function formatWeight(weightKg) {
-        if (isImperial) {
-            const lb = weightKg * 2.20462;
-            return lb.toFixed(1) + ' lb';
-        }
-        if (weightKg >= 1000) {
-            const tons = weightKg / 1000;
-            return tons.toFixed(2) + ' Ton' + (tons !== 1 ? 's' : '');
-        }
-        return weightKg.toFixed(1) + ' kg';
-    }
-
-    // Format volume display on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('[data-volume]').forEach(function(el) {
-            const valueKg = parseFloat(el.textContent.replace(/,/g, ''));
-            if (!isNaN(valueKg)) {
-                el.textContent = formatWeight(valueKg);
-            }
-        });
-
-        // Convert explicit weight fields (starting/current/PRs)
-        document.querySelectorAll('[data-weight-kg]').forEach(function(el) {
-            const kg = parseFloat(el.getAttribute('data-weight-kg'));
-            if (!isNaN(kg)) {
-                if (isImperial) {
-                    el.textContent = (kg * 2.20462).toFixed(1) + ' lb';
-                } else {
-                    el.textContent = kg.toFixed(1) + ' kg';
-                }
-            }
-        });
-    });
-
-    // Training Frequency Data
     const dayOfWeekData = /*[[${trainingFrequency.workoutsByDayOfWeek()}]]*/ {};
     const weeklyBreakdown = /*[[${trainingFrequency.weeklyBreakdown()}]]*/ [];
 
@@ -395,9 +331,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     y: {
@@ -450,9 +384,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     y: {
@@ -478,9 +410,7 @@
         });
     }
 
-    /*]]>*/
-    
-    // Prevent overscrolling by clamping scroll position
+    // Prevent overscrolling
     function clampScrollPosition() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const scrollHeight = Math.max(
@@ -516,7 +446,9 @@
             setTimeout(clampScrollPosition, 100);
         });
     });
+    /*]]>*/
 </script>
 
 </body>
 </html>
+

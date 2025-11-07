@@ -45,6 +45,18 @@ public class WorkoutService {
     }
     
     @Transactional(readOnly = true)
+    public LocalDateTime getFirstWorkoutDate(UUID userId) {
+        List<WorkoutSession> sessions = sessionRepo.findByUserIdOrderByStartedAtDesc(userId);
+        if (sessions.isEmpty()) {
+            return null;
+        }
+        // Get the oldest workout (last in descending order, or use a query for oldest)
+        // Since we have descending order, the last element is the oldest
+        WorkoutSession oldest = sessions.get(sessions.size() - 1);
+        return oldest != null ? oldest.getStartedAt() : null;
+    }
+    
+    @Transactional(readOnly = true)
     public Optional<WorkoutSession> findById(UUID sessionId) {
         return sessionRepo.findById(sessionId);
     }

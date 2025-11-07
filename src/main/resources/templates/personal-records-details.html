@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a30">
+    <title>FitPower - Personal Records</title>
+    <link rel="stylesheet" th:href="@{/css/desktop/advanced-stats.css}">
+    <link rel="stylesheet" th:href="@{/css/mobile/advanced-stats-mobile.css}" media="(max-width: 480px)">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dashboard-container">
+    
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="logo">
+                <i class="fas fa-dumbbell"></i>
+                <span>FitPower</span>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <h3 class="nav-section-title">MAIN MENU</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/exercises" class="nav-link">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>Exercises</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/workouts" class="nav-link">
+                            <i class="fas fa-history"></i>
+                            <span>Workouts</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/templates" class="nav-link">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Templates</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="/stats/weekly" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Statistics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h3 class="nav-section-title">ACCOUNT</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/settings" class="nav-link">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                            <button type="submit" class="nav-link" style="background:none; border:none; width:100%; text-align:left;">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </button>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div class="header-left">
+                <div class="user-profile mobile-profile">
+                    <div class="profile-avatar avatar-preview">
+                        <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
+                        <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name" th:text="${username}">User</span>
+                    </div>
+                </div>
+                <h1 class="page-title">Personal Records</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-profile desktop-profile">
+                    <div class="profile-avatar avatar-preview">
+                        <img th:if="${navAvatar}" th:src="${navAvatar}" alt="Profile Picture" class="avatar-image">
+                        <div class="avatar-placeholder" th:unless="${navAvatar}" style="display:flex;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name" th:text="${username}">User</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="/settings" class="header-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+                        <button type="submit" class="header-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        
+        <div class="dashboard-content">
+            
+            <div class="page-header">
+                <div class="page-title-section">
+                    <a href="/stats/advanced" class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Advanced Stats
+                    </a>
+                    <h1 class="page-title">
+                        Personal Records & Achievements
+                    </h1>
+                    <p class="page-subtitle">Your complete collection of achievements and personal bests</p>
+                </div>
+            </div>
+
+            <!-- Milestones -->
+            <section class="analytics-section" th:if="${!personalRecords.milestones().isEmpty()}">
+                <div class="section-header">
+                    <h2><i class="fas fa-medal"></i> Milestones Achieved</h2>
+                </div>
+
+                <div class="milestones-grid-extended">
+                    <div class="milestone-card" th:each="milestone : ${personalRecords.milestones()}">
+                        <div class="milestone-icon" th:text="${milestone.icon()}">🏆</div>
+                        <div class="milestone-content">
+                            <h4 th:text="${milestone.title()}">Milestone Title</h4>
+                            <p th:text="${milestone.description()}">Description</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search and Filter for PRs -->
+            <section class="analytics-section" th:if="${!personalRecords.exercisePRs().isEmpty()}">
+                <div class="section-header">
+                    <h2><i class="fas fa-trophy"></i> Exercise Personal Records</h2>
+                </div>
+
+                <div class="search-filter-bar">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="prSearch" class="search-input" placeholder="Search exercises...">
+                    </div>
+                    <div class="filter-select-wrapper">
+                        <i class="fas fa-filter filter-icon"></i>
+                        <select id="muscleFilter" class="filter-select">
+                            <option value="">All Muscle Groups</option>
+                            <option value="CHEST">Chest</option>
+                            <option value="BACK">Back</option>
+                            <option value="SHOULDERS">Shoulders</option>
+                            <option value="QUADS">Quads</option>
+                            <option value="BICEPS">Biceps</option>
+                            <option value="TRICEPS">Triceps</option>
+                            <option value="FOREARMS">Forearms</option>
+                            <option value="CALVES">Calves</option>
+                            <option value="HAMSTRINGS">Hamstrings</option>
+                            <option value="CORE">Core</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-select-wrapper">
+                        <i class="fas fa-tag filter-icon"></i>
+                        <select id="recordTypeFilter" class="filter-select">
+                            <option value="">All Record Types</option>
+                            <option value="Max Weight">Max Weight</option>
+                            <option value="Max Reps">Max Reps</option>
+                            <option value="Max Volume (Single Set)">Max Volume</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="results-count">
+                    <i class="fas fa-trophy"></i>
+                    <span id="resultsCount">0 records</span>
+                </div>
+
+                <!-- PRs Grid View -->
+                <div class="prs-grid" id="prsGrid">
+                    <div class="pr-card" 
+                         th:each="pr : ${personalRecords.exercisePRs()}"
+                         th:attr="data-exercise-name=${pr.exerciseName()}, data-muscle-group=${pr.exerciseName()}, data-record-type=${pr.recordType()}">
+                        <div class="pr-header">
+                            <h4 th:text="${pr.exerciseName()}">Exercise</h4>
+                            <span class="record-type-badge" th:text="${pr.recordType()}">Type</span>
+                        </div>
+                        <div class="pr-stats">
+                            <div class="pr-stat">
+                                <span class="pr-label">Weight</span>
+                                <span class="pr-value" data-weight-kg th:attr="data-weight-kg=${pr.weight()}" th:text="${pr.weight()}">0</span>
+                            </div>
+                            <div class="pr-stat">
+                                <span class="pr-label">Reps</span>
+                                <span class="pr-value" th:text="${pr.reps()}">0</span>
+                            </div>
+                        </div>
+                        <div class="pr-date">
+                            <i class="fas fa-calendar"></i>
+                            <span th:text="${#temporals.format(pr.achievedDate(), 'MMM dd, yyyy')}">Date</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Results -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>No records found</h3>
+                    <p>Try adjusting your search or filter criteria</p>
+                </div>
+            </section>
+
+            <!-- Empty State -->
+            <div th:if="${personalRecords.exercisePRs().isEmpty() && personalRecords.milestones().isEmpty()}" class="no-results">
+                <i class="fas fa-trophy"></i>
+                <h3>No records yet</h3>
+                <p>Complete workouts to start tracking your personal records</p>
+                <a href="/workouts/session" class="btn btn-primary" style="margin-top: 1rem;">
+                    <i class="fas fa-plus"></i>
+                    Start Workout
+                </a>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const isImperial = /*[[${unitSystem == 'imperial'}]]*/ false;
+
+    function formatWeight(weightKg) {
+        if (isImperial) {
+            const lb = weightKg * 2.20462;
+            return lb.toFixed(1) + ' lb';
+        }
+        return weightKg.toFixed(1) + ' kg';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('[data-weight-kg]').forEach(function(el) {
+            const kg = parseFloat(el.getAttribute('data-weight-kg'));
+            if (!isNaN(kg)) {
+                if (isImperial) {
+                    el.textContent = (kg * 2.20462).toFixed(1) + ' lb';
+                } else {
+                    el.textContent = kg.toFixed(1) + ' kg';
+                }
+            }
+        });
+    });
+
+    // Search and Filter Functionality
+    const searchInput = document.getElementById('prSearch');
+    const muscleFilter = document.getElementById('muscleFilter');
+    const recordTypeFilter = document.getElementById('recordTypeFilter');
+    const prsGrid = document.getElementById('prsGrid');
+    const resultsCount = document.getElementById('resultsCount');
+    const noResults = document.getElementById('noResults');
+
+    function filterPRs() {
+        if (!prsGrid) return;
+        
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const muscleGroup = muscleFilter ? muscleFilter.value : '';
+        const recordType = recordTypeFilter ? recordTypeFilter.value : '';
+        
+        const cards = prsGrid.querySelectorAll('.pr-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const exerciseName = card.getAttribute('data-exercise-name').toLowerCase();
+            const cardMuscleGroup = card.getAttribute('data-muscle-group');
+            const cardRecordType = card.getAttribute('data-record-type');
+            
+            const matchesSearch = !searchTerm || exerciseName.includes(searchTerm);
+            const matchesMuscle = !muscleGroup || cardMuscleGroup === muscleGroup;
+            const matchesType = !recordType || cardRecordType === recordType;
+            
+            if (matchesSearch && matchesMuscle && matchesType) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        if (resultsCount) {
+            resultsCount.textContent = visibleCount === 1 ? '1 record' : visibleCount + ' records';
+        }
+        
+        if (visibleCount === 0 && cards.length > 0) {
+            if (noResults) noResults.style.display = 'block';
+            prsGrid.style.display = 'none';
+        } else {
+            if (noResults) noResults.style.display = 'none';
+            prsGrid.style.display = 'grid';
+        }
+    }
+
+    if (searchInput && muscleFilter && recordTypeFilter) {
+        searchInput.addEventListener('input', filterPRs);
+        muscleFilter.addEventListener('change', filterPRs);
+        recordTypeFilter.addEventListener('change', filterPRs);
+        filterPRs(); // Initialize
+    }
+
+    // Prevent overscrolling
+    function clampScrollPosition() {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        const maxScroll = Math.max(0, scrollHeight - clientHeight);
+        
+        if (scrollTop < 0) {
+            window.scrollTo(0, 0);
+        } else if (scrollTop > maxScroll) {
+            window.scrollTo(0, maxScroll);
+        }
+    }
+    
+    let scrollTimeout;
+    function handleScroll() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(clampScrollPosition, 10);
+    }
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('touchmove', handleScroll, { passive: true });
+    window.addEventListener('wheel', handleScroll, { passive: true });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        clampScrollPosition();
+        window.addEventListener('resize', function() {
+            setTimeout(clampScrollPosition, 100);
+        });
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>
+

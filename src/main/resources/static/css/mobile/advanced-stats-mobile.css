@@ -606,4 +606,210 @@ body {
   .no-results p {
     font-size: 0.85rem !important;
   }
+
+  /* Template Analytics - Mobile */
+  .template-card {
+    border-radius: 12px !important;
+  }
+
+  .template-summary {
+    padding: 1rem !important;
+  }
+
+  .template-title h3 {
+    font-size: 1rem !important;
+  }
+
+  .template-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .template-stat .stat-value {
+    font-size: 1.1rem !important;
+  }
+
+  .exercise-details {
+    padding: 1rem !important;
+  }
+
+  .exercise-stat-card {
+    padding: 0.75rem !important;
+  }
+
+  .exercise-stat-header h5 {
+    font-size: 0.95rem !important;
+  }
+
+  .exercise-stat-metrics {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .mini-chart-container {
+    height: 120px !important;
+    position: relative;
+  }
+
+  .chart-single-point-notice {
+    position: absolute;
+    bottom: 0.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(102, 126, 234, 0.2);
+    border: 1px solid rgba(102, 126, 234, 0.4);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+    z-index: 10;
+  }
+
+  .chart-single-point-notice i {
+    color: #667eea;
+    font-size: 0.7rem;
+  }
+
+  /* Workout Comparison - Mobile */
+  .comparison-selectors {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+  }
+
+  .comparison-vs {
+    order: 2;
+  }
+
+  .selector-card:first-child {
+    order: 1;
+  }
+
+  .selector-card:last-child {
+    order: 3;
+  }
+
+  .vs-badge {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .vs-badge i {
+    font-size: 1.2rem !important;
+  }
+
+  .comparison-summary-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .comparison-difference {
+    order: 2;
+  }
+
+  .comparison-card.workout1 {
+    order: 1;
+  }
+
+  .comparison-card.workout2 {
+    order: 3;
+  }
+
+  .comparison-card {
+    padding: 1rem !important;
+  }
+
+  .comparison-data-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .comparison-arrow {
+    order: 2;
+  }
+
+  .workout-data:first-child {
+    order: 1;
+  }
+
+  .workout-data:last-child {
+    order: 3;
+  }
+
+  .exercise-comparison-card {
+    padding: 1rem !important;
+  }
+
+  /* Training Frequency Details - Mobile */
+  .stats-grid-extended {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .day-analysis-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .day-card {
+    padding: 0.75rem !important;
+  }
+
+  .weekly-table {
+    overflow-x: auto;
+  }
+
+  .weekly-table table {
+    min-width: 500px;
+  }
+
+  .weekly-table th,
+  .weekly-table td {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Personal Records Details - Mobile */
+  .milestones-grid-extended {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .prs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .pr-card {
+    padding: 1rem !important;
+  }
+
+  .pr-header h4 {
+    font-size: 1rem !important;
+  }
+
+  .pr-stats {
+    gap: 1rem !important;
+  }
+
+  .pr-value {
+    font-size: 1.2rem !important;
+  }
+
+  /* Section Header with Buttons - Mobile */
+  .section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .section-header .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
