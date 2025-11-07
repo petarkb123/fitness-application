@@ -445,6 +445,8 @@ body {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .stat-icon i {
@@ -1067,5 +1069,200 @@ body {
 
 .desktop-profile {
     display: flex !important;
+}
+
+/* Quick Navigation Cards */
+.quick-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.nav-card {
+    background: rgba(44, 44, 74, 0.82);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.3);
+    border-color: rgba(102, 126, 234, 0.5);
+    text-decoration: none;
+    color: white;
+}
+
+.nav-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nav-card-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.nav-card-content {
+    flex: 1;
+}
+
+.nav-card-content h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.nav-card-content p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.nav-card-arrow {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-card:hover .nav-card-arrow {
+    color: #667eea;
+    transform: translateX(5px);
+}
+
+/* Search and Filter Bar */
+.search-filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    background: rgba(44, 44, 74, 0.82);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+.filter-select-wrapper {
+    position: relative;
+    min-width: 200px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    background: rgba(44, 44, 74, 0.82);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.filter-select option {
+    background: #2a2a42;
+    color: white;
+}
+
+.filter-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+}
+
+.results-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    padding: 0.75rem 0;
+}
+
+.no-results {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    background: rgba(44, 44, 74, 0.82);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+}
+
+.no-results i {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.no-results h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.no-results p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
 }
 

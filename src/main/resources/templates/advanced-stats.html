@@ -154,6 +154,42 @@
                 </div>
             </div>
 
+
+            <section class="analytics-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Detailed Exercise Analytics</h2>
+                    <p class="section-subtitle">Dive deeper into your exercise performance and progress</p>
+                </div>
+
+                <div class="quick-nav-grid">
+                    <a href="/stats/progressive-overload" class="nav-card">
+                        <div class="nav-card-icon">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="nav-card-content">
+                            <h3>Progressive Overload</h3>
+                            <p>Monitor strength gains and identify plateaus across all your exercises</p>
+                        </div>
+                        <div class="nav-card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="/stats/volume-trends" class="nav-card">
+                        <div class="nav-card-icon">
+                            <i class="fas fa-weight-hanging"></i>
+                        </div>
+                        <div class="nav-card-content">
+                            <h3>Volume Trends</h3>
+                            <p>Track volume progression for each exercise over time</p>
+                        </div>
+                        <div class="nav-card-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
             
             <section class="analytics-section">
                 <div class="section-header">
@@ -217,97 +253,7 @@
             </section>
 
             
-             
-            <section class="analytics-section" th:if="${!progressiveOverload.isEmpty()}">
-                <div class="section-header">
-                    <h2><i class="fas fa-chart-area"></i> Progressive Overload Tracking</h2>
-                    <p class="section-subtitle">Monitor strength gains and identify plateaus</p>
-                </div>
-
-                <div class="overload-grid">
-                    <div class="overload-card" th:each="overload : ${progressiveOverload}">
-                        <div class="overload-header">
-                            <div class="overload-title">
-                                <h3 th:text="${overload.exerciseName()}">Exercise</h3>
-                                <span class="muscle-badge" th:text="${overload.muscleGroup()}">Muscle</span>
-                            </div>
-                            <div class="status-badge" th:classappend="${overload.status()}">
-                                <i class="fas" th:classappend="${overload.status() == 'progressing' ? 'fa-rocket' : (overload.status() == 'plateau' ? 'fa-pause' : 'fa-check')}"></i>
-                                <span th:text="${overload.status()}">Status</span>
-                            </div>
-                        </div>
-
-                        <div class="overload-progress">
-                            <div class="progress-info">
-                                <div class="progress-item">
-                                    <span class="progress-label">Starting Weight</span>
-                                    <span class="progress-value" data-weight-kg th:attr="data-weight-kg=${overload.startingWeight()}" th:text="${overload.startingWeight()}">0</span>
-                                </div>
-                                <div class="progress-arrow">
-                                    <i class="fas fa-arrow-right"></i>
-                                </div>
-                                <div class="progress-item">
-                                    <span class="progress-label">Current Weight</span>
-                                    <span class="progress-value" data-weight-kg th:attr="data-weight-kg=${overload.currentWeight()}" th:text="${overload.currentWeight()}">0</span>
-                                </div>
-                            </div>
-                            <div class="progress-percent" th:classappend="${overload.progressPercent() > 0 ? 'positive' : 'neutral'}">
-                                <i class="fas fa-arrow-up" th:if="${overload.progressPercent() > 0}"></i>
-                                <i class="fas fa-minus" th:if="${overload.progressPercent() == 0}"></i>
-                                <span th:text="${overload.progressPercent()} + '%'">0%</span>
-                            </div>
-                        </div>
-
-                        <div class="overload-chart">
-                            <canvas th:id="'overloadChart' + ${overloadStat.index}" class="overload-chart-canvas"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section class="analytics-section" th:if="${!volumeTrends.isEmpty()}">
-                <div class="section-header">
-                    <h2><i class="fas fa-weight-hanging"></i> Exercise Volume Trends</h2>
-                    <p class="section-subtitle">Track volume progression for each exercise over time</p>
-                </div>
-
-                <div class="exercise-trends-list">
-                    <div class="trend-card" th:each="trend : ${volumeTrends}">
-                        <div class="trend-header">
-                            <div class="trend-title">
-                                <h3 th:text="${trend.exerciseName()}">Exercise Name</h3>
-                                <span class="muscle-badge" th:text="${trend.muscleGroup()}">Muscle</span>
-                            </div>
-                            <div class="trend-indicator" th:classappend="${trend.trend()}">
-                                <i class="fas" th:classappend="${trend.trend() == 'increasing' ? 'fa-arrow-up' : (trend.trend() == 'decreasing' ? 'fa-arrow-down' : 'fa-minus')}"></i>
-                                <span th:text="${trend.trend()}">Trend</span>
-                            </div>
-                        </div>
-
-                        <div class="trend-stats">
-                            <div class="trend-stat">
-                                <span class="trend-stat-label">Total Volume</span>
-                                <span class="trend-stat-value" data-volume th:text="${#numbers.formatDecimal(trend.totalVolume(), 0, 'COMMA', 0, 'POINT')}">0</span>
-                            </div>
-                            <div class="trend-stat">
-                                <span class="trend-stat-label">Total Sets</span>
-                                <span class="trend-stat-value" th:text="${trend.totalSets()}">0</span>
-                            </div>
-                            <div class="trend-stat">
-                                <span class="trend-stat-label">Avg Per Session</span>
-                                <span class="trend-stat-value" data-volume th:text="${#numbers.formatDecimal(trend.avgVolumePerSession(), 0, 'COMMA', 0, 'POINT')}">0</span>
-                            </div>
-                        </div>
-
-                        <div class="trend-chart">
-                            <canvas th:id="'volumeChart' + ${trendStat.index}" class="volume-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-           
-
+         
             
             <section class="analytics-section">
                 <div class="section-header">
@@ -408,8 +354,6 @@
     // Training Frequency Data
     const dayOfWeekData = /*[[${trainingFrequency.workoutsByDayOfWeek()}]]*/ {};
     const weeklyBreakdown = /*[[${trainingFrequency.weeklyBreakdown()}]]*/ [];
-    const volumeTrends = /*[[${volumeTrends}]]*/ [];
-    const progressiveOverload = /*[[${progressiveOverload}]]*/ [];
 
     // Day of Week Chart
     const dayOfWeekCtx = document.getElementById('dayOfWeekChart');
@@ -522,130 +466,6 @@
         });
     }
 
-    // Volume Trend Charts
-    volumeTrends.forEach((trend, index) => {
-        const canvas = document.getElementById('volumeChart' + index);
-        if (canvas && trend.weeklyData && trend.weeklyData.length > 0) {
-            new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: trend.weeklyData.map(w => {
-                        const date = new Date(w.weekStart);
-                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    }),
-                    datasets: [{
-                        label: 'Volume (' + unitLabel + ')',
-                        data: trend.weeklyData.map(w => w.volume),
-                        borderColor: trend.trend === 'increasing' ? 'rgba(46, 213, 115, 1)' : 
-                                    trend.trend === 'decreasing' ? 'rgba(255, 71, 87, 1)' : 
-                                    'rgba(102, 126, 234, 1)',
-                        backgroundColor: trend.trend === 'increasing' ? 'rgba(46, 213, 115, 0.1)' : 
-                                        trend.trend === 'decreasing' ? 'rgba(255, 71, 87, 0.1)' : 
-                                        'rgba(102, 126, 234, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return formatWeight(context.parsed.y);
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                callback: function(value) {
-                                    return formatWeight(value);
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    });
-
-    // Progressive Overload Charts
-    progressiveOverload.forEach((overload, index) => {
-        const canvas = document.getElementById('overloadChart' + index);
-        if (canvas && overload.progressPoints && overload.progressPoints.length > 0) {
-            new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: overload.progressPoints.map(p => {
-                        const date = new Date(p.date);
-                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    }),
-                    datasets: [{
-                        label: 'Max Weight (' + unitLabel + ')',
-                        data: overload.progressPoints.map(p => p.weight),
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        backgroundColor: 'rgba(255, 159, 64, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: 'rgba(255, 159, 64, 1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    });
     /*]]>*/
     
     // Prevent overscrolling by clamping scroll position

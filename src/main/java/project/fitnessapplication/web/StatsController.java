@@ -57,8 +57,6 @@ public class StatsController {
         LocalDate start = (from != null) ? from : end.minusDays(90);
 
         var trainingFrequency = advancedStats.getTrainingFrequency(userId, start, end);
-        var volumeTrends = advancedStats.getExerciseVolumeTrends(userId, start, end);
-        var progressiveOverload = advancedStats.getProgressiveOverload(userId, start, end);
         var personalRecords = advancedStats.getPersonalRecords(userId);
 
         model.addAttribute("navAvatar", u.getProfilePicture());
@@ -66,11 +64,55 @@ public class StatsController {
         model.addAttribute("from", start);
         model.addAttribute("to", end);
         model.addAttribute("trainingFrequency", trainingFrequency);
-        model.addAttribute("volumeTrends", volumeTrends);
-        model.addAttribute("progressiveOverload", progressiveOverload);
         model.addAttribute("personalRecords", personalRecords);
         model.addAttribute("unitSystem", u.getUnitSystem());
 
         return "advanced-stats";
+    }
+
+    @GetMapping("/stats/progressive-overload")
+    public String progressiveOverload(@AuthenticationPrincipal UserDetails me,
+                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                                     Model model) {
+        var u = users.findByUsernameOrThrow(me.getUsername());
+        UUID userId = u.getId();
+
+        LocalDate end = (to != null) ? to : LocalDate.now();
+        LocalDate start = (from != null) ? from : end.minusDays(90);
+
+        var progressiveOverload = advancedStats.getProgressiveOverload(userId, start, end);
+
+        model.addAttribute("navAvatar", u.getProfilePicture());
+        model.addAttribute("username", u.getUsername());
+        model.addAttribute("from", start);
+        model.addAttribute("to", end);
+        model.addAttribute("progressiveOverload", progressiveOverload);
+        model.addAttribute("unitSystem", u.getUnitSystem());
+
+        return "progressive-overload";
+    }
+
+    @GetMapping("/stats/volume-trends")
+    public String volumeTrends(@AuthenticationPrincipal UserDetails me,
+                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+                               @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+                               Model model) {
+        var u = users.findByUsernameOrThrow(me.getUsername());
+        UUID userId = u.getId();
+
+        LocalDate end = (to != null) ? to : LocalDate.now();
+        LocalDate start = (from != null) ? from : end.minusDays(90);
+
+        var volumeTrends = advancedStats.getExerciseVolumeTrends(userId, start, end);
+
+        model.addAttribute("navAvatar", u.getProfilePicture());
+        model.addAttribute("username", u.getUsername());
+        model.addAttribute("from", start);
+        model.addAttribute("to", end);
+        model.addAttribute("volumeTrends", volumeTrends);
+        model.addAttribute("unitSystem", u.getUnitSystem());
+
+        return "volume-trends";
     }
 }

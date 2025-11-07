@@ -239,13 +239,13 @@
 
                     
                     <div class="muscle-group-section">
-                        <div class="muscle-group-header" onclick="toggleMuscleGroup('legs')" aria-expanded="false">
-                            <h3 class="muscle-group-title">LEGS</h3>
+                        <div class="muscle-group-header" onclick="toggleMuscleGroup('quads')" aria-expanded="false">
+                            <h3 class="muscle-group-title">QUADS</h3>
                             <span class="exercise-count"
                                   th:text="${exercises.?[builtIn and primaryMuscle.name() == 'QUADS'].size()} + ' exercises'">0 exercises</span>
-                            <i class="fas fa-chevron-down muscle-group-icon" id="legs-icon"></i>
+                            <i class="fas fa-chevron-down muscle-group-icon" id="quads-icon"></i>
                         </div>
-                        <div class="muscle-group-content collapsible" id="legs-content" aria-hidden="true">
+                        <div class="muscle-group-content collapsible" id="quads-content" aria-hidden="true">
                             <div class="exercises-grid">
                                 <div class="exercise-card builtin-card"
                                      th:each="exercise : ${exercises.?[builtIn and primaryMuscle.name() == 'QUADS']}">
@@ -632,7 +632,7 @@
             setTimeout(clampScrollPosition, 100);
         });
         // Initialize all muscle groups as collapsed
-        const muscleGroups = ['chest', 'back', 'legs', 'shoulders', 'biceps', 'triceps', 'forearms', 'hamstrings', 'calves', 'core'];
+        const muscleGroups = ['chest', 'back', 'quads', 'shoulders', 'biceps', 'triceps', 'forearms', 'hamstrings', 'calves', 'core'];
         muscleGroups.forEach(group => {
             const content = document.getElementById(group + '-content');
             const icon = document.getElementById(group + '-icon');
