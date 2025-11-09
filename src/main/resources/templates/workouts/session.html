@@ -821,14 +821,13 @@
         if (isEditMode && window.getTimerElapsedMs && originalStartedAt) {
             // Calculate duration from timer state
             const durationMs = window.getTimerElapsedMs();
-            
+
             // Keep original startedAt, calculate new finishedAt based on edited duration
             const startedAt = new Date(originalStartedAt);
             const finishedAt = new Date(startedAt.getTime() + durationMs);
-            
-            // Convert to ISO format for backend
-            payload.startedAt = startedAt.toISOString();
-            payload.finishedAt = finishedAt.toISOString();
+
+            // Convert to local datetime string (no timezone info) for backend
+            payload.finishedAt = formatLocalDateTime(finishedAt);
         }
 
         const endpoint = isEditMode && workoutSessionId 
@@ -881,6 +880,19 @@
             const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
+    }
+
+    function formatLocalDateTime(date) {
+        const pad = (value) => String(value).padStart(2, '0');
+        return [
+            date.getFullYear(),
+            pad(date.getMonth() + 1),
+            pad(date.getDate())
+        ].join('-') + 'T' + [
+            pad(date.getHours()),
+            pad(date.getMinutes()),
+            pad(date.getSeconds())
+        ].join(':');
     }
 
     function getSelectedCards() {

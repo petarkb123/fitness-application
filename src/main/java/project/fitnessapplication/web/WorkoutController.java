@@ -316,7 +316,7 @@ public class WorkoutController {
         
         try {
             workoutService.updateSessionWithSets(body.getSessionId(), u.getId(), exerciseSets,
-                                                 body.getStartedAt(), body.getFinishedAt());
+                                                 body.getFinishedAt());
             return ResponseEntity.ok().build();
         } catch (ResponseStatusException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {

@@ -163,8 +163,8 @@ public class WorkoutService {
     }
     
     @Transactional
-    public void updateSessionWithSets(UUID sessionId, UUID userId, List<ExerciseSetData> exerciseSets, 
-                                     LocalDateTime startedAt, LocalDateTime finishedAt) {
+    public void updateSessionWithSets(UUID sessionId, UUID userId, List<ExerciseSetData> exerciseSets,
+                                      LocalDateTime finishedAt) {
         var session = sessionRepo.findById(sessionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         
@@ -214,12 +214,13 @@ public class WorkoutService {
             }
         }
         
-        // Update timestamps if provided - convert from user local time to UTC for storage
-        if (startedAt != null) {
-            session.setStartedAt(timezoneService.toUtc(startedAt, userId));
-        }
+        // Update finished timestamp if provided - convert from user local time to UTC for storage
         if (finishedAt != null) {
-            session.setFinishedAt(timezoneService.toUtc(finishedAt, userId));
+            LocalDateTime convertedFinished = timezoneService.toUtc(finishedAt, userId);
+            if (session.getStartedAt() != null && convertedFinished.isBefore(session.getStartedAt())) {
+                convertedFinished = session.getStartedAt();
+            }
+            session.setFinishedAt(convertedFinished);
         }
         
         // Ensure session is marked as finished

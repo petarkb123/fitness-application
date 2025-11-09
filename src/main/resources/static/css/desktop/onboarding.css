@@ -1,3 +1,103 @@
+.timezone-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(12, 16, 34, 0.68);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    z-index: 10000;
+}
+
+.timezone-modal-content {
+    width: min(560px, 92vw);
+    max-height: 80vh;
+    background: radial-gradient(120% 140% at 85% 5%, rgba(102,126,234,0.14) 0%, rgba(44,44,74,0.96) 45%, rgba(26,26,48,0.92) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.timezone-modal-header,
+.timezone-modal-body {
+    padding: 1.75rem 2rem;
+}
+
+.timezone-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.timezone-modal-header h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.94);
+}
+
+.timezone-modal-close {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.05);
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    color: rgba(255,255,255,0.7);
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timezone-modal-close:hover {
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.95);
+}
+
+.timezone-modal-body {
+    overflow-y: auto;
+}
+
+.timezone-search {
+    width: 100%;
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(15,18,36,0.6);
+    color: rgba(255,255,255,0.92);
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+}
+
+.timezone-list {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.timezone-option-btn {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.85);
+    text-align: left;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timezone-option-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.96);
+}
 * {
     margin: 0;
     padding: 0;
@@ -92,6 +192,7 @@ body {
 .progress-container {
     position: relative;
     padding: 2rem 0 1rem;
+    z-index: 10001;
 }
 
 .back-arrow {
@@ -103,6 +204,7 @@ body {
     text-decoration: none;
     transition: all 0.3s ease;
     padding: 0.5rem;
+    z-index: 10002;
 }
 
 .back-arrow:hover {
