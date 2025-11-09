@@ -5,11 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import project.fitnessapplication.exercise.model.Exercise;
 import project.fitnessapplication.exercise.repository.ExerciseRepository;
 import project.fitnessapplication.stats.dto.*;
+import project.fitnessapplication.stats.model.Milestone;
+import project.fitnessapplication.stats.repository.MilestoneRepository;
 import project.fitnessapplication.template.model.TemplateItem;
 import project.fitnessapplication.template.model.WorkoutTemplate;
 import project.fitnessapplication.template.repository.TemplateItemRepository;
 import project.fitnessapplication.template.repository.WorkoutTemplateRepository;
 import project.fitnessapplication.workout.model.WorkoutSession;
+import project.fitnessapplication.workout.model.SessionStatus;
 import project.fitnessapplication.workout.model.WorkoutSet;
 import project.fitnessapplication.workout.repository.WorkoutSessionRepository;
 import project.fitnessapplication.workout.repository.WorkoutSetRepository;
@@ -20,6 +23,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,18 +36,21 @@ public class AdvancedStatsService {
     private final ExerciseRepository exerciseRepo;
     private final WorkoutTemplateRepository templateRepo;
     private final TemplateItemRepository templateItemRepo;
+    private final MilestoneRepository milestoneRepo;
 
     public AdvancedStatsService(
             WorkoutSessionRepository sessionRepo,
             WorkoutSetRepository setRepo,
             ExerciseRepository exerciseRepo,
             WorkoutTemplateRepository templateRepo,
-            TemplateItemRepository templateItemRepo) {
+            TemplateItemRepository templateItemRepo,
+            MilestoneRepository milestoneRepo) {
         this.sessionRepo = sessionRepo;
         this.setRepo = setRepo;
         this.exerciseRepo = exerciseRepo;
         this.templateRepo = templateRepo;
         this.templateItemRepo = templateItemRepo;
+        this.milestoneRepo = milestoneRepo;
     }
 
     /**
@@ -60,65 +67,25 @@ public class AdvancedStatsService {
             return new TrainingFrequencyDto(0, 0.0, Map.of(), List.of(), 0, 0.0, 0.0);
         }
 
-        
-        int totalWorkouts = sessions.size();
+        List<WorkoutSession> finishedSessions = sessions.stream()
+                .filter(s -> s.getStatus() == SessionStatus.FINISHED)
+                .toList();
 
-        
-        long daysBetween = ChronoUnit.DAYS.between(from, to) + 1;
-        double weeksCount = daysBetween / 7.0;
-        // Prevent division by zero - ensure at least 1 week for calculation
-        if (weeksCount <= 0) {
-            weeksCount = 1.0;
+        if (finishedSessions.isEmpty()) {
+            return new TrainingFrequencyDto(0, 0.0, Map.of(), List.of(), 0, 0.0, 0.0);
         }
-        
-        // Calculate average workouts per week
-        // For very short periods, we need to be conservative to avoid unrealistic extrapolation
-        double avgPerWeek;
-        if (daysBetween < 7) {
-            // For periods shorter than a week, calculate conservatively
-            // Don't extrapolate more than 1 workout per day
-            // If they did X workouts in Y days, cap the weekly average at (X/Y) * 7, but max 7 workouts/week
-            double workoutsPerDay = totalWorkouts / (double) daysBetween;
-            avgPerWeek = workoutsPerDay * 7.0;
-            // Cap at 7 workouts per week (can't realistically do more than 1 workout per day consistently)
-            avgPerWeek = Math.min(7.0, avgPerWeek);
-        } else {
-            // For periods of a week or longer, use standard calculation
-            avgPerWeek = totalWorkouts / weeksCount;
-            // Still cap at 7 workouts per week for realism
-            avgPerWeek = Math.min(7.0, avgPerWeek);
-        }
-        
-        // Calculate unique workout days (days with at least one workout)
-        Set<LocalDate> uniqueWorkoutDays = sessions.stream()
+
+        int totalWorkouts = finishedSessions.size();
+
+        WeekFields weekFields = WeekFields.ISO;
+        Set<String> uniqueWeeks = finishedSessions.stream()
                 .map(s -> s.getStartedAt().toLocalDate())
+                .map(date -> date.get(weekFields.weekBasedYear()) + ":" + date.get(weekFields.weekOfWeekBasedYear()))
                 .collect(Collectors.toSet());
-        int uniqueDaysCount = uniqueWorkoutDays.size();
-        
-        // Calculate average unique workout days per week
-        // This represents how many days per week the user actually trained
-        // For very short periods, we need to be careful not to over-extrapolate
-        double avgUniqueDaysPerWeek;
-        if (daysBetween < 7) {
-            // For periods shorter than a week, calculate training rate
-            // But don't extrapolate to full 7 days - use a more conservative approach
-            // If they trained X days out of Y days, that's their rate
-            // We'll use this rate but cap it reasonably
-            double trainingRate = uniqueDaysCount / (double) daysBetween;
-            // For very short periods, be conservative: don't assume they'll maintain 100% rate
-            // Instead, calculate: if they maintain this rate over a week, how many days?
-            // But cap it at the number of unique days (can't extrapolate more than what we see)
-            avgUniqueDaysPerWeek = Math.min(uniqueDaysCount, trainingRate * 7.0);
-            // Also cap at 7.0 (can't train more than 7 days per week)
-            avgUniqueDaysPerWeek = Math.min(7.0, avgUniqueDaysPerWeek);
-        } else {
-            // For periods of a week or longer, use the standard calculation
-            avgUniqueDaysPerWeek = uniqueDaysCount / weeksCount;
-            // Cap at 7.0 (can't train more than 7 days per week)
-            avgUniqueDaysPerWeek = Math.min(7.0, avgUniqueDaysPerWeek);
-        }
-        
-
+        int weekCount = uniqueWeeks.isEmpty() ? 1 : uniqueWeeks.size();
+        double rawAvgPerWeek = (double) totalWorkouts / weekCount;
+        rawAvgPerWeek = Math.min(7.0, rawAvgPerWeek);
+        double avgPerWeek = Math.floor(rawAvgPerWeek);
         
         // Calculate day of week for current week only
         LocalDate today = LocalDate.now();
@@ -129,7 +96,7 @@ public class AdvancedStatsService {
         for (DayOfWeek day : DayOfWeek.values()) {
             byDayOfWeek.put(day.name(), 0);
         }
-        for (WorkoutSession s : sessions) {
+        for (WorkoutSession s : finishedSessions) {
             LocalDate sessionDate = s.getStartedAt().toLocalDate();
             // Only count sessions from the current week
             if (!sessionDate.isBefore(currentWeekStart) && !sessionDate.isAfter(currentWeekEnd)) {
@@ -148,7 +115,7 @@ public class AdvancedStatsService {
             LocalDateTime weekStartTs = weekStart.atStartOfDay();
             LocalDateTime weekEndTs = weekEnd.plusDays(1).atStartOfDay().minusNanos(1);
 
-            long count = sessions.stream()
+            long count = finishedSessions.stream()
                     .filter(s -> !s.getStartedAt().isBefore(weekStartTs) && !s.getStartedAt().isAfter(weekEndTs))
                     .count();
 
@@ -160,15 +127,43 @@ public class AdvancedStatsService {
         }
 
         
-        int longestStreak = calculateLongestStreak(sessions, from, to);
+        int longestStreak = calculateLongestStreak(finishedSessions, from, to);
 
         
-        double currentStreak = calculateCurrentStreak(sessions, to);
+        double currentStreak = calculateCurrentStreak(finishedSessions, to);
         
-        // Calculate consistency score based on user's target workout frequency
-        // Use avgUniqueDaysPerWeek (days trained per week) instead of avgPerWeek (workouts per week)
-        double consistencyScore = calculateConsistencyScore(avgUniqueDaysPerWeek, workoutFrequency);
-        // Round to 1 decimal place
+        LocalDate periodStart = LocalDate.now().minusDays(29);
+
+        Set<LocalDate> recentWorkoutDays = finishedSessions.stream()
+                .map(s -> s.getStartedAt().toLocalDate())
+                .filter(d -> !d.isBefore(periodStart))
+                .collect(Collectors.toSet());
+        double recentAvgDaysPerWeek = averageUniqueDaysPerWeek(recentWorkoutDays, periodStart, LocalDate.now());
+
+        double lifetimeAvgDaysPerWeek = 0.0;
+        if (!finishedSessions.isEmpty()) {
+            Set<LocalDate> lifetimeWorkoutDays = finishedSessions.stream()
+                    .map(s -> s.getStartedAt().toLocalDate())
+                    .collect(Collectors.toSet());
+            if (!lifetimeWorkoutDays.isEmpty()) {
+                LocalDate lifetimeStart = lifetimeWorkoutDays.stream().min(LocalDate::compareTo).orElse(LocalDate.now());
+                LocalDate lifetimeEnd = LocalDate.now();
+                lifetimeAvgDaysPerWeek = averageUniqueDaysPerWeek(lifetimeWorkoutDays, lifetimeStart, lifetimeEnd);
+            }
+        }
+
+        double combinedAvgDaysPerWeek;
+        if (recentAvgDaysPerWeek == 0.0 && lifetimeAvgDaysPerWeek == 0.0) {
+            combinedAvgDaysPerWeek = 0.0;
+        } else if (recentAvgDaysPerWeek == 0.0) {
+            combinedAvgDaysPerWeek = lifetimeAvgDaysPerWeek;
+        } else if (lifetimeAvgDaysPerWeek == 0.0) {
+            combinedAvgDaysPerWeek = recentAvgDaysPerWeek;
+        } else {
+            combinedAvgDaysPerWeek = (recentAvgDaysPerWeek + lifetimeAvgDaysPerWeek) / 2.0;
+        }
+
+        double consistencyScore = calculateConsistencyScore(combinedAvgDaysPerWeek, workoutFrequency);
         double roundedScore = Math.round(consistencyScore * 10.0) / 10.0;
 
         return new TrainingFrequencyDto(
@@ -253,6 +248,16 @@ public class AdvancedStatsService {
         double finalScore = Math.max(0.0, Math.min(100.0, score));
         
         return finalScore;
+    }
+
+    private double averageUniqueDaysPerWeek(Set<LocalDate> workoutDays, LocalDate start, LocalDate end) {
+        if (workoutDays.isEmpty() || start.isAfter(end)) {
+            return 0.0;
+        }
+        long daysCovered = ChronoUnit.DAYS.between(start, end) + 1;
+        double weeks = Math.max(1.0, daysCovered / 7.0);
+        double value = workoutDays.size() / weeks;
+        return Math.min(7.0, value);
     }
 
     /**
@@ -360,7 +365,7 @@ public class AdvancedStatsService {
                     BigDecimal.valueOf(sessionCount),
                     2,
                     RoundingMode.HALF_UP
-                );
+            );
             }
 
             
@@ -373,22 +378,22 @@ public class AdvancedStatsService {
                 
                 // Prevent division by zero
                 if (firstHalfSize > 0 && secondHalfSize > 0) {
-                    BigDecimal firstHalfAvg = weeks.subList(0, midPoint).stream()
-                            .map(weeklyVolume::get)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add)
+                BigDecimal firstHalfAvg = weeks.subList(0, midPoint).stream()
+                        .map(weeklyVolume::get)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
                             .divide(BigDecimal.valueOf(firstHalfSize), 2, RoundingMode.HALF_UP);
 
-                    BigDecimal secondHalfAvg = weeks.subList(midPoint, weeks.size()).stream()
-                            .map(weeklyVolume::get)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add)
+                BigDecimal secondHalfAvg = weeks.subList(midPoint, weeks.size()).stream()
+                        .map(weeklyVolume::get)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
                             .divide(BigDecimal.valueOf(secondHalfSize), 2, RoundingMode.HALF_UP);
 
                     // Only compare if first half average is not zero to avoid division issues
                     if (firstHalfAvg.compareTo(BigDecimal.ZERO) > 0) {
-                        if (secondHalfAvg.compareTo(firstHalfAvg.multiply(BigDecimal.valueOf(1.1))) > 0) {
-                            trend = "increasing";
-                        } else if (secondHalfAvg.compareTo(firstHalfAvg.multiply(BigDecimal.valueOf(0.9))) < 0) {
-                            trend = "decreasing";
+                if (secondHalfAvg.compareTo(firstHalfAvg.multiply(BigDecimal.valueOf(1.1))) > 0) {
+                    trend = "increasing";
+                } else if (secondHalfAvg.compareTo(firstHalfAvg.multiply(BigDecimal.valueOf(0.9))) < 0) {
+                    trend = "decreasing";
                         }
                     }
                 }
@@ -541,8 +546,65 @@ public class AdvancedStatsService {
     /**
      * Get personal records and milestones
      */
+    private record MilestoneStats(int completedSessions, BigDecimal totalVolume, long completedLast30Days) {}
+
+    private record MilestoneRule(String key,
+                                 String displayTitle,
+                                 String description,
+                                 Milestone.MilestoneType type,
+                                 java.util.function.Predicate<MilestoneStats> achieved,
+                                 String icon) {}
+
+    private static final List<MilestoneRule> MILESTONE_RULES = List.of(
+            new MilestoneRule("Momentum (10 Sessions)", "Momentum", "Completed 10 workout sessions", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedSessions() >= 10, "🚀"),
+            new MilestoneRule("Getting Started", "Getting Started", "25+ workout sessions completed", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedSessions() >= 25, "🎯"),
+            new MilestoneRule("Dedicated (50 Sessions)", "Dedicated", "50+ workout sessions completed", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedSessions() >= 50, "💪"),
+            new MilestoneRule("Centurion", "Centurion", "100+ workout sessions completed", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedSessions() >= 100, "🏋️"),
+            new MilestoneRule("Iron Veteran", "Iron Veteran", "250+ workout sessions completed", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedSessions() >= 250, "🛡️"),
+
+            new MilestoneRule("100K Club", "100K Club", "Lifted 100,000+ lbs total", Milestone.MilestoneType.VOLUME,
+                    stats -> stats.totalVolume().compareTo(BigDecimal.valueOf(100_000)) >= 0, "💪"),
+            new MilestoneRule("Quarter Million", "Quarter Million", "Lifted 250,000+ lbs total", Milestone.MilestoneType.VOLUME,
+                    stats -> stats.totalVolume().compareTo(BigDecimal.valueOf(250_000)) >= 0, "🏆"),
+            new MilestoneRule("Half Million", "Half Million", "Lifted 500,000+ lbs total", Milestone.MilestoneType.VOLUME,
+                    stats -> stats.totalVolume().compareTo(BigDecimal.valueOf(500_000)) >= 0, "💪"),
+            new MilestoneRule("Three-Quarter Million", "Three-Quarter Million", "Lifted 750,000+ lbs total", Milestone.MilestoneType.VOLUME,
+                    stats -> stats.totalVolume().compareTo(BigDecimal.valueOf(750_000)) >= 0, "🔥"),
+            new MilestoneRule("Million Pound Club", "Million Pound Club", "Lifted 1,000,000+ lbs total", Milestone.MilestoneType.VOLUME,
+                    stats -> stats.totalVolume().compareTo(BigDecimal.valueOf(1_000_000)) >= 0, "💪"),
+            new MilestoneRule("1.5 Million Club", "1.5 Million Club", "Lifted 1,500,000+ lbs total", Milestone.MilestoneType.VOLUME,
+                    stats -> stats.totalVolume().compareTo(BigDecimal.valueOf(1_500_000)) >= 0, "🏆"),
+
+            new MilestoneRule("On Track (8 in 30)", "On Track", "8+ workouts in 30 days", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedLast30Days() >= 8, "📆"),
+            new MilestoneRule("Dedicated (12 in 30)", "Dedicated", "12+ workouts in 30 days", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedLast30Days() >= 12, "🔥"),
+            new MilestoneRule("Relentless (16 in 30)", "Relentless", "16+ workouts in 30 days", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedLast30Days() >= 16, "⚡"),
+            new MilestoneRule("Consistency King", "Consistency King", "20+ workouts in 30 days", Milestone.MilestoneType.CONSISTENCY,
+                    stats -> stats.completedLast30Days() >= 20, "👑")
+    );
+
+    private static final Map<String, MilestoneRule> MILESTONE_RULE_BY_KEY = MILESTONE_RULES.stream()
+            .collect(Collectors.toMap(MilestoneRule::key, rule -> rule));
+
+    private static String defaultIconFor(Milestone.MilestoneType type) {
+        return switch (type) {
+            case CONSISTENCY -> "🔥";
+            case VOLUME -> "💪";
+            case STRENGTH -> "🏋️";
+            case ENDURANCE -> "🏃";
+            case PERSONAL_RECORD -> "⭐";
+        };
+    }
+
+    @Transactional
     public PersonalRecordsDto getPersonalRecords(UUID userId) {
-        
         List<WorkoutSession> allSessions = sessionRepo.findByUserIdOrderByStartedAtDesc(userId);
 
         if (allSessions.isEmpty()) {
@@ -554,11 +616,9 @@ public class AdvancedStatsService {
 
         Map<UUID, WorkoutSession> sessionMap = allSessions.stream()
                 .collect(Collectors.toMap(WorkoutSession::getId, s -> s));
-
         
         Map<UUID, List<WorkoutSet>> setsByExercise = allSets.stream()
                 .collect(Collectors.groupingBy(WorkoutSet::getExerciseId));
-
         
         Set<UUID> exerciseIds = setsByExercise.keySet();
         Map<UUID, Exercise> exerciseMap = exerciseRepo.findAllById(exerciseIds).stream()
@@ -572,19 +632,16 @@ public class AdvancedStatsService {
             Exercise exercise = exerciseMap.get(exerciseId);
 
             if (exercise == null) continue;
-
             
             WorkoutSet maxWeightSet = sets.stream()
                     .filter(s -> s.getWeight() != null)
                     .max(Comparator.comparing(WorkoutSet::getWeight))
                     .orElse(null);
-
             
             WorkoutSet maxRepsSet = sets.stream()
                     .filter(s -> s.getReps() != null)
                     .max(Comparator.comparing(WorkoutSet::getReps))
                     .orElse(null);
-
             
             WorkoutSet maxVolumeSet = sets.stream()
                     .filter(s -> s.getWeight() != null && s.getReps() != null)
@@ -627,54 +684,93 @@ public class AdvancedStatsService {
                 ));
             }
         }
-
         
         exercisePRs.sort((a, b) -> b.achievedDate().compareTo(a.achievedDate()));
 
-        // Filter to only keep the most recent PR per exercise
-        Map<UUID, PersonalRecordsDto.ExercisePR> latestPRByExercise = new LinkedHashMap<>();
-        for (PersonalRecordsDto.ExercisePR pr : exercisePRs) {
-            latestPRByExercise.putIfAbsent(pr.exerciseId(), pr);
-        }
-        exercisePRs = new ArrayList<>(latestPRByExercise.values());
-        
-        // Re-sort by date after filtering
-        exercisePRs.sort((a, b) -> b.achievedDate().compareTo(a.achievedDate()));
+        Set<UUID> finishedSessionIds = allSessions.stream()
+                .filter(s -> s.getStatus() == SessionStatus.FINISHED)
+                .map(WorkoutSession::getId)
+                .collect(Collectors.toSet());
+        int completedSessions = finishedSessionIds.size();
 
-        
-        List<PersonalRecordsDto.Milestone> milestones = new ArrayList<>();
-
-        
-        int totalWorkouts = allSessions.size();
-        if (totalWorkouts >= 100) milestones.add(new PersonalRecordsDto.Milestone("Century Club", "Completed 100+ workouts", "🏆"));
-        else if (totalWorkouts >= 50) milestones.add(new PersonalRecordsDto.Milestone("Half Century", "Completed 50+ workouts", "🎯"));
-        else if (totalWorkouts >= 25) milestones.add(new PersonalRecordsDto.Milestone("Quarter Century", "Completed 25+ workouts", "⭐"));
-        else if (totalWorkouts >= 10) milestones.add(new PersonalRecordsDto.Milestone("Getting Started", "Completed 10+ workouts", "🌟"));
-
-        
         BigDecimal totalVolume = allSets.stream()
+                .filter(s -> finishedSessionIds.contains(s.getSessionId()))
                 .filter(s -> s.getWeight() != null && s.getReps() != null)
                 .map(s -> s.getWeight().multiply(BigDecimal.valueOf(s.getReps())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        if (totalVolume.compareTo(BigDecimal.valueOf(1000000)) >= 0) {
-            milestones.add(new PersonalRecordsDto.Milestone("Million Pound Club", "Lifted 1,000,000+ lbs total", "💪"));
-        } else if (totalVolume.compareTo(BigDecimal.valueOf(500000)) >= 0) {
-            milestones.add(new PersonalRecordsDto.Milestone("Half Million", "Lifted 500,000+ lbs total", "💪"));
-        } else if (totalVolume.compareTo(BigDecimal.valueOf(100000)) >= 0) {
-            milestones.add(new PersonalRecordsDto.Milestone("100K Club", "Lifted 100,000+ lbs total", "💪"));
-        }
-
-        
-        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
-        long recentWorkouts = allSessions.stream()
-                .filter(s -> s.getStartedAt().toLocalDate().isAfter(thirtyDaysAgo))
+        LocalDate periodStart = LocalDate.now().minusDays(29);
+        long workoutsLast30Days = allSessions.stream()
+                .filter(s -> s.getStatus() == SessionStatus.FINISHED)
+                .filter(s -> !s.getStartedAt().toLocalDate().isBefore(periodStart))
                 .count();
 
-        if (recentWorkouts >= 20) milestones.add(new PersonalRecordsDto.Milestone("Consistency King", "20+ workouts in 30 days", "👑"));
-        else if (recentWorkouts >= 12) milestones.add(new PersonalRecordsDto.Milestone("Dedicated", "12+ workouts in 30 days", "🔥"));
+        MilestoneStats milestoneStats = new MilestoneStats(completedSessions, totalVolume, workoutsLast30Days);
 
-        return new PersonalRecordsDto(exercisePRs, milestones);
+        List<Milestone> existingMilestones = milestoneRepo.findByUserIdOrderByAchievedDateDesc(userId);
+        Map<String, Milestone> activeMilestones = new HashMap<>();
+        for (Milestone milestone : existingMilestones) {
+            MilestoneRule rule = MILESTONE_RULE_BY_KEY.get(milestone.getTitle());
+            if (rule == null) {
+                milestoneRepo.delete(milestone);
+                continue;
+            }
+            if (activeMilestones.putIfAbsent(milestone.getTitle(), milestone) != null) {
+                milestoneRepo.delete(milestone);
+            }
+        }
+
+        LocalDate today = LocalDate.now();
+        for (MilestoneRule rule : MILESTONE_RULES) {
+            boolean achieved = rule.achieved().test(milestoneStats);
+            Milestone stored = activeMilestones.get(rule.key());
+
+            if (achieved) {
+                if (stored == null) {
+                    Milestone saved = saveMilestone(userId, rule, today);
+                    activeMilestones.put(rule.key(), saved);
+                } else {
+                    boolean needsUpdate = false;
+                    if (!Objects.equals(stored.getDescription(), rule.description())) {
+                        stored.setDescription(rule.description());
+                        needsUpdate = true;
+                    }
+                    if (stored.getType() != rule.type()) {
+                        stored.setType(rule.type());
+                        needsUpdate = true;
+                    }
+                    if (needsUpdate) {
+                        milestoneRepo.save(stored);
+                    }
+                }
+            } else if (stored != null) {
+                milestoneRepo.delete(stored);
+                activeMilestones.remove(rule.key());
+            }
+        }
+
+        List<Milestone> refreshed = milestoneRepo.findByUserIdOrderByAchievedDateDesc(userId);
+        List<PersonalRecordsDto.Milestone> milestoneDtos = new ArrayList<>(refreshed.size());
+        for (Milestone milestone : refreshed) {
+            MilestoneRule rule = MILESTONE_RULE_BY_KEY.get(milestone.getTitle());
+            String displayTitle = rule != null ? rule.displayTitle() : milestone.getTitle();
+            String description = rule != null ? rule.description() : milestone.getDescription();
+            String icon = rule != null ? rule.icon() : defaultIconFor(milestone.getType());
+            milestoneDtos.add(new PersonalRecordsDto.Milestone(displayTitle, description, icon));
+        }
+
+        return new PersonalRecordsDto(exercisePRs, milestoneDtos);
+    }
+
+    private Milestone saveMilestone(UUID userId, MilestoneRule rule, LocalDate achievedDate) {
+        Milestone milestone = Milestone.builder()
+                .userId(userId)
+                .title(rule.key())
+                .description(rule.description())
+                .achievedDate(achievedDate)
+                .type(rule.type())
+                .build();
+        return milestoneRepo.save(milestone);
     }
 
     

@@ -28,7 +28,6 @@ public class TemplateController {
 
     private final TemplateService templateService;
     private final UserService users;
-
     @GetMapping
     public String list(@AuthenticationPrincipal UserDetails me, Model model) {
         UUID userId = users.findByUsernameOrThrow(me.getUsername()).getId();
