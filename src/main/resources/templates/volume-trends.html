@@ -280,7 +280,11 @@
                 data: {
                     labels: trend.weeklyData.map(w => {
                         const date = new Date(w.weekStart);
-                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const weekEnd = new Date(date);
+                        weekEnd.setDate(weekEnd.getDate() + 6);
+                        const startStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const endStr = weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        return startStr + '-' + endStr;
                     }),
                     datasets: [{
                         label: 'Volume (' + unitLabel + ')',

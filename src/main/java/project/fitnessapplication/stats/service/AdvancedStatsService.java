@@ -87,19 +87,15 @@ public class AdvancedStatsService {
         rawAvgPerWeek = Math.min(7.0, rawAvgPerWeek);
         double avgPerWeek = Math.floor(rawAvgPerWeek);
         
-        // Calculate day of week for current week only
-        LocalDate today = LocalDate.now();
-        LocalDate currentWeekStart = today.with(DayOfWeek.MONDAY);
-        LocalDate currentWeekEnd = currentWeekStart.plusDays(6);
-        
+        // Calculate day of week for the entire date range
         Map<String, Integer> byDayOfWeek = new LinkedHashMap<>();
         for (DayOfWeek day : DayOfWeek.values()) {
             byDayOfWeek.put(day.name(), 0);
         }
         for (WorkoutSession s : finishedSessions) {
             LocalDate sessionDate = s.getStartedAt().toLocalDate();
-            // Only count sessions from the current week
-            if (!sessionDate.isBefore(currentWeekStart) && !sessionDate.isAfter(currentWeekEnd)) {
+            // Count all sessions within the date range
+            if (!sessionDate.isBefore(from) && !sessionDate.isAfter(to)) {
                 String dayName = s.getStartedAt().getDayOfWeek().name();
                 byDayOfWeek.put(dayName, byDayOfWeek.get(dayName) + 1);
             }
@@ -274,10 +270,19 @@ public class AdvancedStatsService {
             return List.of();
         }
 
-        Map<UUID, WorkoutSession> sessionMap = sessions.stream()
+        // Only use FINISHED sessions for volume trends
+        List<WorkoutSession> finishedSessions = sessions.stream()
+                .filter(s -> s.getStatus() == SessionStatus.FINISHED)
+                .toList();
+
+        if (finishedSessions.isEmpty()) {
+            return List.of();
+        }
+
+        Map<UUID, WorkoutSession> sessionMap = finishedSessions.stream()
                 .collect(Collectors.toMap(WorkoutSession::getId, s -> s));
 
-        List<UUID> sessionIds = sessions.stream().map(WorkoutSession::getId).toList();
+        List<UUID> sessionIds = finishedSessions.stream().map(WorkoutSession::getId).toList();
         List<WorkoutSet> allSets = setRepo.findAllBySessionIdIn(sessionIds);
 
         
@@ -305,7 +310,7 @@ public class AdvancedStatsService {
             for (WorkoutSet set : sets) {
                 WorkoutSession session = sessionMap.get(set.getSessionId());
                 if (session == null) continue;
-                
+
                 // Skip warmup sets
                 if (set.isWarmup()) continue;
                 // Skip drop sets - only track main sets for volume trends
@@ -314,8 +319,10 @@ public class AdvancedStatsService {
                     continue;
                 }
 
-                LocalDate weekStart = session.getStartedAt().toLocalDate()
-                        .with(DayOfWeek.MONDAY);
+                // Calculate week start (Monday) for the session date
+                // This correctly handles all days of the week, including edge cases
+                LocalDate sessionDate = session.getStartedAt().toLocalDate();
+                LocalDate weekStart = sessionDate.with(DayOfWeek.MONDAY);
 
                 BigDecimal setVolume = BigDecimal.ZERO;
                 if (set.getWeight() != null && set.getReps() != null) {
@@ -369,31 +376,50 @@ public class AdvancedStatsService {
             }
 
             
+            // Sort weeks chronologically
             List<LocalDate> weeks = new ArrayList<>(weeklyVolume.keySet());
+            weeks.sort(LocalDate::compareTo);
+            
             String trend = "stable";
             if (weeks.size() >= 2) {
+                // Use first and last weeks for trend comparison (more accurate for small datasets)
+                // For larger datasets, compare first half vs second half
+                if (weeks.size() <= 4) {
+                    // For 2-4 weeks, compare first week vs last week
+                    BigDecimal firstWeekVolume = weeklyVolume.get(weeks.get(0));
+                    BigDecimal lastWeekVolume = weeklyVolume.get(weeks.get(weeks.size() - 1));
+                    
+                    if (firstWeekVolume.compareTo(BigDecimal.ZERO) > 0) {
+                        BigDecimal changeRatio = lastWeekVolume.divide(firstWeekVolume, 4, RoundingMode.HALF_UP);
+                        if (changeRatio.compareTo(BigDecimal.valueOf(1.1)) > 0) {
+                            trend = "increasing";
+                        } else if (changeRatio.compareTo(BigDecimal.valueOf(0.9)) < 0) {
+                            trend = "decreasing";
+                        }
+                    }
+                } else {
+                    // For 5+ weeks, compare first half vs second half
                 int midPoint = weeks.size() / 2;
-                int firstHalfSize = midPoint;
-                int secondHalfSize = weeks.size() - midPoint;
-                
-                // Prevent division by zero
-                if (firstHalfSize > 0 && secondHalfSize > 0) {
+                    int firstHalfSize = midPoint;
+                    int secondHalfSize = weeks.size() - midPoint;
+                    
+                    if (firstHalfSize > 0 && secondHalfSize > 0) {
                 BigDecimal firstHalfAvg = weeks.subList(0, midPoint).stream()
                         .map(weeklyVolume::get)
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .divide(BigDecimal.valueOf(firstHalfSize), 2, RoundingMode.HALF_UP);
+                                .divide(BigDecimal.valueOf(firstHalfSize), 2, RoundingMode.HALF_UP);
 
                 BigDecimal secondHalfAvg = weeks.subList(midPoint, weeks.size()).stream()
                         .map(weeklyVolume::get)
                         .reduce(BigDecimal.ZERO, BigDecimal::add)
-                            .divide(BigDecimal.valueOf(secondHalfSize), 2, RoundingMode.HALF_UP);
+                                .divide(BigDecimal.valueOf(secondHalfSize), 2, RoundingMode.HALF_UP);
 
-                    // Only compare if first half average is not zero to avoid division issues
-                    if (firstHalfAvg.compareTo(BigDecimal.ZERO) > 0) {
+                        if (firstHalfAvg.compareTo(BigDecimal.ZERO) > 0) {
                 if (secondHalfAvg.compareTo(firstHalfAvg.multiply(BigDecimal.valueOf(1.1))) > 0) {
                     trend = "increasing";
                 } else if (secondHalfAvg.compareTo(firstHalfAvg.multiply(BigDecimal.valueOf(0.9))) < 0) {
                     trend = "decreasing";
+                            }
                         }
                     }
                 }
@@ -692,7 +718,7 @@ public class AdvancedStatsService {
                 .map(WorkoutSession::getId)
                 .collect(Collectors.toSet());
         int completedSessions = finishedSessionIds.size();
-
+        
         BigDecimal totalVolume = allSets.stream()
                 .filter(s -> finishedSessionIds.contains(s.getSessionId()))
                 .filter(s -> s.getWeight() != null && s.getReps() != null)
