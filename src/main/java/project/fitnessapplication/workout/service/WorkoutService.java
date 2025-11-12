@@ -85,8 +85,14 @@ public class WorkoutService {
 
     @Transactional
     public WorkoutSession start(UUID user) {
+        return start(user, null);
+    }
+    
+    @Transactional
+    public WorkoutSession start(UUID user, UUID templateId) {
         var session = new WorkoutSession();
         session.setUserId(user);
+        session.setTemplateId(templateId);
         // Store in UTC for consistency
         session.setStartedAt(timezoneService.nowUtc());
         return sessionRepo.save(session);

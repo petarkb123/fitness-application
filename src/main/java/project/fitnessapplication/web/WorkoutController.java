@@ -62,7 +62,16 @@ public class WorkoutController {
             regionalSessions.add(builder.build());
         }
         model.addAttribute("sessions", regionalSessions);
-        model.addAttribute("templates", templateService.list(userId));
+        
+        // Get templates and create a map of template IDs to template names for quick lookup
+        var templates = templateService.list(userId);
+        model.addAttribute("templates", templates);
+        var templateMap = templates.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        project.fitnessapplication.template.model.WorkoutTemplate::getId,
+                        project.fitnessapplication.template.model.WorkoutTemplate::getName
+                ));
+        model.addAttribute("templateMap", templateMap);
 
         return "workouts/history";
     }
@@ -77,7 +86,7 @@ public class WorkoutController {
 
         var s = (sessionId != null)
                 ? workoutService.findById(sessionId).orElseThrow()
-                : workoutService.start(userId);
+                : workoutService.start(userId, templateId);
 
         if (!Objects.equals(s.getUserId(), userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

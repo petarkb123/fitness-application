@@ -40,5 +40,8 @@ public class WorkoutSession {
     @Builder.Default
     private SessionStatus status = SessionStatus.IN_PROGRESS;
 
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "template_id", columnDefinition = "char(36)")
+    private UUID templateId;
 
 }
