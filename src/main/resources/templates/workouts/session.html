@@ -1946,10 +1946,22 @@
             return; // template not needed
         }
 
-        // If starting from a template, preload
-        const templateId = new URLSearchParams(location.search).get('templateId');
+        // If starting from a template, preload latest template items
+        // Check URL first (for new sessions), then check server-provided sessionTemplateId
+        const templateIdFromUrl = new URLSearchParams(location.search).get('templateId');
+        const templateIdFromServer = /*[[${sessionTemplateId}]]*/ null;
+        const templateId = templateIdFromUrl || templateIdFromServer;
+        
         if (templateId) {
-            fetch(`/workouts/templates/${templateId}/exercises`)
+            // Always fetch latest template items from database to ensure we get updates
+            // Add timestamp to prevent browser caching
+            const cacheBuster = new Date().getTime();
+            fetch(`/workouts/templates/${templateId}/exercises?t=${cacheBuster}`, {
+                cache: 'no-cache',
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
+            })
                 .then(r => r.json())
                 .then(list => loadTemplateExercises(list))
                 .catch(err => console.error('Template preload failed:', err));

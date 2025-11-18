@@ -157,6 +157,13 @@ public class WorkoutController {
         model.addAttribute("exercises", options);
         model.addAttribute("existingSets", workoutService.getSessionSets(s.getId()));
         
+        // Pass templateId from session so frontend can fetch latest template items if needed
+        // Use templateId from URL if provided (for new sessions), otherwise use session's templateId
+        UUID sessionTemplateId = (templateId != null) ? templateId : s.getTemplateId();
+        if (sessionTemplateId != null) {
+            model.addAttribute("sessionTemplateId", sessionTemplateId.toString());
+        }
+        
         // Get last performance data for each exercise
         java.util.Map<String, project.fitnessapplication.workout.dto.LastPerformanceData> lastPerformanceData = new java.util.HashMap<>();
         for (var exercise : options) {
